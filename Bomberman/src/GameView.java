@@ -83,7 +83,6 @@ public class GameView{
         private List<Rectangle> cells;
         private Point selectedCell;
         private BufferedImage image1 = null;
-        private int[] currentLocation = {1,1};
 
         public GamePane() {
         	

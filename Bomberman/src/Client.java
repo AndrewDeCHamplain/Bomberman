@@ -14,15 +14,25 @@ public class Client {
 
 	/**
 	 * @param args[0] -> port number
-	 * @throws UnknownHostException 
-	 * @throws SocketException 
 	 */
-	public static void main(String[] args) throws UnknownHostException, SocketException {
+	public static void main(String[] args){
 		
 		// TODO Auto-generated method stub
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-		DatagramSocket clientSocket = new DatagramSocket();
-		InetAddress IPAddress = InetAddress.getByName("localhost");
+		DatagramSocket clientSocket = null;
+		try {
+			clientSocket = new DatagramSocket();
+		} catch (SocketException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		InetAddress IPAddress = null;
+		try {
+			IPAddress = InetAddress.getByName("localhost");
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		byte[] receiveData, sendData;
 		String sentence = null;
 		
