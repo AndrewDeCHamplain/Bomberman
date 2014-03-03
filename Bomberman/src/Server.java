@@ -10,11 +10,14 @@
 import java.io.*; 
 import java.net.*;
 
+
+
 public class Server {
+	
 	
 	public static char[][] boardArray = 
 		{{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-		{'w','1','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
+		{'w','1','x','f','f','f','f','f','f','f','f','f','f','f','x','2','w'},
 		{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
 		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
 		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
@@ -28,7 +31,7 @@ public class Server {
 		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
 		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
 		{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-		{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
+		{'w','3','x','f','f','f','f','f','f','f','f','f','f','f','x','4','w'},
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'}
 		};
 	public static String arraystring = null;
@@ -41,6 +44,11 @@ public class Server {
 		
 			DatagramSocket serverSocket = null;
 			DatagramPacket receivePacket = null;
+			
+			Player player1 = null;
+			Player player2 = null;
+			Player player3 = null;
+			Player player4 = null;
 			
 			byte[] receiveData, sendData;
 			int numPlayers = 0;
@@ -83,12 +91,28 @@ public class Server {
 				if(startGame.equals("join")){
 					
 					numPlayers++;
+
 					//get address from who sent packet
 					InetAddress IPAddress = receivePacket.getAddress();
 					System.out.println(receivePacket.getAddress().getHostAddress() + " joined the game.");
 					int port = receivePacket.getPort();
 					String temp = String.valueOf(numPlayers);
 					sendData = temp.getBytes();
+					
+					if(numPlayers == 1){
+						player1 = new Player(1, 1, 1, IPAddress);
+						placePlayer(player1);
+					}else if(numPlayers == 2){
+						player2 = new Player(16, 1, 2, IPAddress);
+						placePlayer(player2);
+					}else if(numPlayers == 3){
+						player3 = new Player(1, 16, 3, IPAddress);
+						placePlayer(player3);
+					}else if(numPlayers == 4){
+						player4 = new Player(16, 16, 4, IPAddress);
+						placePlayer(player4);
+					}
+					
 					//send player their number
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 					try {
@@ -140,6 +164,9 @@ public class Server {
 				//get address from who sent packet
 				InetAddress IPAddress = receivePacket.getAddress();
 				int port = receivePacket.getPort();
+				
+				movePlayer(whichPlayer(IPAddress,player1,player2,player3,player4),sentence);
+				
 				sendData = arrayToString(boardArray).getBytes();
 				
 				//send the message back
@@ -165,5 +192,39 @@ public class Server {
 		}
 		return arraystring;
 	} 
+	
+	public static void placePlayer(Player player){
+				boardArray[player.x][player.y]=(char) player.playerNumber;
+	}
+	public static void movePlayer(Player player, String direction){
+				if (direction.equals("LEFT")||direction.equals("left")){
+					if (boardArray[player.x-1][player.y]=='f')
+						player.x=player.x--;
+				}
+				if (direction.equals("UP")||direction.equals("up")){
+					if (boardArray[player.x][player.y+1]=='f')
+						player.y=player.y++;
+				}
+				if (direction.equals("RIGHT")||direction.equals("right")){
+					if (boardArray[player.x+1][player.y]=='f')
+						player.x=player.x++;
+				}
+				if (direction.equals("DOWN")||direction.equals("down")){
+					if (boardArray[player.x][player.y-1]=='f')
+						player.y=player.y--;
+				}
+	}
+	public static Player whichPlayer(InetAddress ipaddress,Player p1,Player p2, Player p3, Player p4){
+		if (p1.IP == ipaddress)
+			return p1;
+		else if (p2.IP == ipaddress)
+			return p2;
+		else if (p3.IP == ipaddress)
+			return p3;
+		else if (p4.IP == ipaddress)
+			return p4;
+		else 
+			return null;
+	}
 
 }
