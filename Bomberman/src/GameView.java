@@ -26,10 +26,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 
-public class GameView{
+public class GameView implements Runnable{
 
-	public static char[][] boardArray = {{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-										{'w','1','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
+	public static char[][] boardArray = null;
+	/*public static char[][] boardArray = {{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
+										{'w','x','1','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
 										{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
 										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
 										{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
@@ -50,8 +51,10 @@ public class GameView{
 	public static void main(String[] args) {
         new GameView();
     }
+    */
 
-    public GameView(){
+    public GameView(char[][] args){
+    	boardArray = args;
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -82,7 +85,7 @@ public class GameView{
         private int rowCount = boardArray[0].length;
         private List<Rectangle> cells;
         private Point selectedCell;
-        private BufferedImage image1 = null;
+        private BufferedImage sprite_down = null;
 
         public GamePane() {
         	
@@ -150,20 +153,10 @@ public class GameView{
                     }
                 }
             }
-            /*
-            // load character images
-            try {
-				image1 = ImageIO.read(new File("Bomberman/Resource/Bombermansprite1.png"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            */
+
             
-            try {
-            	//byte[] rawData = getRawBytesFromFile("../resources/bmanDown.png");
-            	
-            	image1 = ImageIO.read(new File("resources/bmanDown.png"));
+            try {            	
+            	sprite_down = ImageIO.read(new File("resources/bmanDown.png"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -177,20 +170,23 @@ public class GameView{
                 	Rectangle cell = cells.get(index);
                 	
                 	if(boardArray[row][col] == '1'){
-                		g.drawImage(image1, 0, 0, cellWidth, cellHeight, null);
+                		g2d.setColor(new Color(200, 180, 160));
+                		//g2d.fill(cell);
+                		g.drawImage(sprite_down, col*cellWidth, row*cellHeight, cellWidth, cellHeight, null);
+                		
                 	}
                 	else if(boardArray[row][col] == 'x'){
                 		g2d.setColor(new Color(200, 180, 160));
-                		g2d.fill(cell);
+                		//g2d.fill(cell);
                 	}
                 	else if(boardArray[row][col] == 'w'){
                 		g2d.setColor(Color.GRAY);
                 		g2d.fill(cell);
                 	}
-                	else { // floor ('f')
+                	/*else { // floor ('f')
                 		g2d.setColor(new Color(200, 180, 160));
                 		g2d.fill(cell);
-                	}
+                	}*/
                 }
             }
 			
@@ -205,4 +201,10 @@ public class GameView{
             g2d.dispose();
         }
     }
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		new GameView(boardArray);
+	}
 }
