@@ -43,10 +43,11 @@ public class Server {
 			DatagramPacket receivePacket = null;
 			
 			byte[] receiveData, sendData;
-			int port, numPlayers = 0;
+			int numPlayers = 0;
 			
 			try {
 				serverSocket = new DatagramSocket(Integer.parseInt(args[0])); 
+				
 				//serverSocket = new DatagramSocket(5293);
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
@@ -59,42 +60,33 @@ public class Server {
 				e2.printStackTrace();
 			}
 			
-			String startGame = null;
+			String startGame = "";
 			
-			while(startGame != "START_GAME" || numPlayers < 4){
+			while(!startGame.equals("start") && !(numPlayers > 4 )){
+				System.out.println("Waiting for players, players: " + numPlayers);
+				
+				
 				receiveData = new byte[1024];
 				sendData = new byte[1024];
 				
 				receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
 					serverSocket.receive(receivePacket);
+					startGame = new String(receivePacket.getData(), 0, receivePacket.getLength(), "UTF-8");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				startGame = new String(receivePacket.getData());
 				
-				// If trying to start game without any players
-				if(startGame == "START_GAME" && numPlayers==0){
-					InetAddress IPAddress = receivePacket.getAddress();
-					port = receivePacket.getPort();
-					String temp = "No players";
-					sendData = temp.getBytes();
-					//send player their number
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-					try {
-						serverSocket.send(sendPacket);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				System.out.println(startGame);
 				
-				if(startGame == "JOIN_GAME"){
+				if(startGame.equals("join")){
+					
 					numPlayers++;
 					//get address from who sent packet
 					InetAddress IPAddress = receivePacket.getAddress();
-					port = receivePacket.getPort();
+					System.out.println(receivePacket.getAddress().getHostAddress() + " joined the game.");
+					int port = receivePacket.getPort();
 					String temp = String.valueOf(numPlayers);
 					sendData = temp.getBytes();
 					//send player their number
@@ -106,8 +98,29 @@ public class Server {
 						e.printStackTrace();
 					}
 				}
-			}
 				
+				// If trying to start game without any players
+				if(startGame.equals("start") && numPlayers==0){
+					InetAddress IPAddress = receivePacket.getAddress();
+					int port = receivePacket.getPort();
+					String temp = "No players";
+					sendData = temp.getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+					try {
+						serverSocket.send(sendPacket);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}								
+				
+			}
+			try {
+				serverSocket.setBroadcast(true);
+			} catch (SocketException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 			while(true){
 				
 				receiveData = new byte[1024];
@@ -126,7 +139,7 @@ public class Server {
 				
 				//get address from who sent packet
 				InetAddress IPAddress = receivePacket.getAddress();
-				port = receivePacket.getPort();
+				int port = receivePacket.getPort();
 				sendData = arrayToString(boardArray).getBytes();
 				
 				//send the message back

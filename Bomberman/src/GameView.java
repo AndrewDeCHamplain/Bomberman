@@ -29,6 +29,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class GameView implements Runnable{
 
 	public static char[][] boardArray = null;
+	private static char[] playerNum;
 	/*public static char[][] boardArray = {{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
 										{'w','x','1','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
 										{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
@@ -53,8 +54,9 @@ public class GameView implements Runnable{
     }
     */
 
-    public GameView(char[][] args){
+    public GameView(char[][] args, char[] playerNum){
     	boardArray = args;
+    	this.playerNum = playerNum;
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -169,7 +171,7 @@ public class GameView implements Runnable{
                 	index = row + (col * columnCount);
                 	Rectangle cell = cells.get(index);
                 	
-                	if(boardArray[row][col] == '1'){
+                	if(boardArray[row][col] == playerNum[0]){
                 		g2d.setColor(new Color(200, 180, 160));
                 		//g2d.fill(cell);
                 		g.drawImage(sprite_down, col*cellWidth, row*cellHeight, cellWidth, cellHeight, null);
@@ -205,6 +207,6 @@ public class GameView implements Runnable{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		new GameView(boardArray);
+		new GameView(boardArray, playerNum);
 	}
 }
