@@ -48,9 +48,9 @@ public class GameView implements Runnable{
 										{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
 										{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'}
 										};
-	
+	/*
 	public static void main(String[] args) {
-        new GameView();
+        new GameView(boardArray, playerNum);
     }
     */
 
@@ -209,4 +209,5 @@ public class GameView implements Runnable{
 		// TODO Auto-generated method stub
 		new GameView(boardArray, playerNum);
 	}
+	
 }

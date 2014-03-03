@@ -56,32 +56,49 @@ public class Client {
 
 		// Thread gameThread = new Thread(new GameView(tileMap, playerNum));
 		DatagramPacket sendPacket = null, receivePacket = null;
+		MulticastSocket multicastSocket = null;
+		DatagramSocket clientSocket = null;
+		InetAddress IPAddress = null;
 		char[] playerNum = null;
+		int port1 = Integer.parseInt(args[0]);
+		int port2 = port1+1;
+		InetAddress group = null;
+		byte[] receiveData = new byte[1024];
+		byte[] sendData = new byte[1024];
 
 		// TODO Auto-generated method stub
-		
-		DatagramSocket clientSocket = null;
 		try {
 			clientSocket = new DatagramSocket();
+			
+			group = InetAddress.getByName("224.224.224.224");
+			multicastSocket = new MulticastSocket(port2);
+			multicastSocket.joinGroup(group);
+			multicastSocket.setReuseAddress(true);
 		} catch (SocketException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		InetAddress IPAddress = null;
+
 		try {
 			IPAddress = InetAddress.getByName("localhost");
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		byte[] receiveData = new byte[1024];
-		byte[] sendData = new byte[1024];
-		String sentence = "", temp = "";
+	
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
 				System.in));
 		
-		String player = "";
-		while (true) {
+		String player = "", starting = "", sentence = "", temp = "";
+
+		
+		while (!starting.equals("starting")) {
 			receiveData = new byte[1024];
 			sendData = new byte[1024];
 			
@@ -95,29 +112,27 @@ public class Client {
 			//String temp = sentence;
 			
 			if (sentence.equals("join")) {
-				System.out.println(IPAddress.getHostAddress()
+				DatagramPacket packet = null;
+				String port1Addr = IPAddress.getHostAddress();
+				System.out.println(port1Addr
 						+ " trying to join game.");
 				sendData = sentence.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
-						IPAddress, Integer.parseInt(args[0]));
+						IPAddress, port1);
 				System.out.println("Joining game.");
 				try {
 					clientSocket.send(sendPacket);
+					
+					packet = new DatagramPacket(receiveData, receiveData.length, group, port2);
+					multicastSocket.receive(packet);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				receivePacket = new DatagramPacket(receiveData,
-						receiveData.length);
-				try {
-					clientSocket.receive(receivePacket);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				player = new String(receivePacket.getData());
+				
+				player = new String(packet.getData());
 				playerNum = player.toCharArray();
-				System.out.println(IPAddress.getHostAddress() + " is player "
+				System.out.println(port1Addr + " is player "
 						+ player);
 			}
 			if (player.equals("4")){
@@ -130,33 +145,28 @@ public class Client {
 						+ " starting game.");
 				sendData = sentence.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
-						IPAddress, Integer.parseInt(args[0]));
+						IPAddress,port1);
 				try {
 					clientSocket.send(sendPacket);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				receivePacket = new DatagramPacket(receiveData,
-						receiveData.length);
-				try {
-					clientSocket.receive(receivePacket);
-					temp = new String(receivePacket.getData(), 0, receivePacket.getLength(), "UTF-8");
+					
+					DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length, group, port2);
+					multicastSocket.receive(packet);
+					temp = new String(packet.getData());
+					System.out.println(temp);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				if (!temp.equals("No players")){
+				if (temp.trim().equals("starting")){
 					System.out.println("You have started the game!");
 					Thread gameThread = new Thread(new GameView(tileMap, playerNum));
-					break;
+					starting = "starting";
 				}
 				else{
 					System.out.println("No players to start the game!");
 				}
 			}
-
 		}
 		while (true) {
 
@@ -171,27 +181,24 @@ public class Client {
 			}
 			sendData = sentence.getBytes();
 			sendPacket = new DatagramPacket(sendData, sendData.length,
-					IPAddress, Integer.parseInt(args[0]));
+					IPAddress, port1);
 			// DatagramPacket sendPacket = new DatagramPacket(sendData,
 			// sendData.length, IPAddress, 5293);
 			try {
 				clientSocket.send(sendPacket);
+				
+				DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length, group, port2);
+				multicastSocket.receive(packet);
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			try {
-				clientSocket.receive(receivePacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			String tileMapString = new String(receivePacket.getData());
 			tileMap = stringToArray(tileMapString);
 			System.out.println("From server: " + tileMapString);
 
-			;
 			// clientSocket.close();
 		}
 	}

@@ -10,14 +10,11 @@
 import java.io.*; 
 import java.net.*;
 
-
-
 public class Server {
-	
 	
 	public static char[][] boardArray = 
 		{{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-		{'w','1','x','f','f','f','f','f','f','f','f','f','f','f','x','2','w'},
+		{'w','1','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
 		{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
 		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
 		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
@@ -31,7 +28,7 @@ public class Server {
 		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
 		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
 		{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-		{'w','3','x','f','f','f','f','f','f','f','f','f','f','f','x','4','w'},
+		{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'}
 		};
 	public static String arraystring = null;
@@ -43,31 +40,37 @@ public class Server {
 		// TODO Auto-generated method stub
 		
 			DatagramSocket serverSocket = null;
+			MulticastSocket multicastSocket = null;
 			DatagramPacket receivePacket = null;
+			DatagramPacket sendPacket = null;
+			int port1 = Integer.parseInt(args[0]);
+			int port2 = port1+1;
+			byte[] receiveData, sendData;
+			int numPlayers = 0;
+			InetAddress group = null;
+			InetAddress IPAddress;
 			
 			Player player1 = null;
 			Player player2 = null;
 			Player player3 = null;
 			Player player4 = null;
 			
-			byte[] receiveData, sendData;
-			int numPlayers = 0;
 			
 			try {
-				serverSocket = new DatagramSocket(Integer.parseInt(args[0])); 
+				serverSocket = new DatagramSocket(port1); 
+				serverSocket.setReuseAddress(true);
 				
-				//serverSocket = new DatagramSocket(5293);
+				group = InetAddress.getByName("224.224.224.224");
+				multicastSocket = new MulticastSocket(port2); 
+				multicastSocket.joinGroup(group);
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} // 
-			try {
-				serverSocket.setReuseAddress(true);
-			} catch (SocketException e2) {
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				e.printStackTrace();
 			}
-			
+
 			String startGame = "";
 			
 			while(!startGame.equals("start") && !(numPlayers > 4 )){
@@ -91,11 +94,10 @@ public class Server {
 				if(startGame.equals("join")){
 					
 					numPlayers++;
-
 					//get address from who sent packet
-					InetAddress IPAddress = receivePacket.getAddress();
+					IPAddress = receivePacket.getAddress();
 					System.out.println(receivePacket.getAddress().getHostAddress() + " joined the game.");
-					int port = receivePacket.getPort();
+					port1 = receivePacket.getPort();
 					String temp = String.valueOf(numPlayers);
 					sendData = temp.getBytes();
 					
@@ -114,37 +116,45 @@ public class Server {
 					}
 					
 					//send player their number
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+					sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 					try {
-						serverSocket.send(sendPacket);
+						multicastSocket.send(sendPacket);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					
 				}
 				
 				// If trying to start game without any players
 				if(startGame.equals("start") && numPlayers==0){
-					InetAddress IPAddress = receivePacket.getAddress();
-					int port = receivePacket.getPort();
+					IPAddress = receivePacket.getAddress();
+					//int port = receivePacket.getPort();
 					String temp = "No players";
 					sendData = temp.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+					sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 					try {
-						serverSocket.send(sendPacket);
+						multicastSocket.send(sendPacket);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}								
-				
+				}									
 			}
+			//serverSocket.close();
+			
+			// Once starting, server makes new multicasting socket
+			//int port = multicastSocket.getPort();
+			//InetAddress address = multicastSocket.getInetAddress();
+			sendData = "starting".getBytes();
+			sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 			try {
-				serverSocket.setBroadcast(true);
-			} catch (SocketException e2) {
+				multicastSocket.send(sendPacket);
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				e.printStackTrace();
 			}
+			System.out.println("Game starting");
 			while(true){
 				
 				receiveData = new byte[1024];
@@ -159,20 +169,21 @@ public class Server {
 					e1.printStackTrace();
 				}
 				String sentence = new String(receivePacket.getData());
+				IPAddress = receivePacket.getAddress();
 				System.out.println("Received: " + sentence);
-				
-				//get address from who sent packet
-				InetAddress IPAddress = receivePacket.getAddress();
-				int port = receivePacket.getPort();
 				
 				movePlayer(whichPlayer(IPAddress,player1,player2,player3,player4),sentence);
 				
+				
+				//get address from who sent packet
+				//InetAddress IPAddress = receivePacket.getAddress();
+				//port = receivePacket.getPort();
 				sendData = arrayToString(boardArray).getBytes();
 				
 				//send the message back
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+				sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 				try {
-					serverSocket.send(sendPacket);
+					multicastSocket.send(sendPacket);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -215,13 +226,13 @@ public class Server {
 				}
 	}
 	public static Player whichPlayer(InetAddress ipaddress,Player p1,Player p2, Player p3, Player p4){
-		if (p1.IP.equals(ipaddress))
+		if (p1.IP == ipaddress)
 			return p1;
-		else if (p2.IP.equals(ipaddress))
+		else if (p2.IP == ipaddress)
 			return p2;
-		else if (p3.IP.equals(ipaddress))
+		else if (p3.IP == ipaddress)
 			return p3;
-		else if (p4.equals(ipaddress))
+		else if (p4.IP == ipaddress)
 			return p4;
 		else 
 			return null;
