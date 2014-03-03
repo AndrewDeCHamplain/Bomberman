@@ -215,13 +215,13 @@ public class Server {
 				}
 	}
 	public static Player whichPlayer(InetAddress ipaddress,Player p1,Player p2, Player p3, Player p4){
-		if (p1.IP == ipaddress)
+		if (p1.IP.equals(ipaddress))
 			return p1;
-		else if (p2.IP == ipaddress)
+		else if (p2.IP.equals(ipaddress))
 			return p2;
-		else if (p3.IP == ipaddress)
+		else if (p3.IP.equals(ipaddress))
 			return p3;
-		else if (p4.IP == ipaddress)
+		else if (p4.equals(ipaddress))
 			return p4;
 		else 
 			return null;

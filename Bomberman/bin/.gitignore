@@ -3,5 +3,6 @@
 /GameView$GamePane$1.class
 /GameView$GamePane.class
 /GameView.class
-/Server.class
 /Player.class
+/Server.class
+/Spectator.class
