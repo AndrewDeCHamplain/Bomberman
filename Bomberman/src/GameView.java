@@ -28,33 +28,14 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class GameView implements Runnable{
 
-	public static char[][] boardArray = null;
-	private static char[] playerNum;
-	/*public static char[][] boardArray = {{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-										{'w','x','1','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
-										{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-										{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-										{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-										{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-										{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-										{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-										{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-										{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-										{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
-										{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'}
-										};
-	/*
+	public static ArrayList<ArrayList<Character>> boardArray = null;
+	private static char playerNum;
+	
 	public static void main(String[] args) {
         new GameView(boardArray, playerNum);
     }
-    */
 
-    public GameView(char[][] args, char[] playerNum){
+    public GameView(ArrayList<ArrayList<Character>> args, char playerNum){
     	boardArray = args;
     	this.playerNum = playerNum;
         EventQueue.invokeLater(new Runnable() {
@@ -72,6 +53,8 @@ public class GameView implements Runnable{
                 frame.pack();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
+                // create controller -> make as observable
+                // add key listener
             }
         });
     }
@@ -83,8 +66,8 @@ public class GameView implements Runnable{
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private int columnCount = boardArray.length;
-        private int rowCount = boardArray[0].length;
+		private int columnCount = boardArray.get(0).size();
+        private int rowCount = boardArray.size() - 1;
         private List<Rectangle> cells;
         private Point selectedCell;
         private BufferedImage sprite_down = null;
@@ -170,18 +153,18 @@ public class GameView implements Runnable{
                 	
                 	index = row + (col * columnCount);
                 	Rectangle cell = cells.get(index);
-                	
-                	if(boardArray[row][col] == playerNum[0]){
-                		g2d.setColor(new Color(200, 180, 160));
+                	char temp = boardArray.get(row).get(col);
+                	if(temp == playerNum){
+                		//g2d.setColor(new Color(200, 180, 160));
                 		//g2d.fill(cell);
                 		g.drawImage(sprite_down, col*cellWidth, row*cellHeight, cellWidth, cellHeight, null);
                 		
                 	}
-                	else if(boardArray[row][col] == 'x'){
-                		g2d.setColor(new Color(200, 180, 160));
+                	else if(temp == 'x'){
+                		//g2d.setColor(new Color(200, 180, 160));
                 		//g2d.fill(cell);
                 	}
-                	else if(boardArray[row][col] == 'w'){
+                	else if(temp == 'w'){
                 		g2d.setColor(Color.GRAY);
                 		g2d.fill(cell);
                 	}
@@ -191,13 +174,14 @@ public class GameView implements Runnable{
                 	}*/
                 }
             }
+            //g.drawImage(sprite_down, cellWidth, cellHeight, cellWidth, cellHeight, null);
 			
 			
             g2d.setColor(new Color(200, 180, 160));
             for (Rectangle cell : cells) {
                 g2d.draw(cell);
             }
-            
+            System.out.println("Print board");
             
             
             g2d.dispose();

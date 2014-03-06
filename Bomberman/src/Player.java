@@ -2,15 +2,30 @@ import java.net.InetAddress;
 
 
 public class Player {
-	int x;
-	int y;
-	int HP;
+	int x, y, lives; 
+	char playerNumber;
 	InetAddress IP;
-	int playerNumber;
-	Player(int X,int Y,int Num,InetAddress ip){
-		x = X;
-		y = Y;
-		playerNumber = Num;
-		IP = ip;
+
+	Player(int x,int y,char num,InetAddress IP){
+		this.x = x;
+		this.y = y;
+		playerNumber = num;
+		this.IP = IP;
+	}
+	
+	public char getPlayerNum(){
+		return playerNumber;
+	}
+	public int getYPosition(){
+		return y;
+	}
+	public int getXPosition(){
+		return x;
+	}
+	public int getHP(){
+		return lives;
+	}
+	public InetAddress getIPAddress(){
+		return IP;
 	}
 }

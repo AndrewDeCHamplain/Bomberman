@@ -9,10 +9,14 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Client {
 
-	public static char tileMap[][] = {
+	
+	public static ArrayList<ArrayList<Character>> tileMap = null;
+			/*{
 			{ 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w',
 					'w', 'w', 'w', 'w' },
 			{ 'w', 'x', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
@@ -47,7 +51,7 @@ public class Client {
 					'f', 'x', 'x', 'w' },
 			{ 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w',
 					'w', 'w', 'w', 'w' } };
-
+*/
 	/**
 	 * @param args
 	 *            [0] -> port number
@@ -59,13 +63,13 @@ public class Client {
 		MulticastSocket multicastSocket = null;
 		DatagramSocket clientSocket = null;
 		InetAddress IPAddress = null;
-		char[] playerNum = null;
+		InetAddress group = null;
+		char playerNum = 0;
 		int port1 = Integer.parseInt(args[0]);
 		int port2 = port1+1;
-		InetAddress group = null;
 		byte[] receiveData = new byte[1024];
 		byte[] sendData = new byte[1024];
-
+		
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -74,30 +78,18 @@ public class Client {
 			multicastSocket = new MulticastSocket(port2);
 			multicastSocket.joinGroup(group);
 			multicastSocket.setReuseAddress(true);
-		} catch (SocketException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			IPAddress = InetAddress.getByName("localhost");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		try {
-			IPAddress = InetAddress.getByName("localhost");
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
 				System.in));
 		
-		String player = "", starting = "", sentence = "", temp = "";
-
 		
+		String player = "", starting = "", sentence = "", temp = "";
 		while (!starting.equals("starting")) {
 			receiveData = new byte[1024];
 			sendData = new byte[1024];
@@ -131,13 +123,12 @@ public class Client {
 				}
 				
 				player = new String(packet.getData());
-				playerNum = player.toCharArray();
+				playerNum = player.toCharArray()[0];
 				System.out.println(port1Addr + " is player "
 						+ player);
 			}
 			if (player.equals("4")){
 				System.out.println("4 Players, Game Started!");
-				Thread gameThread = new Thread(new GameView(tileMap, playerNum));
 				break;
 			}
 			if (sentence.equals("start")) {
@@ -152,7 +143,6 @@ public class Client {
 					DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length, group, port2);
 					multicastSocket.receive(packet);
 					temp = new String(packet.getData());
-					System.out.println(temp);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -160,7 +150,6 @@ public class Client {
 				
 				if (temp.trim().equals("starting")){
 					System.out.println("You have started the game!");
-					Thread gameThread = new Thread(new GameView(tileMap, playerNum));
 					starting = "starting";
 				}
 				else{
@@ -168,6 +157,20 @@ public class Client {
 				}
 			}
 		}
+		
+		try {
+			receivePacket = new DatagramPacket(receiveData, receiveData.length, group, port2);
+			multicastSocket.receive(receivePacket);
+			tileMap = stringToArray(new String(receivePacket.getData()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+		Thread gameThread = new Thread(new GameView(tileMap, playerNum));
+		
+		
 		while (true) {
 
 			receiveData = new byte[1024];
@@ -182,22 +185,18 @@ public class Client {
 			sendData = sentence.getBytes();
 			sendPacket = new DatagramPacket(sendData, sendData.length,
 					IPAddress, port1);
-			// DatagramPacket sendPacket = new DatagramPacket(sendData,
-			// sendData.length, IPAddress, 5293);
 			try {
 				clientSocket.send(sendPacket);
 				
 				DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length, group, port2);
 				multicastSocket.receive(packet);
-				
+				String tileMapString = new String(receivePacket.getData());
+				tileMap = stringToArray(tileMapString);
+				System.out.println("From server: " + tileMapString);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			String tileMapString = new String(receivePacket.getData());
-			tileMap = stringToArray(tileMapString);
-			System.out.println("From server: " + tileMapString);
 
 			// clientSocket.close();
 		}
@@ -205,24 +204,25 @@ public class Client {
 
 	// this method converts our array to a CSV string format where each level of
 	// the array is delimited by "|"
-	public static char[][] stringToArray(String s) {
-		char[][] tileMapInternal = null;
-		String tempMap[] = null;
-		int i = 0;
-		int j = 0;
-		String[] tokensRow = s.split("|");
-		// String[] tokensColumn = s.split(",");
-
-		for (String t : tokensRow) {
-			tempMap[i] = t;
-			String[] tokensColumn = tempMap[j].split(",");
-			for (String y : tokensColumn) {
-				tileMapInternal[i][j] = y.toCharArray()[0];
-				j++;
-			}
-			i++;
+	public static ArrayList<ArrayList<Character>> stringToArray(String s) {
+		ArrayList<ArrayList<Character>> tileMapInternal = new ArrayList<ArrayList<Character>>();
+		ArrayList<String> tempMap = new ArrayList<String>();
+		int j=0;	
+		
+		StringTokenizer st1 = new StringTokenizer(s, "|");
+		while (st1.hasMoreElements()) {
+			tempMap.add((String) st1.nextElement());
 		}
+		for(int i=0; i<tempMap.size(); i++){
+			ArrayList<Character> row = new ArrayList<Character>();
+			StringTokenizer st2 = new StringTokenizer((String) tempMap.get(i), ",");
+			
+			while (st2.hasMoreElements()){
+				row.add(((String) st2.nextElement()).charAt(0));
+			}
+			tileMapInternal.add(row);
+		}
+		System.out.println(tileMapInternal);
 		return tileMapInternal;
 	}
-
 }
