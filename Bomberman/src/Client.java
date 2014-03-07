@@ -16,42 +16,7 @@ public class Client {
 
 	
 	public static ArrayList<ArrayList<Character>> tileMap = null;
-			/*{
-			{ 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w',
-					'w', 'w', 'w', 'w' },
-			{ 'w', 'x', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'x', 'x', 'w' },
-			{ 'w', 'x', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'x', 'w' },
-			{ 'w', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'f', 'f', 'w' },
-			{ 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'f', 'w' },
-			{ 'w', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'f', 'f', 'w' },
-			{ 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'f', 'w' },
-			{ 'w', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'f', 'f', 'w' },
-			{ 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'f', 'w' },
-			{ 'w', 'f', 'f', 'f', 'f', 'f', 'f', 'f', '1', 'f', 'f', 'f', 'f',
-					'f', 'f', 'f', 'w' },
-			{ 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'f', 'w' },
-			{ 'w', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'f', 'f', 'w' },
-			{ 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'f', 'w' },
-			{ 'w', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'f', 'f', 'w' },
-			{ 'w', 'x', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w', 'f', 'w',
-					'f', 'w', 'x', 'w' },
-			{ 'w', 'x', 'x', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f',
-					'f', 'x', 'x', 'w' },
-			{ 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w',
-					'w', 'w', 'w', 'w' } };
-*/
+	
 	/**
 	 * @param args
 	 *            [0] -> port number
@@ -169,7 +134,7 @@ public class Client {
 		
 	
 		Thread gameThread = new Thread(new GameView(tileMap, playerNum));
-		
+		Thread receiver = new Thread(new ClientReceive());
 		
 		while (true) {
 
