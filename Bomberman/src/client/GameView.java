@@ -1,3 +1,4 @@
+package client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,8 +15,6 @@ import javax.imageio.ImageIO;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class GameView implements Runnable{
 
     public GameView(ArrayList<ArrayList<Character>> args, char playerNum){
     	boardArray = args;
-    	this.playerNum = playerNum;
+    	GameView.playerNum = playerNum;
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -59,6 +58,7 @@ public class GameView implements Runnable{
         });
     }
 
+   
     public class GamePane extends JPanel {
 
     	
@@ -69,12 +69,13 @@ public class GameView implements Runnable{
 		private int columnCount = boardArray.get(0).size();
         private int rowCount = boardArray.size() - 1;
         private List<Rectangle> cells;
-        private Point selectedCell;
         private BufferedImage sprite_down = null;
+        private Point selectedCell;
 
         public GamePane() {
         	
             cells = new ArrayList<>(columnCount * rowCount);
+            /*
             MouseAdapter mouseHandler;
             mouseHandler = new MouseAdapter() {
                 @Override
@@ -90,14 +91,15 @@ public class GameView implements Runnable{
                     int column = e.getX() / cellWidth;
                     int row = e.getY() / cellHeight;
 
-                    selectedCell = new Point(column, row);
+                    Point selectedCell = new Point(column, row);
                     repaint();
 
                 }
             };
             addMouseMotionListener(mouseHandler);
+            */
         }
-
+        
         @Override
         public Dimension getPreferredSize() {
             return new Dimension(600, 600);
@@ -115,8 +117,6 @@ public class GameView implements Runnable{
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g.create();
 
-            int index; 	
-           
             int width = getWidth();
             int height = getHeight();
 
@@ -150,9 +150,8 @@ public class GameView implements Runnable{
             // fill grid with colours and sprites
             for (int row = 0; row < rowCount; row++) {
                 for (int col = 0; col < columnCount; col++) {
-                	
-                	index = row + (col * columnCount);
-                	Rectangle cell = cells.get(index);
+
+                	Rectangle cell = cells.get(row + (col * columnCount));
                 	char temp = boardArray.get(row).get(col);
                 	if(temp == playerNum){
                 		//g2d.setColor(new Color(200, 180, 160));
@@ -192,6 +191,7 @@ public class GameView implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		new GameView(boardArray, playerNum);
+		
 	}
 	
 }

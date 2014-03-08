@@ -1,3 +1,4 @@
+package server;
 /**
  * 
  */
@@ -9,6 +10,8 @@
 
 import java.io.*;
 import java.net.*;
+
+import client.ClientReceive;
 
 public class Server {
 
@@ -45,8 +48,8 @@ public class Server {
 		MulticastSocket multicastSocket = null;
 		DatagramPacket receivePacket = null;
 		DatagramPacket sendPacket = null;
-		int port1 = Integer.parseInt(args[0]);
-		int port2 = port1 + 1;
+		int port1 = 3333;
+		int port2 = 3334;
 		byte[] receiveData, sendData;
 		int numPlayers = 0;
 		InetAddress group = null;
@@ -64,13 +67,10 @@ public class Server {
 			group = InetAddress.getByName("224.224.224.224");
 			multicastSocket = new MulticastSocket(port2);
 			multicastSocket.joinGroup(group);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 
 		String startGame = "";
 
@@ -87,44 +87,53 @@ public class Server {
 						receivePacket.getLength(), "UTF-8");
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
+				serverSocket.close();
+				multicastSocket.close();
 				e1.printStackTrace();
 			}
-
 			if (startGame.equals("join")) {
-
 				numPlayers++;
+				
 				// get address from who sent packet
 				IPAddress = receivePacket.getAddress();
 				System.out.println(receivePacket.getAddress().getHostAddress()
 						+ " joined the game.");
 				port1 = receivePacket.getPort();
+				
+				// create new server thread to handle new clients inputs
+				Thread inputThread = new Thread(new ClientReceive(getNextPort(numPlayers)));
+				inputThread.start();
+				
 				String temp = String.valueOf(numPlayers);
-				System.out.println(temp);
 				sendData = temp.getBytes();
-
-				if (numPlayers == 1) {
-					player1 = new Player(1, 1, '1', IPAddress);
-					placePlayer(player1);
-				} else if (numPlayers == 2) {
-					player2 = new Player(16, 1, '2', IPAddress);
-					placePlayer(player2);
-				} else if (numPlayers == 3) {
-					player3 = new Player(1, 16, '3', IPAddress);
-					placePlayer(player3);
-				} else if (numPlayers == 4) {
-					player4 = new Player(16, 16, '4', IPAddress);
-					placePlayer(player4);
-				}
-
-				// send player their number
+				
+				// send player their number and what server they will talk to
 				sendPacket = new DatagramPacket(sendData, sendData.length,
-						group, port2);
+						IPAddress, port1);
 				try {
 					multicastSocket.send(sendPacket);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					serverSocket.close();
+					multicastSocket.close();
 					e.printStackTrace();
 				}
+				
+				if (numPlayers == 1) {
+					player1 = new Player(1, 1, '1', IPAddress);
+					//placePlayer(player1);
+				} else if (numPlayers == 2) {
+					player2 = new Player(16, 1, '2', IPAddress);
+					//placePlayer(player2);
+				} else if (numPlayers == 3) {
+					player3 = new Player(1, 16, '3', IPAddress);
+					//placePlayer(player3);
+				} else if (numPlayers == 4) {
+					player4 = new Player(16, 16, '4', IPAddress);
+					//placePlayer(player4);
+				}
+
+				
 
 			}
 
@@ -140,6 +149,8 @@ public class Server {
 					multicastSocket.send(sendPacket);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					serverSocket.close();
+					multicastSocket.close();
 					e.printStackTrace();
 				}
 			}
@@ -155,6 +166,8 @@ public class Server {
 			multicastSocket.send(sendPacket);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			serverSocket.close();
+			multicastSocket.close();
 			e.printStackTrace();
 		}
 
@@ -165,6 +178,8 @@ public class Server {
 			multicastSocket.send(sendPacket);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			serverSocket.close();
+			multicastSocket.close();
 			e.printStackTrace();
 		}
 		System.out.println("Game starting");
@@ -180,15 +195,17 @@ public class Server {
 				serverSocket.receive(receivePacket);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
+				serverSocket.close();
+				multicastSocket.close();
 				e1.printStackTrace();
 			}
 			String sentence = new String(receivePacket.getData());
 			IPAddress = receivePacket.getAddress();
 			System.out.println("Received: " + sentence);
 
-			movePlayer(
-					whichPlayer(IPAddress, player1, player2, player3, player4),
-					sentence);
+			//movePlayer(
+			//		whichPlayer(IPAddress, player1, player2, player3, player4),
+			//		sentence);
 
 			// get address from who sent packet
 			// InetAddress IPAddress = receivePacket.getAddress();
@@ -202,10 +219,21 @@ public class Server {
 				multicastSocket.send(sendPacket);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				serverSocket.close();
+				multicastSocket.close();
 				e.printStackTrace();
 			}
-
 		}
+	}
+
+	private static int getNextPort(int numPlayers) {
+		if(numPlayers == 1)
+			return 3335;
+		if(numPlayers == 1)
+			return 3336;
+		if(numPlayers == 1)
+			return 3337;
+		else return 3338;
 	}
 
 	// this method converts our array to a CSV string format where each level of
@@ -223,30 +251,7 @@ public class Server {
 		return arraystring;
 	}
 
-	public static void placePlayer(Player player) {
-		boardArray[player.getXPosition()][player.getYPosition()] = player.getPlayerNum();
-		System.out.println(boardArray[player.getXPosition()][player.getYPosition()]);
-	}
-
-	public static void movePlayer(Player player, String direction) {
-		if (direction.equals("LEFT") || direction.equals("left")) {
-			if (boardArray[player.x - 1][player.y] == 'f')
-				player.x = player.x--;
-		}
-		if (direction.equals("UP") || direction.equals("up")) {
-			if (boardArray[player.x][player.y + 1] == 'f')
-				player.y = player.y++;
-		}
-		if (direction.equals("RIGHT") || direction.equals("right")) {
-			if (boardArray[player.x + 1][player.y] == 'f')
-				player.x = player.x++;
-		}
-		if (direction.equals("DOWN") || direction.equals("down")) {
-			if (boardArray[player.x][player.y - 1] == 'f')
-				player.y = player.y--;
-		}
-	}
-
+/*
 	public static Player whichPlayer(InetAddress ipaddress, Player p1,
 			Player p2, Player p3, Player p4) {
 		if (p1.getIPAddress().equals(ipaddress))
@@ -260,4 +265,5 @@ public class Server {
 		else
 			return null;
 	}
+	*/
 }

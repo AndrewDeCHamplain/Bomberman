@@ -1,9 +1,12 @@
-/Player.class
-/Server.class
-/Spectator.class
 /Client.class
+/ClientReceive.class
 /GameView$1.class
 /GameView$GamePane$1.class
 /GameView$GamePane.class
 /GameView.class
-/ClientReceive.class
+/Player.class
+/Server.class
+/Spectator.class
+/ServerThread.class
+/server
+/client
