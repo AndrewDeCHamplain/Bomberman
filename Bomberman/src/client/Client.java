@@ -1,6 +1,6 @@
 package client;
 /**
- * SYSC 3303 - Assignment
+ * 
  */
 
 /**
