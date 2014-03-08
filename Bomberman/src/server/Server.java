@@ -111,11 +111,10 @@ public class Server {
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, port1);
 				try {
-					multicastSocket.send(sendPacket);
+					serverSocket.send(sendPacket);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					serverSocket.close();
-					multicastSocket.close();
 					e.printStackTrace();
 				}
 				

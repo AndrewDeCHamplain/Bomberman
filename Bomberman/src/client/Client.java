@@ -24,7 +24,6 @@ public class Client {
 	 */
 	public static void main(String[] args) {
 
-		// Thread gameThread = new Thread(new GameView(tileMap, playerNum));
 		DatagramPacket sendPacket = null; 
 		DatagramSocket clientSocket = null, inputSocket = null;
 		InetAddress IPAddress = null;
@@ -83,7 +82,19 @@ public class Client {
 					// TODO Auto-generated catch block
 					clientSocket.close();
 					e.printStackTrace();
-				}				
+				}
+				
+				byte[] receiveData = new byte[1024];
+				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+				try {
+					clientSocket.receive(receivePacket);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					clientSocket.close();
+					e1.printStackTrace();
+				}
+				playerNum = (new String(receivePacket.getData())).charAt(0);
+				
 			}
 			
 			if (sentence.equals("start")) {

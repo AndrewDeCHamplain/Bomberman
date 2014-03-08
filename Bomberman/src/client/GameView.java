@@ -29,14 +29,11 @@ public class GameView implements Runnable{
 
 	public static ArrayList<ArrayList<Character>> boardArray = null;
 	private static char playerNum;
-	
-	public static void main(String[] args) {
-        new GameView(boardArray, playerNum);
-    }
 
     public GameView(ArrayList<ArrayList<Character>> args, char playerNum){
     	boardArray = args;
     	GameView.playerNum = playerNum;
+    	System.out.println("Player num " +playerNum);
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -52,6 +49,7 @@ public class GameView implements Runnable{
                 frame.pack();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
+                frame.setAlwaysOnTop(true);
                 // create controller -> make as observable
                 // add key listener
             }
@@ -75,31 +73,10 @@ public class GameView implements Runnable{
         public GamePane() {
         	
             cells = new ArrayList<>(columnCount * rowCount);
-            /*
-            MouseAdapter mouseHandler;
-            mouseHandler = new MouseAdapter() {
-                @Override
-                public void mouseMoved(MouseEvent e) {
-                    Point point = e.getPoint();
-
-                    int width = getWidth();
-                    int height = getHeight();
-
-                    int cellWidth = width / columnCount;
-                    int cellHeight = height / rowCount;
-
-                    int column = e.getX() / cellWidth;
-                    int row = e.getY() / cellHeight;
-
-                    Point selectedCell = new Point(column, row);
-                    repaint();
-
-                }
-            };
-            addMouseMotionListener(mouseHandler);
-            */
+            
+            //repaint();
         }
-        
+       
         @Override
         public Dimension getPreferredSize() {
             return new Dimension(600, 600);
@@ -115,6 +92,7 @@ public class GameView implements Runnable{
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            //this.setBackground(new Color(30, 150, 30));
             Graphics2D g2d = (Graphics2D) g.create();
 
             int width = getWidth();
@@ -126,6 +104,7 @@ public class GameView implements Runnable{
             int xOffset = (width - (columnCount * cellWidth)) / 2;
             int yOffset = (height - (rowCount * cellHeight)) / 2;
 
+            System.out.println("Player num "+GameView.playerNum);
             if (cells.isEmpty()) {
                 for (int row = 0; row < rowCount; row++) {
                     for (int col = 0; col < columnCount; col++) {
@@ -153,7 +132,7 @@ public class GameView implements Runnable{
 
                 	Rectangle cell = cells.get(row + (col * columnCount));
                 	char temp = boardArray.get(row).get(col);
-                	if(temp == playerNum){
+                	if(temp == GameView.playerNum){
                 		//g2d.setColor(new Color(200, 180, 160));
                 		//g2d.fill(cell);
                 		g.drawImage(sprite_down, col*cellWidth, row*cellHeight, cellWidth, cellHeight, null);

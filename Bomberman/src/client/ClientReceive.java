@@ -95,10 +95,10 @@ public class ClientReceive implements Runnable {
 	
 	public void startLobbyLogic(String received){
 		System.out.println("Received "+received);
-		
 		if (received.equals("1") || received.equals("2") || received.equals("3")) {
 			//System.out.println("You are player " + Client.playerNum);
 			Client.playerNum = received.toCharArray()[0];
+			//System.out.println("You are player );
 			Client.keyInputPort = Integer.valueOf(received)+3333;
 		}
 		else if (received.equals("4")) {
