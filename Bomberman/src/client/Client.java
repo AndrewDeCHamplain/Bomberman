@@ -1,4 +1,5 @@
 package client;
+
 /**
  * 
  */
@@ -16,27 +17,25 @@ public class Client {
 	public static char playerNum = 0;
 	public static boolean startLobby = true;
 	public static int keyInputPort;
-	
-	
+	public static String currMove = "";
+
 	/**
 	 * @param args
 	 *            [0] -> port number
 	 */
 	public static void main(String[] args) {
 
-		DatagramPacket sendPacket = null; 
+		DatagramPacket sendPacket = null;
 		DatagramSocket clientSocket = null, inputSocket = null;
 		InetAddress IPAddress = null;
 		int sendPort = 3333;
 		boolean joined = false;
 
-		
 		byte[] sendData = new byte[1024];
-		
-		
+
 		Thread receiver = new Thread(new ClientReceive(sendPort));
 		receiver.start();
-		
+
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -49,14 +48,14 @@ public class Client {
 
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
 				System.in));
-		
-		
+
+		System.out.println("Join game.");
 		String sentence = "";
 		while (startLobby) {
-			
+
 			sendData = new byte[1024];
+
 			
-			System.out.println("Join game.");
 			try {
 				sentence = inFromUser.readLine();
 			} catch (IOException e) {
@@ -64,10 +63,10 @@ public class Client {
 				clientSocket.close();
 				e.printStackTrace();
 			}
-			
+
 			if (sentence.equals("join")) {
 				System.out.println("You are trying to join the game.");
-				if(joined){
+				if (joined) {
 					System.out.println("You have already joined");
 					break;
 				}
@@ -83,9 +82,10 @@ public class Client {
 					clientSocket.close();
 					e.printStackTrace();
 				}
-				
+
 				byte[] receiveData = new byte[1024];
-				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+				DatagramPacket receivePacket = new DatagramPacket(receiveData,
+						receiveData.length);
 				try {
 					clientSocket.receive(receivePacket);
 				} catch (IOException e1) {
@@ -94,15 +94,15 @@ public class Client {
 					e1.printStackTrace();
 				}
 				playerNum = (new String(receivePacket.getData())).charAt(0);
-				
+
 			}
-			
+
 			if (sentence.equals("start")) {
 				System.out.println(IPAddress.getHostAddress()
 						+ " starting game.");
 				sendData = sentence.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
-						IPAddress,sendPort);
+						IPAddress, sendPort);
 				try {
 					clientSocket.send(sendPacket);
 				} catch (IOException e) {
@@ -111,7 +111,7 @@ public class Client {
 					e.printStackTrace();
 				}
 			}
-		}	
+		}
 		clientSocket.close();
 		try {
 			inputSocket = new DatagramSocket();
@@ -121,27 +121,42 @@ public class Client {
 			inputSocket.close();
 			e.printStackTrace();
 		}
-		
+
 		while (true) {
 			sendData = new byte[1024];
 
+			/*
+			 * try { sentence = inFromUser.readLine(); } catch (IOException e) {
+			 * // TODO Auto-generated catch block inputSocket.close();
+			 * e.printStackTrace(); }
+			 */
+
+			// slow down the loop (can register a key press up to every 20
+			// milliseconds)
 			try {
-				sentence = inFromUser.readLine();
-			} catch (IOException e) {
+				Thread.sleep(20);
+			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
-				inputSocket.close();
-				e.printStackTrace();
+				e1.printStackTrace();
 			}
-			sendData = sentence.getBytes();
-			sendPacket = new DatagramPacket(sendData, sendData.length,
-					IPAddress, sendPort);
-			try {
-				inputSocket.send(sendPacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				inputSocket.close();
-				e.printStackTrace();
+
+			synchronized (currMove) {
+				if (currMove != "") {
+					System.out.println(currMove);
+					sendData = currMove.getBytes();
+					sendPacket = new DatagramPacket(sendData, sendData.length,
+							IPAddress, keyInputPort);
+					try {
+						inputSocket.send(sendPacket);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						inputSocket.close();
+						e.printStackTrace();
+					}
+				}
+				currMove = "";
 			}
+
 		}
 	}
 }

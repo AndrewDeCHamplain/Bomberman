@@ -200,7 +200,6 @@ public class Server {
 			}
 			String sentence = new String(receivePacket.getData());
 			IPAddress = receivePacket.getAddress();
-			System.out.println("Received: " + sentence);
 
 			//movePlayer(
 			//		whichPlayer(IPAddress, player1, player2, player3, player4),
@@ -246,7 +245,6 @@ public class Server {
 			}
 			arraystring = arraystring + "|";
 		}
-		System.out.println(arraystring);
 		return arraystring;
 	}
 
