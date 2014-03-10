@@ -2,7 +2,7 @@ package server;
 
 public class GameBoard {
 
-	public static char[][] boardArray;
+	private static char[][] boardArray;
 
 	public GameBoard(int gameSize) {
 		// use XML parse to make correct game board array
