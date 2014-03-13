@@ -17,28 +17,8 @@ import java.util.concurrent.TimeUnit;
 import client.ClientReceive;
 
 public class Server {
-
-	public static char[][] boardArray = {
-			{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-			{'w','1','x','f','f','f','f','f','f','f','f','f','f','f','x','2','w'},
-			{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-			{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-			{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-			{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-			{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-			{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-			{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-			{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-			{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-			{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-			{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-			{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-			{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-			{'w','4','x','f','f','f','f','f','f','f','f','f','f','f','x','3','w'},
-			{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'} 
-			};
 	
-	public static String arraystring = null;
+	private static String arrayString = null;
 	private static InetAddress group = null;
 	private static MulticastSocket multicastSocket = null;
 
@@ -171,12 +151,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		
-		
-
-		//while (true) {
-			
 			ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
-
 			ses.scheduleAtFixedRate(new Runnable() {
 			    @Override
 			    public void run() {
@@ -195,12 +170,10 @@ public class Server {
 						e.printStackTrace();
 					}
 			    }
-			    
-			}, 0, 1, TimeUnit.SECONDS);
-			// when finished
+			}, 0, 1, TimeUnit.SECONDS); // sends gameboard every 1 second
 			//ses.shutdown();
+			
 			while(true);
-		//}
 	}
 
 	private static int getNextPort(int numPlayers) {
@@ -216,14 +189,14 @@ public class Server {
 	// this method converts our array to a CSV string format where each level of
 	// the array is delimited by "|"
 	public static String arrayToString(char array[][]) {
-		arraystring = "";
+		arrayString = "";
 		for (int i = 0; i < array.length; i++) {
-			arraystring = arraystring + array[i][0];
+			arrayString = arrayString + array[i][0];
 			for (int j = 1; j < array[i].length; j++) {
-				arraystring = arraystring + "," + array[i][j];
+				arrayString = arrayString + "," + array[i][j];
 			}
-			arraystring = arraystring + "|";
+			arrayString = arrayString + "|";
 		}
-		return arraystring;
+		return arrayString;
 	}
 }
