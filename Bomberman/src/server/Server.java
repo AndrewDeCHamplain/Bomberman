@@ -181,6 +181,10 @@ public class Server {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
+		
+		Thread engineThread = new Thread(new GameEngine());
+		engineThread.start();
+		
 		System.out.println("Game starting");
 
 		while (true) {
@@ -227,9 +231,9 @@ public class Server {
 	private static int getNextPort(int numPlayers) {
 		if(numPlayers == 1)
 			return 3335;
-		if(numPlayers == 1)
+		if(numPlayers == 2)
 			return 3336;
-		if(numPlayers == 1)
+		if(numPlayers == 3)
 			return 3337;
 		else return 3338;
 	}
@@ -247,20 +251,4 @@ public class Server {
 		}
 		return arraystring;
 	}
-
-/*
-	public static Player whichPlayer(InetAddress ipaddress, Player p1,
-			Player p2, Player p3, Player p4) {
-		if (p1.getIPAddress().equals(ipaddress))
-			return p1;
-		else if (p2.getIPAddress().equals(ipaddress))
-			return p2;
-		else if (p3.getIPAddress().equals(ipaddress))
-			return p3;
-		else if (p4.getIPAddress().equals(ipaddress))
-			return p4;
-		else
-			return null;
-	}
-	*/
 }
