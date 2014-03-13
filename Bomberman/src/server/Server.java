@@ -10,6 +10,9 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import client.ClientReceive;
 
@@ -36,6 +39,8 @@ public class Server {
 			};
 	
 	public static String arraystring = null;
+	private static InetAddress group = null;
+	private static MulticastSocket multicastSocket = null;
 
 	/**
 	 * @param args
@@ -45,20 +50,15 @@ public class Server {
 		// TODO Auto-generated method stub
 
 		DatagramSocket serverSocket = null;
-		MulticastSocket multicastSocket = null;
+		
 		DatagramPacket receivePacket = null;
 		DatagramPacket sendPacket = null;
 		int port1 = 3333;
-		int port2 = 3334;
+		final int port2 = 3334;
 		byte[] receiveData, sendData;
 		int numPlayers = 0;
-		InetAddress group = null;
+		
 		InetAddress IPAddress;
-
-		Player player1 = null;
-		Player player2 = null;
-		Player player3 = null;
-		Player player4 = null;
 
 		try {
 			serverSocket = new DatagramSocket(port1);
@@ -98,7 +98,7 @@ public class Server {
 				IPAddress = receivePacket.getAddress();
 				System.out.println(receivePacket.getAddress().getHostAddress()
 						+ " joined the game.");
-				port1 = receivePacket.getPort();
+				int port = receivePacket.getPort();
 				
 				// create new server thread to handle new clients inputs
 				Thread inputThread = new Thread(new ClientReceive(getNextPort(numPlayers)));
@@ -109,7 +109,7 @@ public class Server {
 				
 				// send player their number and what server they will talk to
 				sendPacket = new DatagramPacket(sendData, sendData.length,
-						IPAddress, port1);
+						IPAddress, port);
 				try {
 					serverSocket.send(sendPacket);
 				} catch (IOException e) {
@@ -117,23 +117,6 @@ public class Server {
 					serverSocket.close();
 					e.printStackTrace();
 				}
-				
-				if (numPlayers == 1) {
-					player1 = new Player(1, 1, '1', IPAddress);
-					//placePlayer(player1);
-				} else if (numPlayers == 2) {
-					player2 = new Player(16, 1, '2', IPAddress);
-					//placePlayer(player2);
-				} else if (numPlayers == 3) {
-					player3 = new Player(1, 16, '3', IPAddress);
-					//placePlayer(player3);
-				} else if (numPlayers == 4) {
-					player4 = new Player(16, 16, '4', IPAddress);
-					//placePlayer(player4);
-				}
-
-				
-
 			}
 
 			// If trying to start game without any players
@@ -154,78 +137,70 @@ public class Server {
 				}
 			}
 		}
-		// serverSocket.close();
+		serverSocket.close(); // server no longer receives any data
+ 
+		/* Once starting, server makes the GameEngine which makes the GameBoard.
+		*  Then "starting" is send on the multicasted socket.
+		*  Then the server loops, forever sending the boardarray to the clients
+		*  at a fixed FPS.
+		*/
+		
+		Thread engineThread = new Thread(new GameEngine(numPlayers));
+		engineThread.start();
+		
+		System.out.println("Game starting");
 
-		// Once starting, server makes new multicasting socket
-		// int port = multicastSocket.getPort();
-		// InetAddress address = multicastSocket.getInetAddress();
 		sendData = "starting".getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 		try {
 			multicastSocket.send(sendPacket);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			serverSocket.close();
 			multicastSocket.close();
 			e.printStackTrace();
 		}
 
 		// send the board
-		sendData = arrayToString(boardArray).getBytes();
+		sendData = arrayToString(GameEngine.getCurrentBoard()).getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 		try {
 			multicastSocket.send(sendPacket);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			serverSocket.close();
 			multicastSocket.close();
 			e.printStackTrace();
 		}
 		
-		Thread engineThread = new Thread(new GameEngine());
-		engineThread.start();
 		
-		System.out.println("Game starting");
 
-		while (true) {
+		//while (true) {
+			
+			ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 
-			receiveData = new byte[1024];
-			sendData = new byte[1024];
-
-			// read a message from socket
-			receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			try {
-				serverSocket.receive(receivePacket);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				serverSocket.close();
-				multicastSocket.close();
-				e1.printStackTrace();
-			}
-			String sentence = new String(receivePacket.getData());
-			IPAddress = receivePacket.getAddress();
-
-			//movePlayer(
-			//		whichPlayer(IPAddress, player1, player2, player3, player4),
-			//		sentence);
-
-			// get address from who sent packet
-			// InetAddress IPAddress = receivePacket.getAddress();
-			// port = receivePacket.getPort();
-
-			// send the board
-			sendData = arrayToString(boardArray).getBytes();
-			sendPacket = new DatagramPacket(sendData, sendData.length, group,
-					port2);
-			try {
-				multicastSocket.send(sendPacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				serverSocket.close();
-				multicastSocket.close();
-				e.printStackTrace();
-			}
-		}
+			ses.scheduleAtFixedRate(new Runnable() {
+			    @Override
+			    public void run() {
+			    	byte[] sendData = new byte[1024];
+			    	
+			    	System.out.println("Fetching game board");
+					// send the board
+					sendData = arrayToString(GameEngine.getCurrentBoard()).getBytes();
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, group,
+							port2);
+					try {
+						multicastSocket.send(sendPacket);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						multicastSocket.close();
+						e.printStackTrace();
+					}
+			    }
+			    
+			}, 0, 1, TimeUnit.SECONDS);
+			// when finished
+			//ses.shutdown();
+			while(true);
+		//}
 	}
 
 	private static int getNextPort(int numPlayers) {

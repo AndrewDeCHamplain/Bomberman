@@ -130,7 +130,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 
 				Rectangle cell = cells.get(row + (col * columnCount));
 				char temp = boardArray.get(row).get(col);
-				if (temp == playerNum) {
+				if (temp == '1' || temp == '2' || temp == '3' || temp == '4') {
 					// g2d.setColor(new Color(200, 180, 160));
 					// g2d.fill(cell);
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,

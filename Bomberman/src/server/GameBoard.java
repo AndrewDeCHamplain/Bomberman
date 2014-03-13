@@ -25,13 +25,6 @@ public class GameBoard {
 	public GameBoard(int gameSize) {
 		// use XML parse to make correct game board array
 	}
-
-	public static void placePlayer(Player player, int x, int y) {
-		boardArray[x][y] = player.getPlayerNum();
-		player.setX(x);
-		player.setY(y);
-		System.out.println(boardArray[x][y]);
-	}
 	public char[][] getBoardArray(){
 		return boardArray;
 	}

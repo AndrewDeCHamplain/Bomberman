@@ -37,8 +37,9 @@ public class ServerInputThread implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			String command = new String(receivePacket.getData()).trim();
-			//perform game logic...
+			synchronized (GameEngine.command){
+				GameEngine.command = new String(receivePacket.getData()).trim()+","+player;
+			}
 		}
 	}
 	
