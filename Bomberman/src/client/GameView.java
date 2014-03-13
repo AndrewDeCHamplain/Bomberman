@@ -59,21 +59,17 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		// TODO Auto-generated method stub
 		if (e.getKeyCode() == KeyEvent.VK_D) {
 			Client.currMove = "right";
-			System.out.println(Client.playerNum +": Right pressed");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_A) {
 			Client.currMove = "left";
-			System.out.println(Client.playerNum +": Left pressed");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_W) {
 			Client.currMove = "up";
-			System.out.println(Client.playerNum +": Up pressed");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_S) {
 			Client.currMove = "down";
-			System.out.println(Client.playerNum +": Down pressed");
 		}
-		repaint(); 
+		//repaint(); 
 	}
 
 	@Override

@@ -9,8 +9,9 @@ public class ServerInputThread implements Runnable {
 	public int player;
 	int receivePort;
 
-	public ServerInputThread(int port) {
+	public ServerInputThread(int port, int player) {
 		receivePort = port;
+		this.player = player;
 	}
 
 	@Override
@@ -37,6 +38,7 @@ public class ServerInputThread implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.out.println(player +" Pressed: " +new String(receivePacket.getData()));
 			synchronized (GameEngine.command){
 				GameEngine.command = new String(receivePacket.getData()).trim()+","+player;
 			}

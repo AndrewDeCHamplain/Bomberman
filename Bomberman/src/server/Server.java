@@ -14,8 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import client.ClientReceive;
-
 public class Server {
 	
 	private static String arrayString = null;
@@ -81,7 +79,7 @@ public class Server {
 				int port = receivePacket.getPort();
 				
 				// create new server thread to handle new clients inputs
-				Thread inputThread = new Thread(new ClientReceive(getNextPort(numPlayers)));
+				Thread inputThread = new Thread(new ServerInputThread(getNextPort(numPlayers), numPlayers));
 				inputThread.start();
 				
 				String temp = String.valueOf(numPlayers);

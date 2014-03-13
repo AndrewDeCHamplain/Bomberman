@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 
 public class ClientReceive implements Runnable {
 
-	int receivePort;
+	private int receivePort;
 	public static ArrayList<ArrayList<Character>> tileMap;
 
 	public ClientReceive(int port) {
@@ -23,6 +23,7 @@ public class ClientReceive implements Runnable {
 		MulticastSocket multicastSocket = null;
 		InetAddress group = null;
 
+		startLobbyLogic(String.valueOf(Client.playerNum).trim());
 
 		// Create multicasting socket for receiving gameview updates
 		try {
@@ -35,12 +36,11 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
-		System.out.println("Socket made");
 		
 		// Start menu, waiting for a client to connect
 		while (Client.startLobby) {
 			receiveData = new byte[1024];
-			System.out.println("In game lobby");
+			
 			try {
 				receivePacket = new DatagramPacket(receiveData,
 						receiveData.length, group, receivePort);
@@ -94,7 +94,6 @@ public class ClientReceive implements Runnable {
 	
 	
 	public void startLobbyLogic(String received){
-		System.out.println("Received "+received);
 		if (received.equals("1") || received.equals("2") || received.equals("3")) {
 			//System.out.println("You are player " + Client.playerNum);
 			Client.playerNum = received.toCharArray()[0];

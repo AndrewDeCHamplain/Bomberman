@@ -14,10 +14,10 @@ import java.net.*;
 
 public class Client {
 
-	public static char playerNum = 0;
+	static char playerNum = 0;
 	public static boolean startLobby = true;
-	public static int keyInputPort;
-	public static String currMove = "";
+	static int keyInputPort;
+	static String currMove = "";
 
 	/**
 	 * @param args
@@ -32,9 +32,6 @@ public class Client {
 		boolean joined = false;
 
 		byte[] sendData = new byte[1024];
-
-		Thread receiver = new Thread(new ClientReceive(sendPort));
-		receiver.start();
 
 		// TODO Auto-generated method stub
 		try {
@@ -53,9 +50,9 @@ public class Client {
 		String sentence = "";
 		while (startLobby) {
 
+			System.out.println("In start lobby");
 			sendData = new byte[1024];
 
-			
 			try {
 				sentence = inFromUser.readLine();
 			} catch (IOException e) {
@@ -66,11 +63,17 @@ public class Client {
 
 			if (sentence.equals("join")) {
 				System.out.println("You are trying to join the game.");
-				if (joined) {
+				
+				if (joined) { // check if already in game
 					System.out.println("You have already joined");
 					break;
 				}
 				joined = true;
+				
+				// make thread to handle board updates from server
+				Thread receiver = new Thread(new ClientReceive(sendPort));
+				receiver.start();
+				
 				sendData = sentence.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, sendPort);
@@ -95,6 +98,7 @@ public class Client {
 				}
 				playerNum = (new String(receivePacket.getData())).charAt(0);
 
+				System.out.println("You are player "+playerNum);
 			}
 
 			if (sentence.equals("start")) {
@@ -110,6 +114,7 @@ public class Client {
 					clientSocket.close();
 					e.printStackTrace();
 				}
+				startLobby = false;
 			}
 		}
 		clientSocket.close();
@@ -122,41 +127,41 @@ public class Client {
 			e.printStackTrace();
 		}
 
+		System.out.println("Waiting for key presses");
 		while (true) {
 			sendData = new byte[1024];
-
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			/*
 			 * try { sentence = inFromUser.readLine(); } catch (IOException e) {
 			 * // TODO Auto-generated catch block inputSocket.close();
 			 * e.printStackTrace(); }
 			 */
 
-			// slow down the loop (can register a key press up to every 20
-			// milliseconds)
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			synchronized (currMove) {
-				if (currMove != "") {
-					System.out.println(currMove);
-					sendData = currMove.getBytes();
-					sendPacket = new DatagramPacket(sendData, sendData.length,
-							IPAddress, keyInputPort);
-					try {
-						inputSocket.send(sendPacket);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						inputSocket.close();
-						e.printStackTrace();
-					}
+			if (currMove != "") {
+				System.out.println("Key pressed");
+				System.out.println(currMove);
+				sendData = currMove.getBytes();
+				sendPacket = new DatagramPacket(sendData, sendData.length,
+						IPAddress, keyInputPort);
+				try {
+					inputSocket.send(sendPacket);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					inputSocket.close();
+					e.printStackTrace();
 				}
 				currMove = "";
 			}
-
 		}
+	}
+	public void setCurrMove(String s){
+		currMove = s;
 	}
 }
