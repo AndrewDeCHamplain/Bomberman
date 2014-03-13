@@ -5,6 +5,7 @@ import java.net.InetAddress;
 public class Player {
 	private int x, y, lives; 
 	private char playerNumber;
+	private String prevMove;
 	private InetAddress IP;
 
 	Player(int x,int y,char num,InetAddress IP){
@@ -12,6 +13,7 @@ public class Player {
 		this.y = y;
 		playerNumber = num;
 		this.IP = IP;
+		prevMove = "";
 	}
 	
 	public char getPlayerNum(){
@@ -29,6 +31,9 @@ public class Player {
 	public InetAddress getIPAddress(){
 		return IP;
 	}
+	public String getPrevMove(){
+		return prevMove;
+	}
 	public void setX(int x){
 		this.x=x;
 	}
@@ -40,5 +45,8 @@ public class Player {
 	}
 	public void setPlayerNumber(char playerNum){
 		playerNumber = playerNum;
+	}
+	public void setPrevMove(String prevMove){
+		this.prevMove = prevMove;
 	}
 }
