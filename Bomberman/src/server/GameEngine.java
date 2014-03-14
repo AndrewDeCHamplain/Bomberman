@@ -11,7 +11,6 @@ public class GameEngine implements Runnable {
 	public GameEngine(int numPlayers) {
 		board = new GameBoard(1);
 		this.numPlayers = numPlayers;
-		System.out.println("GameEngine, numPlayers: " + this.numPlayers);
 		// currentBoard = board.getBoardArray();
 	}
 
@@ -108,7 +107,6 @@ public class GameEngine implements Runnable {
 		if (i == 0) {
 			player1 = new Player(1, 1, '1');
 			board.placePlayer(player1);
-			System.out.println("Player 1 made");
 		} else if (i == 1) {
 			player2 = new Player(board.getBoardRows() - 2, 1, '2');
 			board.placePlayer(player2);
@@ -119,13 +117,6 @@ public class GameEngine implements Runnable {
 			player4 = new Player(board.getBoardRows() - 2,
 					board.getBoardCols() - 2, '4');
 			board.placePlayer(player4);
-		}
-		System.out.println("GameEngine: ");
-		for (int x = 0; x < board.getBoardRows(); x++) {
-			for (int y = 0; y < board.getBoardCols(); y++) {
-				System.out.print(board.getBoardArray()[x][y]);
-			}
-			System.out.println();
 		}
 	}
 

@@ -29,9 +29,7 @@ public class GameBoard {
 		return boardArray;
 	}
 	public void placePlayer(Player player){
-		System.out.println("Player x: "+player.getXPosition()+" y: "+player.getYPosition()+" Num: "+player.getPlayerNum());
 		boardArray[player.getXPosition()][player.getYPosition()] = player.getPlayerNum();
-		System.out.println(boardArray);
 	}
 	public void placeFloor(int x, int y){
 		boardArray[x][y] = 'f';
