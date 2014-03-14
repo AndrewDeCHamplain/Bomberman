@@ -28,4 +28,21 @@ public class GameBoard {
 	public char[][] getBoardArray(){
 		return boardArray;
 	}
+	public void placePlayer(Player player){
+		System.out.println("Player x: "+player.getXPosition()+" y: "+player.getYPosition()+" Num: "+player.getPlayerNum());
+		boardArray[player.getXPosition()][player.getYPosition()] = player.getPlayerNum();
+		System.out.println(boardArray);
+	}
+	public void placeFloor(int x, int y){
+		boardArray[x][y] = 'f';
+	}
+	public char getBoardArrayElement(int x, int y){
+		return boardArray[x][y];
+	}
+	public int getBoardRows(){
+		return boardArray.length;
+	}
+	public int getBoardCols(){
+		return boardArray[0].length;
+	}
 }

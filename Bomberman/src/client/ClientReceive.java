@@ -135,7 +135,7 @@ public class ClientReceive implements Runnable {
 			}
 			tileMapInternal.add(row);
 		}
-		System.out.println(tileMapInternal);
+		System.out.println("ClientReveived: "+tileMapInternal);
 		return tileMapInternal;
 	}
 }

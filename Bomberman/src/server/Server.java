@@ -139,7 +139,7 @@ public class Server {
 		}
 
 		// send the board
-		sendData = arrayToString(GameEngine.getCurrentBoard()).getBytes();
+		sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 		try {
 			multicastSocket.send(sendPacket);
@@ -157,7 +157,7 @@ public class Server {
 			    	
 			    	System.out.println("Fetching game board");
 					// send the board
-					sendData = arrayToString(GameEngine.getCurrentBoard()).getBytes();
+					sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, group,
 							port2);
 					try {
