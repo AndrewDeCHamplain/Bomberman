@@ -32,7 +32,8 @@ public class Client {
 		boolean joined = false;
 
 		byte[] sendData = new byte[1024];
-
+		
+		
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();

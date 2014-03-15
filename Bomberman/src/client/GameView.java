@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class GameView extends JPanel implements Runnable, KeyListener {
 
@@ -22,12 +23,14 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private static char playerNum;
 	private int columnCount;
 	private int rowCount;
+	Semaphore semaphore;
 
-	public GameView(ArrayList<ArrayList<Character>> args, char playerNum) {
+	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore) {
 		boardArray = args;
 		GameView.playerNum = playerNum;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
+		this.semaphore = semaphore;
 		addKeyListener(this);
 	}
 
@@ -37,7 +40,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		
 		
 		JFrame f = new JFrame("Bomberman");
-		GameView d = new GameView(boardArray, playerNum);
+		GameView d = new GameView(boardArray, playerNum, semaphore);
 		f.add(d);
 		f.pack();
 		f.setResizable(true);
@@ -46,6 +49,17 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		f.setTitle("Bomberman");
 		f.setLocationRelativeTo(null);
 		f.setFocusable(true);
+		while(true){
+			try {
+				this.semaphore.acquire();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			boardArray = ClientReceive.tileMap;
+			System.out.println("Repainting: ");
+			repaint();
+		}
 	}
 
 	@Override
@@ -69,7 +83,6 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_S) {
 			Client.currMove = "down";
 		}
-		//repaint(); 
 	}
 
 	@Override
@@ -82,7 +95,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 	}
-
+	
 	@Override
 	public Dimension getPreferredSize() {
 		return (new Dimension(600, 600));

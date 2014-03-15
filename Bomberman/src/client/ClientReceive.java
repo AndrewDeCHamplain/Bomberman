@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.concurrent.Semaphore;
 
 public class ClientReceive implements Runnable {
 
@@ -22,6 +23,7 @@ public class ClientReceive implements Runnable {
 		DatagramPacket receivePacket = null;
 		MulticastSocket multicastSocket = null;
 		InetAddress group = null;
+		Semaphore semaphore = new Semaphore(0);
 
 		startLobbyLogic(String.valueOf(Client.playerNum).trim());
 
@@ -69,7 +71,7 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();	
 		}
-		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum));
+		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, semaphore));
 		gameThread.start();
 		
 		
@@ -89,6 +91,7 @@ public class ClientReceive implements Runnable {
 				multicastSocket.close();
 				e.printStackTrace();	
 			}
+			semaphore.release();
 		}
 	}
 	

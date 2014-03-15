@@ -186,7 +186,7 @@ public class Server {
 
 	// this method converts our array to a CSV string format where each level of
 	// the array is delimited by "|"
-	public static String arrayToString(char array[][]) {
+	private static String arrayToString(char array[][]) {
 		arrayString = "";
 		for (int i = 0; i < array.length; i++) {
 			arrayString = arrayString + array[i][0];

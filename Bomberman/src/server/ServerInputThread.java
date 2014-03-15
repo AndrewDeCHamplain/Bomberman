@@ -44,27 +44,4 @@ public class ServerInputThread implements Runnable {
 			}
 		}
 	}
-	
-	
-	/*
-	 * public static void movePlayer(Player player, String direction) {
-		if (direction.equals("LEFT") || direction.equals("left")) {
-			if (boardArray[player.x - 1][player.y] == 'f')
-				player.x = player.x--;
-		}
-		if (direction.equals("UP") || direction.equals("up")) {
-			if (boardArray[player.x][player.y + 1] == 'f')
-				player.y = player.y++;
-		}
-		if (direction.equals("RIGHT") || direction.equals("right")) {
-			if (boardArray[player.x + 1][player.y] == 'f')
-				player.x = player.x++;
-		}
-		if (direction.equals("DOWN") || direction.equals("down")) {
-			if (boardArray[player.x][player.y - 1] == 'f')
-				player.y = player.y--;
-		}
-	}
-	 */
-
 }
