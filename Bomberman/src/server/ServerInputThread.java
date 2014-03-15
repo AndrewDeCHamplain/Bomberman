@@ -21,7 +21,6 @@ public class ServerInputThread implements Runnable {
 		DatagramPacket receivePacket = null;
 		byte[] receivedData = new byte[1024];
 
-		System.out.println("ServerInput: port: "+receivePort);
 		try {
 			serverSocket = new DatagramSocket(receivePort);
 			serverSocket.setReuseAddress(true);

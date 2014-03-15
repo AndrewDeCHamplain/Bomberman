@@ -152,8 +152,6 @@ public class Client {
 
 			
 			if (currMove != "") {
-				System.out.println("Key pressed");
-				System.out.println(currMove);
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, keyInputPort);

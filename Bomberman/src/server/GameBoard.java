@@ -37,10 +37,10 @@ public class GameBoard {
 	public char getBoardArrayElement(int x, int y){
 		return boardArray[x][y];
 	}
-	public int getBoardRows(){
+	public int getBoardY(){
 		return boardArray.length;
 	}
-	public int getBoardCols(){
+	public int getBoardX(){
 		return boardArray[0].length;
 	}
 }

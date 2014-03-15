@@ -27,22 +27,18 @@ public class GameEngine implements Runnable {
 					if (parts[0].trim().equals("LEFT")
 							|| parts[0].trim().equals("left")) {
 						movePlayerLeft(player1);
-						System.out.println(command);
 					}
 					if (parts[0].trim().equals("UP")
 							|| parts[0].trim().equals("up")) {
 						movePlayerUp(player1);
-						System.out.println(command);
 					}
 					if (parts[0].trim().equals("RIGHT")
 							|| parts[0].trim().equals("right")) {
 						movePlayerRight(player1);
-						System.out.println(command);
 					}
 					if (parts[0].trim().equals("DOWN")
 							|| parts[0].trim().equals("down")) {
 						movePlayerDown(player1);
-						System.out.println(command);
 					}
 				}
 				if (parts[1].equals("2")) {
@@ -110,24 +106,25 @@ public class GameEngine implements Runnable {
 
 	private void makePlayer(int i) {
 		if (i == 0) {
-			player1 = new Player(1, 1, '1');
+			player1 = new Player(3, 3, '1');
 			board.placePlayer(player1);
 		} else if (i == 1) {
-			player2 = new Player(board.getBoardRows() - 2, 1, '2');
+			player2 = new Player(board.getBoardX() - 2, 1, '2');
 			board.placePlayer(player2);
 		} else if (i == 2) {
-			player3 = new Player(1, board.getBoardCols() - 2, '3');
+			player3 = new Player(1, board.getBoardY() - 2, '3');
 			board.placePlayer(player3);
 		} else {
-			player4 = new Player(board.getBoardRows() - 2,
-					board.getBoardCols() - 2, '4');
+			player4 = new Player(board.getBoardX() - 2,
+					board.getBoardY() - 2, '4');
 			board.placePlayer(player4);
 		}
 	}
 
-	public void movePlayerRight(Player player) {
+	public void movePlayerDown(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition() + 1,
-				player.getYPosition()) == 'f' || board.getBoardArrayElement(player.getXPosition() + 1,
+				player.getYPosition()) == 'f'
+				|| board.getBoardArrayElement(player.getXPosition() + 1,
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() + 1);
 			board.placePlayer(player);
@@ -135,9 +132,10 @@ public class GameEngine implements Runnable {
 		}
 	}
 
-	public void movePlayerLeft(Player player) {
+	public void movePlayerUp(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition() - 1,
-				player.getYPosition()) == 'f' || board.getBoardArrayElement(player.getXPosition() - 1,
+				player.getYPosition()) == 'f'
+				|| board.getBoardArrayElement(player.getXPosition() - 1,
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() - 1);
 			board.placePlayer(player);
@@ -145,9 +143,10 @@ public class GameEngine implements Runnable {
 		}
 	}
 
-	public void movePlayerUp(Player player) {
+	public void movePlayerRight(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition(),
-				player.getYPosition() + 1) == 'f' || board.getBoardArrayElement(player.getXPosition(),
+				player.getYPosition() + 1) == 'f'
+				|| board.getBoardArrayElement(player.getXPosition(),
 						player.getYPosition() + 1) == 'x') {
 			player.setY(player.getYPosition() + 1);
 			board.placePlayer(player);
@@ -155,9 +154,10 @@ public class GameEngine implements Runnable {
 		}
 	}
 
-	public void movePlayerDown(Player player) {
+	public void movePlayerLeft(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition(),
-				player.getYPosition() - 1) == 'f' || board.getBoardArrayElement(player.getXPosition(),
+				player.getYPosition() - 1) == 'f'
+				|| board.getBoardArrayElement(player.getXPosition(),
 						player.getYPosition() - 1) == 'x') {
 			player.setY(player.getYPosition() - 1);
 			board.placePlayer(player);

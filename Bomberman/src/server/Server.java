@@ -154,7 +154,6 @@ public class Server {
 			    @Override
 			    public void run() {
 			    	byte[] sendData = new byte[1024];
-
 					// send the board
 					sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, group,
@@ -167,7 +166,7 @@ public class Server {
 						e.printStackTrace();
 					}
 			    }
-			}, 0, 1, TimeUnit.SECONDS); // sends gameboard every 1 second
+			}, 0, 32, TimeUnit.MILLISECONDS); // sends gameboard at 30 FPS
 			//ses.shutdown();
 			
 			while(true);
