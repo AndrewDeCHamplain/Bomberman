@@ -57,8 +57,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 				e.printStackTrace();
 			}
 			boardArray = ClientReceive.tileMap;
-			System.out.println("Repainting: ");
-			repaint();
+			f.validate();
+			f.repaint();
 		}
 	}
 

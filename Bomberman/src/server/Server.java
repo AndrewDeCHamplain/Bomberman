@@ -154,8 +154,7 @@ public class Server {
 			    @Override
 			    public void run() {
 			    	byte[] sendData = new byte[1024];
-			    	
-			    	System.out.println("Fetching game board");
+
 					// send the board
 					sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
 					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, group,

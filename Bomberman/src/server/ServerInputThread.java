@@ -21,6 +21,7 @@ public class ServerInputThread implements Runnable {
 		DatagramPacket receivePacket = null;
 		byte[] receivedData = new byte[1024];
 
+		System.out.println("ServerInput: port: "+receivePort);
 		try {
 			serverSocket = new DatagramSocket(receivePort);
 			serverSocket.setReuseAddress(true);
@@ -30,6 +31,7 @@ public class ServerInputThread implements Runnable {
 			e.printStackTrace();
 		}
 		while (true) {
+			receivedData = new byte[1024];
 			receivePacket = new DatagramPacket(receivedData,
 					receivedData.length);
 			try {

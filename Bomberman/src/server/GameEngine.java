@@ -27,18 +27,22 @@ public class GameEngine implements Runnable {
 					if (parts[0].trim().equals("LEFT")
 							|| parts[0].trim().equals("left")) {
 						movePlayerLeft(player1);
+						System.out.println(command);
 					}
 					if (parts[0].trim().equals("UP")
 							|| parts[0].trim().equals("up")) {
 						movePlayerUp(player1);
+						System.out.println(command);
 					}
 					if (parts[0].trim().equals("RIGHT")
 							|| parts[0].trim().equals("right")) {
 						movePlayerRight(player1);
+						System.out.println(command);
 					}
 					if (parts[0].trim().equals("DOWN")
 							|| parts[0].trim().equals("down")) {
 						movePlayerDown(player1);
+						System.out.println(command);
 					}
 				}
 				if (parts[1].equals("2")) {
@@ -95,6 +99,7 @@ public class GameEngine implements Runnable {
 						movePlayerDown(player4);
 					}
 				}
+				command = "0,0";
 			}
 		}
 	}

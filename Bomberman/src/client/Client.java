@@ -98,7 +98,11 @@ public class Client {
 					e1.printStackTrace();
 				}
 				playerNum = (new String(receivePacket.getData())).charAt(0);
-
+				if(playerNum == '1') keyInputPort = 3335;
+				else if(playerNum == '2') keyInputPort = 3336;
+				else if(playerNum == '3') keyInputPort = 3337;
+				else keyInputPort = 3338;
+				
 				System.out.println("You are player "+playerNum);
 			}
 
@@ -128,6 +132,7 @@ public class Client {
 			e.printStackTrace();
 		}
 
+		System.out.println("Client: KeyInputPort: "+keyInputPort);
 		System.out.println("Waiting for key presses");
 		while (true) {
 			sendData = new byte[1024];
@@ -145,6 +150,7 @@ public class Client {
 			 * e.printStackTrace(); }
 			 */
 
+			
 			if (currMove != "") {
 				System.out.println("Key pressed");
 				System.out.println(currMove);
