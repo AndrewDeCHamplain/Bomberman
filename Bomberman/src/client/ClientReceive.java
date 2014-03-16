@@ -10,10 +10,12 @@ import java.util.concurrent.Semaphore;
 public class ClientReceive implements Runnable {
 
 	private int receivePort;
+	Semaphore semStarting;
 	public static ArrayList<ArrayList<Character>> tileMap;
 
-	public ClientReceive(int port) {
+	public ClientReceive(int port, Semaphore semaphore) {
 		receivePort = port + 1;
+		semStarting = semaphore;
 	}
 
 	@Override
@@ -108,9 +110,11 @@ public class ClientReceive implements Runnable {
 			Client.keyInputPort = 3338;
 		}
 		else if(received.equals("no players")){
+			semStarting.release();
 			System.out.println("Not enough players to start");
 		}
 		else if(received.equals("starting")){
+			semStarting.release();
 			Client.startLobby = false;
 			System.out.println("Game now starting");
 		}
