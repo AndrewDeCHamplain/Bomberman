@@ -49,10 +49,11 @@ public class Server {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-
+		Boolean starting = false;
+		int numReadyPlayers = 0;
 		String startGame = "";
 
-		while (!startGame.equals("start") && !(numPlayers > 4)) {
+		while (!starting) {
 			System.out.println("Waiting for players, players: " + numPlayers);
 
 			receiveData = new byte[1024];
@@ -71,7 +72,9 @@ public class Server {
 			}
 			if (startGame.equals("join")) {
 				numPlayers++;
-				
+				if(numPlayers >= 4){
+					starting = true;
+				}
 				// get address from who sent packet
 				IPAddress = receivePacket.getAddress();
 				System.out.println(receivePacket.getAddress().getHostAddress()
@@ -113,6 +116,11 @@ public class Server {
 					multicastSocket.close();
 					e.printStackTrace();
 				}
+			}
+			if(startGame.equals("start") && numPlayers > 0){
+				numReadyPlayers++;
+				if (numReadyPlayers == numPlayers)
+					starting = true;
 			}
 		}
 		serverSocket.close(); // server no longer receives any data
