@@ -105,6 +105,14 @@ public class Client {
 				
 				System.out.println("You are player "+playerNum);
 			}
+			
+			/*
+			 * if (sentence.equals("spectate")){
+			 * 
+			 * call method GameModeType(Spectator); specNum = (new
+			 * String(receivePacket.getData())).charAt(0); // add a new variable
+			 * spectator number System.out.println("You are spectator "+ specNum);
+			 */
 
 			if (sentence.equals("start")) {
 				System.out.println(IPAddress.getHostAddress()
@@ -169,4 +177,47 @@ public class Client {
 	public void setCurrMove(String s){
 		currMove = s;
 	}
+	
+	/*
+	public void GameModeType(SpectatorMode e) {
+		final Spectator s = e.getPlayer();
+		if (e.getNewGameMode() == GameMode.Spectate) {
+			System.out.println("You are beginning to join as a spectator");
+			joined = true;
+			Thread receiver = new Thread(new ClientReceive(sendPort));
+			receiver.start();
+
+			sendData = sentence.getBytes();
+			sendPacket = new DatagramPacket(sendData, sendData.length,
+					IPAddress, sendPort);
+			System.out.println("Joining game as specatator");
+			try {
+				clientSocket.send(sendPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				clientSocket.close();
+				e.printStackTrace();
+			}
+			byte[] receiveData = new byte[1024];
+			DatagramPacket receivePacket = new DatagramPacket(receiveData,
+					receiveData.length);
+			try {
+				clientSocket.receive(receivePacket);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				clientSocket.close();
+				e1.printStackTrace();
+			}
+			public void run()
+			{
+				s.addPropertyChangeListener(listener);
+				s.semaphore;
+				s.addComponentListener(null);
+				s.addKeyListener(s);
+			}
+			e.getPlayer().sendMessage("You are now joined in as a spectator");
+
+		}
+	}
+	*/
 }
