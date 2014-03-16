@@ -11,6 +11,7 @@ package client;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.Semaphore;
 
 public class Client {
 
@@ -30,10 +31,9 @@ public class Client {
 		InetAddress IPAddress = null;
 		int sendPort = 3333;
 		boolean joined = false;
-
 		byte[] sendData = new byte[1024];
-		
-		
+		Semaphore semaphore = new Semaphore(0);
+
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -46,36 +46,30 @@ public class Client {
 
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
 				System.in));
-
+		Thread receiver = new Thread(new ClientReceive(sendPort, semaphore));
+		receiver.start();
 		System.out.println("Join game.");
-		String sentence = "";
-		while (startLobby) {
 
-			System.out.println("In start lobby");
+		while (startLobby) {
 			sendData = new byte[1024];
 
 			try {
-				sentence = inFromUser.readLine();
+				currMove = inFromUser.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				clientSocket.close();
 				e.printStackTrace();
 			}
+			if (currMove.equals("join")) {
 
-			if (sentence.equals("join")) {
-				System.out.println("You are trying to join the game.");
-				
 				if (joined) { // check if already in game
 					System.out.println("You have already joined");
 					break;
 				}
 				joined = true;
-				
+
 				// make thread to handle board updates from server
-				Thread receiver = new Thread(new ClientReceive(sendPort));
-				receiver.start();
-				
-				sendData = sentence.getBytes();
+
+				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, sendPort);
 				System.out.println("Joining game.");
@@ -98,38 +92,45 @@ public class Client {
 					e1.printStackTrace();
 				}
 				playerNum = (new String(receivePacket.getData())).charAt(0);
-				if(playerNum == '1') keyInputPort = 3335;
-				else if(playerNum == '2') keyInputPort = 3336;
-				else if(playerNum == '3') keyInputPort = 3337;
-				else keyInputPort = 3338;
-				
-				System.out.println("You are player "+playerNum);
+
+				if (playerNum == '1')
+					keyInputPort = 3335;
+				else if (playerNum == '2')
+					keyInputPort = 3336;
+				else if (playerNum == '3')
+					keyInputPort = 3337;
+				else
+					keyInputPort = 3338;
+
+				System.out.println("You are player " + playerNum);
 			}
-			
+			if (currMove.equals("start")) {
+				System.out.println(IPAddress.getHostAddress() + " starting game.");
+				sendData = currMove.getBytes();
+				sendPacket = new DatagramPacket(sendData, sendData.length,
+						IPAddress, sendPort);
+				try {
+					clientSocket.send(sendPacket);
+					semaphore.acquire();
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					clientSocket.close();
+					e.printStackTrace();
+				}
+			}
+
+
 			/*
 			 * if (sentence.equals("spectate")){
 			 * 
 			 * call method GameModeType(Spectator); specNum = (new
 			 * String(receivePacket.getData())).charAt(0); // add a new variable
-			 * spectator number System.out.println("You are spectator "+ specNum);
+			 * spectator number System.out.println("You are spectator "+
+			 * specNum);
 			 */
-
-			if (sentence.equals("start")) {
-				System.out.println(IPAddress.getHostAddress()
-						+ " starting game.");
-				sendData = sentence.getBytes();
-				sendPacket = new DatagramPacket(sendData, sendData.length,
-						IPAddress, sendPort);
-				try {
-					clientSocket.send(sendPacket);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					clientSocket.close();
-					e.printStackTrace();
-				}
-				startLobby = false;
-			}
 		}
+		
+		// No longer in startLobby
 		clientSocket.close();
 		try {
 			inputSocket = new DatagramSocket();
@@ -140,25 +141,18 @@ public class Client {
 			e.printStackTrace();
 		}
 
-		System.out.println("Client: KeyInputPort: "+keyInputPort);
+		System.out.println("Client: KeyInputPort: " + keyInputPort);
 		System.out.println("Waiting for key presses");
 		while (true) {
 			sendData = new byte[1024];
-			
+
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			/*
-			 * try { sentence = inFromUser.readLine(); } catch (IOException e) {
-			 * // TODO Auto-generated catch block inputSocket.close();
-			 * e.printStackTrace(); }
-			 */
 
-			
 			if (currMove != "") {
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
@@ -174,11 +168,11 @@ public class Client {
 			}
 		}
 	}
-	public void setCurrMove(String s){
+
+	public void setCurrMove(String s) {
 		currMove = s;
 	}
-	
-	/*
+/*
 	public void GameModeType(SpectatorMode e) {
 		final Spectator s = e.getPlayer();
 		if (e.getNewGameMode() == GameMode.Spectate) {
