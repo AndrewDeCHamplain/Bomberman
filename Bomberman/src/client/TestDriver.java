@@ -6,10 +6,12 @@ import java.io.InputStreamReader;
 
 public class TestDriver {
 
+	
+	static BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
+			System.in));
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
-				System.in));
+		
 		String sentence = "";
 		
 		System.out.println("Choose test to be performed. (1,2, or 3) Type 'quit' to end test");
@@ -40,19 +42,22 @@ public class TestDriver {
 		Thread client1 = new Thread(new ClientTest());
 		client1.start();
 		
-		Thread.sleep(1000);
+		
+		Thread.sleep(2000);
 		Client.setCurrMove("join");
-		Thread.sleep(500);
+		System.out.println("Joining");
+		Thread.sleep(1000);
 		Client.setCurrMove("start");
 		Thread.sleep(2000);
 		Client.setCurrMove("down");
 		Thread.sleep(500);
 		Client.setCurrMove("down");
 		Thread.sleep(500);
-		Client.setCurrMove("right");
+		Client.setCurrMove("bomb");
 		Thread.sleep(500);
-		Client.setCurrMove("right");
+		Client.setCurrMove("up");
+		Thread.sleep(500);
+		Client.setCurrMove("up");
 
 	}
-
 }

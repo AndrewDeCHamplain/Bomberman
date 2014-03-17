@@ -163,7 +163,7 @@ public class GameEngine implements Runnable {
 		if (board.getBoardArrayElement(player.getXPosition() + 1,
 				player.getYPosition()) == 'e'){
 			player.setX(player.getXPosition() + 1);
-			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			board.setExplosion(player.getXPosition(), player.getYPosition());
 			player.setLives(player.getLives()-1);
 			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b'
 					|| board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c')
@@ -191,7 +191,7 @@ public class GameEngine implements Runnable {
 		if (board.getBoardArrayElement(player.getXPosition() - 1,
 				player.getYPosition()) == 'e'){
 			player.setX(player.getXPosition() - 1);
-			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			board.setExplosion(player.getXPosition(), player.getYPosition());
 			player.setLives(player.getLives()-1);
 			if (board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b'
 					|| board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'c')
@@ -219,7 +219,7 @@ public class GameEngine implements Runnable {
 		if (board.getBoardArrayElement(player.getXPosition(),
 				player.getYPosition() + 1) == 'e'){
 			player.setY(player.getYPosition() + 1);
-			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			board.setExplosion(player.getXPosition(), player.getYPosition());
 			player.setLives(player.getLives()-1);
 			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b'
 					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() - 1) == 'c')
@@ -247,7 +247,7 @@ public class GameEngine implements Runnable {
 		if (board.getBoardArrayElement(player.getXPosition(),
 				player.getYPosition() - 1) == 'e'){
 			player.setY(player.getYPosition() - 1);
-			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			board.setExplosion(player.getXPosition(), player.getYPosition());
 			player.setLives(player.getLives()-1);
 			if (board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b'
 					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() + 1) == 'c')

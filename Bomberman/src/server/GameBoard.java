@@ -6,9 +6,9 @@ public class GameBoard {
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
 		{'w','x','x','f','f','f','d','f','f','f','f','f','d','f','x','x','w'},
 		{'w','x','w','f','w','d','w','f','w','d','w','f','w','f','w','x','w'},
-		{'w','f','f','d','f','f','f','f','f','d','f','f','d','d','f','d','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','d','w','f','w'},
-		{'w','d','d','f','f','f','f','d','f','f','d','f','f','f','f','f','w'},
+		{'w','f','d','d','f','f','f','f','f','d','f','f','d','d','f','d','w'},
+		{'w','d','w','f','w','f','w','f','w','f','w','f','w','d','w','f','w'},
+		{'w','f','d','f','f','f','f','d','f','f','d','f','f','f','f','f','w'},
 		{'w','f','w','d','w','f','w','f','w','f','w','f','w','d','w','d','w'},
 		{'w','d','f','f','f','d','f','d','f','d','f','f','f','d','f','f','w'},
 		{'w','f','w','f','w','d','w','d','w','f','w','f','w','f','w','f','w'},
@@ -52,6 +52,9 @@ public class GameBoard {
 			boardArray[x][y+1] = 'e';
 		if (boardArray[x][y-1] != 'w')
 			boardArray[x][y-1] = 'e';
+	}
+	public synchronized void setExplosion(int x, int y){
+		boardArray[x][y] = 'e';
 	}
 	public synchronized void removeExplosion(int x, int y, Player player){
 		boardArray[x][y] = 'f';
