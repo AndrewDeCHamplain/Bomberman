@@ -23,7 +23,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private static char playerNum;
 	private int columnCount;
 	private int rowCount;
-	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosion = null;
+	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosion = null,
+			spriteDestructible = null;
 	Semaphore semaphore;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore) {
@@ -36,8 +37,9 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
-			//spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
+			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
 			//spriteExplosion = ImageIO.read(new File("resources/bmanExplosion.png"));
+			spriteDestructible = ImageIO.read(new File("resources/bmanDestructible.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -154,11 +156,14 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 					// g2d.fill(cell);
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
+				} else if (temp == 'd'){ // destructible
+					g.drawImage(spriteDestructible, col * cellWidth, row * cellHeight,
+							cellWidth, cellHeight, null);
 				} else if (temp == 'e'){ // explosion
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
 				} else if (temp == 'b'){ // bomb
-					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
+					g.drawImage(spriteBomb, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
 				} else if (temp == 'x'){
 					// g2d.setColor(new Color(200, 180, 160));

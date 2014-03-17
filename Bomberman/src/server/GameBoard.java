@@ -4,21 +4,21 @@ public class GameBoard {
 
 	private static char[][] boardArray = {
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-		{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
-		{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-		{'w','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','w'},
-		{'w','x','w','f','w','f','w','f','w','f','w','f','w','f','w','x','w'},
-		{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
+		{'w','x','x','f','f','f','d','f','f','f','f','f','d','f','x','x','w'},
+		{'w','x','w','f','w','d','w','f','w','d','w','f','w','f','w','x','w'},
+		{'w','f','f','d','f','f','f','f','f','d','f','f','d','d','f','d','w'},
+		{'w','f','w','f','w','f','w','f','w','f','w','f','w','d','w','f','w'},
+		{'w','d','d','f','f','f','f','d','f','f','d','f','f','f','f','f','w'},
+		{'w','f','w','d','w','f','w','f','w','f','w','f','w','d','w','d','w'},
+		{'w','d','f','f','f','d','f','d','f','d','f','f','f','d','f','f','w'},
+		{'w','f','w','f','w','d','w','d','w','f','w','f','w','f','w','f','w'},
+		{'w','f','f','f','d','f','d','f','f','d','f','f','d','d','f','f','w'},
+		{'w','d','w','f','w','d','w','f','w','f','w','f','w','f','w','f','w'},
+		{'w','f','d','d','f','d','f','f','f','d','f','f','f','d','f','d','w'},
+		{'w','f','w','f','w','f','w','f','w','d','w','f','w','f','w','d','w'},
+		{'w','f','d','f','f','f','f','d','f','f','f','f','d','f','f','f','w'},
+		{'w','x','w','d','w','d','w','f','w','f','w','d','w','d','w','x','w'},
+		{'w','x','x','d','f','f','d','f','f','f','f','d','f','f','x','x','w'},
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'} 
 		};
 
@@ -41,18 +41,17 @@ public class GameBoard {
 		boardArray[player.getXPosition()][player.getYPosition()] = 'c';
 	}
 	public synchronized void placeExplosion(int x, int y, Player player){
-		if(player.getBombs()>0){
-			player.setBombs(player.getBombs()-1);
-			boardArray[x][y] = 'e';
-			if (boardArray[x+1][y] != 'w')
-				boardArray[x+1][y] = 'e';
-			if (boardArray[x-1][y] != 'w')
-				boardArray[x-1][y] = 'e';
-			if (boardArray[x][y+1] != 'w')
-				boardArray[x][y+1] = 'e';
-			if (boardArray[x][y-1] != 'w')
-				boardArray[x][y-1] = 'e';
-		}
+		
+		player.setBombs(player.getBombs()-1);
+		boardArray[x][y] = 'e';
+		if (boardArray[x+1][y] != 'w')
+			boardArray[x+1][y] = 'e';
+		if (boardArray[x-1][y] != 'w')
+			boardArray[x-1][y] = 'e';
+		if (boardArray[x][y+1] != 'w')
+			boardArray[x][y+1] = 'e';
+		if (boardArray[x][y-1] != 'w')
+			boardArray[x][y-1] = 'e';
 	}
 	public synchronized void removeExplosion(int x, int y, Player player){
 		boardArray[x][y] = 'f';
