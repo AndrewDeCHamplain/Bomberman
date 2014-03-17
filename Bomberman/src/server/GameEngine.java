@@ -1,5 +1,6 @@
 package server;
 
+
 public class GameEngine implements Runnable {
 	private static GameBoard board;
 	private int numPlayers;
@@ -40,6 +41,10 @@ public class GameEngine implements Runnable {
 							|| parts[0].trim().equals("down")) {
 						movePlayerDown(player1);
 					}
+					if (parts[0].trim().equals("BOMB")
+							|| parts[0].trim().equals("bomb")) {
+						placeBomb(player1);
+					}
 				}
 				if (parts[1].equals("2")) {
 					if (parts[0].trim().equals("LEFT")
@@ -57,6 +62,10 @@ public class GameEngine implements Runnable {
 					if (parts[0].trim().equals("DOWN")
 							|| parts[0].trim().equals("down")) {
 						movePlayerDown(player2);
+					}
+					if (parts[0].trim().equals("BOMB")
+							|| parts[0].trim().equals("bomb")) {
+						
 					}
 				}
 				if (parts[1].equals("3")) {
@@ -76,6 +85,10 @@ public class GameEngine implements Runnable {
 							|| parts[0].trim().equals("down")) {
 						movePlayerDown(player3);
 					}
+					if (parts[0].trim().equals("BOMB")
+							|| parts[0].trim().equals("bomb")) {
+						
+					}
 				}
 				if (parts[1].equals("4")) {
 					if (parts[0].trim().equals("LEFT")
@@ -93,6 +106,10 @@ public class GameEngine implements Runnable {
 					if (parts[0].trim().equals("DOWN")
 							|| parts[0].trim().equals("down")) {
 						movePlayerDown(player4);
+					}
+					if (parts[0].trim().equals("BOMB")
+							|| parts[0].trim().equals("bomb")) {
+						
 					}
 				}
 				command = "0,0";
@@ -120,48 +137,78 @@ public class GameEngine implements Runnable {
 			board.placePlayer(player4);
 		}
 	}
+	
+	private void placeBomb(Player player){
+		int tempx = player.getXPosition(), tempy = player.getYPosition();
+		board.placeBomb(player);
+		for (int row = 0; row < board.getBoardArray().length; row++) {
+	        for (int column = 0; column < board.getBoardArray()[row].length; column++) {
+	            System.out.print(board.getBoardArray()[row][column] + " ");
+	        }
+	        System.out.println();
+	    }
+		Thread bomb = new Thread(new BombFactory());
+		bomb.start();
+		try {
+			bomb.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		board.placeFloor(tempx, tempy);
+		for (int row = 0; row < board.getBoardArray().length; row++) {
+	        for (int column = 0; column < board.getBoardArray()[row].length; column++) {
+	            System.out.print(board.getBoardArray()[row][column] + " ");
+	        }
+	        System.out.println();
+	    }
+	}
 
-	public void movePlayerDown(Player player) {
+	private void movePlayerDown(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition() + 1,
 				player.getYPosition()) == 'f'
 				|| board.getBoardArrayElement(player.getXPosition() + 1,
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() + 1);
 			board.placePlayer(player);
-			board.placeFloor(player.getXPosition() - 1, player.getYPosition());
+			if( board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) != 'b')
+				board.placeFloor(player.getXPosition() - 1, player.getYPosition());
 		}
 	}
 
-	public void movePlayerUp(Player player) {
+	private void movePlayerUp(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition() - 1,
 				player.getYPosition()) == 'f'
 				|| board.getBoardArrayElement(player.getXPosition() - 1,
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() - 1);
 			board.placePlayer(player);
-			board.placeFloor(player.getXPosition() + 1, player.getYPosition());
+			if( board.getBoardArrayElement(player.getXPosition()+1, player.getYPosition()) != 'b')
+					board.placeFloor(player.getXPosition() + 1, player.getYPosition());
 		}
 	}
 
-	public void movePlayerRight(Player player) {
+	private void movePlayerRight(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition(),
 				player.getYPosition() + 1) == 'f'
 				|| board.getBoardArrayElement(player.getXPosition(),
 						player.getYPosition() + 1) == 'x') {
 			player.setY(player.getYPosition() + 1);
 			board.placePlayer(player);
-			board.placeFloor(player.getXPosition(), player.getYPosition() - 1);
+			if( board.getBoardArrayElement(player.getXPosition(), player.getYPosition() - 1) != 'b')
+					board.placeFloor(player.getXPosition(), player.getYPosition() - 1);
 		}
 	}
 
-	public void movePlayerLeft(Player player) {
+	private void movePlayerLeft(Player player) {
 		if (board.getBoardArrayElement(player.getXPosition(),
 				player.getYPosition() - 1) == 'f'
 				|| board.getBoardArrayElement(player.getXPosition(),
 						player.getYPosition() - 1) == 'x') {
 			player.setY(player.getYPosition() - 1);
 			board.placePlayer(player);
-			board.placeFloor(player.getXPosition(), player.getYPosition() + 1);
+			if( board.getBoardArrayElement(player.getXPosition(), player.getYPosition() +1) != 'b')
+				board.placeFloor(player.getXPosition(), player.getYPosition() + 1);
 		}
 	}
 }

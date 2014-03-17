@@ -2,7 +2,7 @@ package server;
 
 
 public class Player {
-	private int x, y, lives; 
+	private int x, y, lives, bombs; 
 	private char playerNumber;
 	private String prevMove;
 
@@ -10,6 +10,7 @@ public class Player {
 		this.x = x;
 		this.y = y;
 		playerNumber = num;
+		lives = 1;
 		prevMove = "";
 	}
 	
@@ -28,6 +29,9 @@ public class Player {
 	public String getPrevMove(){
 		return prevMove;
 	}
+	public int getBombs(){
+		return bombs;
+	}
 	public void setX(int x){
 		this.x=x;
 	}
@@ -42,5 +46,8 @@ public class Player {
 	}
 	public void setPrevMove(String prevMove){
 		this.prevMove = prevMove;
+	}
+	public void setBombs(int bombs){
+		this.bombs = bombs;
 	}
 }

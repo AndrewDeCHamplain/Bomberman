@@ -34,6 +34,11 @@ public class GameBoard {
 	public void placeFloor(int x, int y){
 		boardArray[x][y] = 'f';
 	}
+	public void placeBomb(Player player){
+		boardArray[player.getXPosition()][player.getYPosition()] = 'b';
+	}
+	public void placeExplosion(Player player){
+	}
 	public char getBoardArrayElement(int x, int y){
 		return boardArray[x][y];
 	}
