@@ -1,0 +1,8 @@
+join
+start
+down
+down
+bomb
+up
+up
+
