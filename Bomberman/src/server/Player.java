@@ -10,7 +10,7 @@ public class Player {
 		this.x = x;
 		this.y = y;
 		playerNumber = num;
-		lives = 10;
+		lives = 2;
 		bombs = 1;
 		prevMove = "";
 	}

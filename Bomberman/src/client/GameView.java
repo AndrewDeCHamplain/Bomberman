@@ -24,7 +24,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private int columnCount;
 	private int rowCount;
 	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
-			spriteDestructible = null;
+			spriteDestructible = null, spriteMonster = null;
 	Semaphore semaphore;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore) {
@@ -40,6 +40,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
 			spriteExplosionYellow = ImageIO.read(new File("resources/bmanExplosionYellow.png"));
 			spriteDestructible = ImageIO.read(new File("resources/bmanDestructible.png"));
+			spriteMonster = ImageIO.read(new File("resources/bmanMonster.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,6 +161,9 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 							cellWidth, cellHeight, null);
 				} else if (temp == 'e'){ // explosion
 					g.drawImage(spriteExplosionYellow, col * cellWidth, row * cellHeight,
+							cellWidth, cellHeight, null);
+				} else if (temp == 'm'){ // monster
+					g.drawImage(spriteMonster, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
 				} else if (temp == 'b'){ // bomb
 					g.drawImage(spriteBomb, col * cellWidth, row * cellHeight,
