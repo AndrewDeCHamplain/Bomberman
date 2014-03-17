@@ -11,6 +11,7 @@ public class Player {
 		this.y = y;
 		playerNumber = num;
 		lives = 1;
+		bombs = 1;
 		prevMove = "";
 	}
 	

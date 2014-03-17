@@ -1,6 +1,5 @@
 package server;
 
-
 public class GameEngine implements Runnable {
 	private static GameBoard board;
 	private int numPlayers;
@@ -65,7 +64,7 @@ public class GameEngine implements Runnable {
 					}
 					if (parts[0].trim().equals("BOMB")
 							|| parts[0].trim().equals("bomb")) {
-						
+						placeBomb(player2);
 					}
 				}
 				if (parts[1].equals("3")) {
@@ -87,7 +86,7 @@ public class GameEngine implements Runnable {
 					}
 					if (parts[0].trim().equals("BOMB")
 							|| parts[0].trim().equals("bomb")) {
-						
+						placeBomb(player3);
 					}
 				}
 				if (parts[1].equals("4")) {
@@ -109,7 +108,7 @@ public class GameEngine implements Runnable {
 					}
 					if (parts[0].trim().equals("BOMB")
 							|| parts[0].trim().equals("bomb")) {
-						
+						placeBomb(player4);
 					}
 				}
 				command = "0,0";
@@ -132,36 +131,17 @@ public class GameEngine implements Runnable {
 			player3 = new Player(1, board.getBoardY() - 2, '3');
 			board.placePlayer(player3);
 		} else {
-			player4 = new Player(board.getBoardX() - 2,
-					board.getBoardY() - 2, '4');
+			player4 = new Player(board.getBoardX() - 2, board.getBoardY() - 2,
+					'4');
 			board.placePlayer(player4);
 		}
 	}
-	
-	private void placeBomb(Player player){
-		int tempx = player.getXPosition(), tempy = player.getYPosition();
-		board.placeBomb(player);
-		for (int row = 0; row < board.getBoardArray().length; row++) {
-	        for (int column = 0; column < board.getBoardArray()[row].length; column++) {
-	            System.out.print(board.getBoardArray()[row][column] + " ");
-	        }
-	        System.out.println();
-	    }
-		Thread bomb = new Thread(new BombFactory());
+
+	private void placeBomb(Player player) {
+
+		Thread bomb = new Thread(new BombFactory(player, board));
 		bomb.start();
-		try {
-			bomb.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		board.placeFloor(tempx, tempy);
-		for (int row = 0; row < board.getBoardArray().length; row++) {
-	        for (int column = 0; column < board.getBoardArray()[row].length; column++) {
-	            System.out.print(board.getBoardArray()[row][column] + " ");
-	        }
-	        System.out.println();
-	    }
+
 	}
 
 	private void movePlayerDown(Player player) {
@@ -171,8 +151,12 @@ public class GameEngine implements Runnable {
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() + 1);
 			board.placePlayer(player);
-			if( board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) != 'b')
-				board.placeFloor(player.getXPosition() - 1, player.getYPosition());
+			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c'
+					|| board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b')
+				board.placeBomb(player.getXPosition() - 1,player.getYPosition());
+			else {
+				board.placeFloor(player.getXPosition() - 1,player.getYPosition());
+			}
 		}
 	}
 
@@ -183,8 +167,12 @@ public class GameEngine implements Runnable {
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() - 1);
 			board.placePlayer(player);
-			if( board.getBoardArrayElement(player.getXPosition()+1, player.getYPosition()) != 'b')
-					board.placeFloor(player.getXPosition() + 1, player.getYPosition());
+			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c'
+					|| board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b')
+				board.placeBomb(player.getXPosition() + 1,player.getYPosition());
+			else {
+				board.placeFloor(player.getXPosition() + 1,player.getYPosition());
+			}
 		}
 	}
 
@@ -195,8 +183,12 @@ public class GameEngine implements Runnable {
 						player.getYPosition() + 1) == 'x') {
 			player.setY(player.getYPosition() + 1);
 			board.placePlayer(player);
-			if( board.getBoardArrayElement(player.getXPosition(), player.getYPosition() - 1) != 'b')
-					board.placeFloor(player.getXPosition(), player.getYPosition() - 1);
+			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b'
+					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() - 1) == 'c')
+				board.placeBomb(player.getXPosition(),player.getYPosition() - 1);
+			else {
+				board.placeFloor(player.getXPosition(),player.getYPosition() - 1);
+			}
 		}
 	}
 
@@ -207,8 +199,12 @@ public class GameEngine implements Runnable {
 						player.getYPosition() - 1) == 'x') {
 			player.setY(player.getYPosition() - 1);
 			board.placePlayer(player);
-			if( board.getBoardArrayElement(player.getXPosition(), player.getYPosition() +1) != 'b')
-				board.placeFloor(player.getXPosition(), player.getYPosition() + 1);
+			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c'
+					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() + 1) == 'b')
+				board.placeBomb(player.getXPosition(),player.getYPosition() + 1);
+			else {
+				board.placeFloor(player.getXPosition(),player.getYPosition() + 1);
+			}
 		}
 	}
 }

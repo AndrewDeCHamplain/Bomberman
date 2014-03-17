@@ -36,8 +36,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
-			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
-			spriteExplosion = ImageIO.read(new File("resources/bmanExplosion.png"));
+			//spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
+			//spriteExplosion = ImageIO.read(new File("resources/bmanExplosion.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,12 +149,14 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 
 				Rectangle cell = cells.get(row + (col * columnCount));
 				char temp = boardArray.get(row).get(col);
-				if (temp == '1' || temp == '2' || temp == '3' || temp == '4') {
+				if (temp == '1' || temp == '2' || temp == '3' || temp == '4' || temp == 'c') {
 					// g2d.setColor(new Color(200, 180, 160));
 					// g2d.fill(cell);
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
-
+				} else if (temp == 'b'){
+					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
+							cellWidth, cellHeight, null);
 				} else if (temp == 'x') {
 					// g2d.setColor(new Color(200, 180, 160));
 					// g2d.fill(cell);
