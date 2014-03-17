@@ -1,5 +1,7 @@
 package server;
 
+import java.util.concurrent.Semaphore;
+
 public class GameEngine implements Runnable {
 	private static GameBoard board;
 	private int numPlayers;
@@ -8,10 +10,12 @@ public class GameEngine implements Runnable {
 	private int[] alive = {1,1,1,1};
 	// private static char[][] currentBoard;
 	public static String command = "0,0";
+	Semaphore semNewMessage;
 
-	public GameEngine(int numPlayers) {
+	public GameEngine(int numPlayers, Semaphore semaphore) {
 		board = new GameBoard(1);
 		this.numPlayers = numPlayers;
+		semNewMessage = semaphore;
 		// currentBoard = board.getBoardArray();
 	}
 	@Override
@@ -22,6 +26,12 @@ public class GameEngine implements Runnable {
 		}
 		
 		while (true) {
+			try {
+				semNewMessage.acquire();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			synchronized (command) {
 				String[] parts = command.split(",");
 				if (parts[1].equals("1")) {

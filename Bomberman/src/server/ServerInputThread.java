@@ -3,15 +3,18 @@ package server;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.concurrent.Semaphore;
 
 public class ServerInputThread implements Runnable {
 
 	public int player;
 	int receivePort;
+	Semaphore semNewMessage;
 
-	public ServerInputThread(int port, int player) {
+	public ServerInputThread(int port, int player, Semaphore semaphore) {
 		receivePort = port;
 		this.player = player;
+		semNewMessage = semaphore;
 	}
 
 	@Override
@@ -40,6 +43,7 @@ public class ServerInputThread implements Runnable {
 				e.printStackTrace();
 			}
 			System.out.println(player +" Pressed: " +new String(receivePacket.getData()));
+			semNewMessage.release();
 			synchronized (GameEngine.command){
 				GameEngine.command = new String(receivePacket.getData()).trim()+","+player;
 			}

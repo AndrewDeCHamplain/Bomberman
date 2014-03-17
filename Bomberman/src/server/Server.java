@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class Server {
@@ -35,6 +36,7 @@ public class Server {
 		final int port2 = 3334;
 		byte[] receiveData, sendData;
 		int numPlayers = 0;
+		Semaphore semaphore = new Semaphore(0);
 		
 		InetAddress IPAddress;
 
@@ -82,7 +84,7 @@ public class Server {
 				int port = receivePacket.getPort();
 				
 				// create new server thread to handle new clients inputs
-				Thread inputThread = new Thread(new ServerInputThread(getNextPort(numPlayers), numPlayers));
+				Thread inputThread = new Thread(new ServerInputThread(getNextPort(numPlayers), numPlayers, semaphore));
 				inputThread.start();
 				
 				String temp = String.valueOf(numPlayers);
@@ -131,7 +133,7 @@ public class Server {
 		*  at a fixed FPS.
 		*/
 		
-		Thread engineThread = new Thread(new GameEngine(numPlayers));
+		Thread engineThread = new Thread(new GameEngine(numPlayers, semaphore));
 		engineThread.start();
 		
 		System.out.println("Game starting");

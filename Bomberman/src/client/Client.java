@@ -53,20 +53,24 @@ public class Client {
 		while (startLobby) {
 			sendData = new byte[1024];
 			
+			// for user use
+			/*
 			try {
 				currMove = inFromUser.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			/*
+			*/
+			
+			//when testing
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			*/
+			
 			if (currMove.equals("join")) {
 
 				if (joined) { // check if already in game
