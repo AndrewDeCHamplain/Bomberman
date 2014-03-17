@@ -23,6 +23,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private static char playerNum;
 	private int columnCount;
 	private int rowCount;
+	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosion = null;
 	Semaphore semaphore;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore) {
@@ -32,6 +33,15 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		rowCount = boardArray.size() - 1;
 		this.semaphore = semaphore;
 		addKeyListener(this);
+		
+		try {
+			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
+			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
+			spriteExplosion = ImageIO.read(new File("resources/bmanExplosion.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -86,6 +96,9 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_S) {
 			Client.currMove = "down";
 		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			Client.currMove = "bomb";
+		}
 	}
 
 	@Override
@@ -109,7 +122,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		// this.setBackground(new Color(30, 150, 30));
 		Graphics2D g2d = (Graphics2D) g.create();
 		List<Rectangle> cells = new ArrayList<>(columnCount * rowCount);;
-		BufferedImage spriteDown = null;
+		
+		
 		int width = getWidth();
 		int height = getHeight();
 	
@@ -127,13 +141,6 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 					cells.add(cell);
 				}
 			}
-		}
-
-		try {
-			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 		// fill grid with colours and sprites

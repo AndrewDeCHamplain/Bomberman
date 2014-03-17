@@ -52,14 +52,14 @@ public class Client {
 
 		while (startLobby) {
 			sendData = new byte[1024];
-			/*
+			
 			try {
 				currMove = inFromUser.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			*/
+			
 			if (currMove.equals("join")) {
 
 				if (joined) { // check if already in game
