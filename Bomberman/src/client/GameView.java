@@ -154,13 +154,16 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 					// g2d.fill(cell);
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
-				} else if (temp == 'b'){
+				} else if (temp == 'e'){ // explosion
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
-				} else if (temp == 'x') {
+				} else if (temp == 'b'){ // bomb
+					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
+							cellWidth, cellHeight, null);
+				} else if (temp == 'x'){
 					// g2d.setColor(new Color(200, 180, 160));
 					// g2d.fill(cell);
-				} else if (temp == 'w') {
+				} else if (temp == 'w'){
 					g2d.setColor(Color.GRAY);
 					g2d.fill(cell);
 				}

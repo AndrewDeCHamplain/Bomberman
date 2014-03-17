@@ -138,10 +138,9 @@ public class GameEngine implements Runnable {
 	}
 
 	private void placeBomb(Player player) {
-
+		
 		Thread bomb = new Thread(new BombFactory(player, board));
 		bomb.start();
-
 	}
 
 	private void movePlayerDown(Player player) {

@@ -40,7 +40,30 @@ public class GameBoard {
 	public void placeBombAndPlayer(Player player){
 		boardArray[player.getXPosition()][player.getYPosition()] = 'c';
 	}
-	public void placeExplosion(Player player){
+	public synchronized void placeExplosion(int x, int y, Player player){
+		if(player.getBombs()>0){
+			player.setBombs(player.getBombs()-1);
+			boardArray[x][y] = 'e';
+			if (boardArray[x+1][y] != 'w')
+				boardArray[x+1][y] = 'e';
+			if (boardArray[x-1][y] != 'w')
+				boardArray[x-1][y] = 'e';
+			if (boardArray[x][y+1] != 'w')
+				boardArray[x][y+1] = 'e';
+			if (boardArray[x][y-1] != 'w')
+				boardArray[x][y-1] = 'e';
+		}
+	}
+	public synchronized void removeExplosion(int x, int y, Player player){
+		boardArray[x][y] = 'f';
+		if (boardArray[x+1][y] == 'e')
+			boardArray[x+1][y] = 'f';
+		if (boardArray[x-1][y] == 'e')
+			boardArray[x-1][y] = 'f';
+		if (boardArray[x][y+1] == 'e')
+			boardArray[x][y+1] = 'f';
+		if (boardArray[x][y-1] == 'e')
+			boardArray[x][y-1] = 'f';
 	}
 	public char getBoardArrayElement(int x, int y){
 		return boardArray[x][y];
