@@ -24,7 +24,7 @@ public class Client {
 	 * @param args
 	 *            [0] -> port number
 	 */
-	public static void main(String[] args) {
+	public Client() {
 
 		DatagramPacket sendPacket = null;
 		DatagramSocket clientSocket = null, inputSocket = null;
@@ -52,13 +52,14 @@ public class Client {
 
 		while (startLobby) {
 			sendData = new byte[1024];
-
+			/*
 			try {
 				currMove = inFromUser.readLine();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 			if (currMove.equals("join")) {
 
 				if (joined) { // check if already in game
@@ -101,7 +102,7 @@ public class Client {
 					keyInputPort = 3337;
 				else
 					keyInputPort = 3338;
-
+				currMove = "";
 				System.out.println("You are player " + playerNum);
 			}
 			if (currMove.equals("start")) {
@@ -117,6 +118,7 @@ public class Client {
 					clientSocket.close();
 					e.printStackTrace();
 				}
+				currMove = "";
 			}
 
 
@@ -169,8 +171,12 @@ public class Client {
 		}
 	}
 
-	public void setCurrMove(String s) {
+	public static void setCurrMove(String s) {
 		currMove = s;
+	}
+	
+	public static void main(String args[]){
+		new Client();
 	}
 /*
 	public void GameModeType(SpectatorMode e) {

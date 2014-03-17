@@ -44,11 +44,14 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		f.add(d);
 		f.pack();
 		f.setResizable(true);
-		f.setVisible(true);
+		
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setTitle("Bomberman");
 		f.setLocationRelativeTo(null);
+		f.setAlwaysOnTop (true);
 		f.setFocusable(true);
+		f.setVisible(true);
+		
 		while(true){
 			try {
 				this.semaphore.acquire();

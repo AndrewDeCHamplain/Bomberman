@@ -24,7 +24,7 @@ public class Server {
 	 * @param args
 	 *            [0] -> port number
 	 */
-	public static void main(String[] args) {
+	public Server() {
 		// TODO Auto-generated method stub
 
 		DatagramSocket serverSocket = null;
@@ -202,5 +202,8 @@ public class Server {
 			arrayString = arrayString + "|";
 		}
 		return arrayString;
+	}
+	public static void main(String[] args){
+		new Server();
 	}
 }

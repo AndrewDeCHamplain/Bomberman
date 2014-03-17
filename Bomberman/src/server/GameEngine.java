@@ -106,7 +106,7 @@ public class GameEngine implements Runnable {
 
 	private void makePlayer(int i) {
 		if (i == 0) {
-			player1 = new Player(3, 3, '1');
+			player1 = new Player(1, 1, '1');
 			board.placePlayer(player1);
 		} else if (i == 1) {
 			player2 = new Player(board.getBoardX() - 2, 1, '2');
