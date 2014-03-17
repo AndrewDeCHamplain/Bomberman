@@ -138,11 +138,11 @@ public class GameEngine implements Runnable {
 	}
 
 	private void placeBomb(Player player) {
-		if(player.getBombs()>0){
+		//if(player.getBombs()>0){
 			Thread bomb = new Thread(new BombFactory(player, board));
 			bomb.start();
-			player.setBombs(player.getBombs() -1);
-		}
+			//player.setBombs(player.getBombs() -1);
+		//}
 	}
 
 	private void movePlayerDown(Player player) {
@@ -152,8 +152,21 @@ public class GameEngine implements Runnable {
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() + 1);
 			board.placePlayer(player);
+			
 			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c'
 					|| board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b')
+				board.placeBomb(player.getXPosition() - 1,player.getYPosition());
+			else {
+				board.placeFloor(player.getXPosition() - 1,player.getYPosition());
+			}
+		}
+		if (board.getBoardArrayElement(player.getXPosition() + 1,
+				player.getYPosition()) == 'e'){
+			player.setX(player.getXPosition() + 1);
+			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			player.setLives(player.getLives()-1);
+			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b'
+					|| board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c')
 				board.placeBomb(player.getXPosition() - 1,player.getYPosition());
 			else {
 				board.placeFloor(player.getXPosition() - 1,player.getYPosition());
@@ -168,8 +181,20 @@ public class GameEngine implements Runnable {
 						player.getYPosition()) == 'x') {
 			player.setX(player.getXPosition() - 1);
 			board.placePlayer(player);
-			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c'
+			if (board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'c'
 					|| board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b')
+				board.placeBomb(player.getXPosition() + 1,player.getYPosition());
+			else {
+				board.placeFloor(player.getXPosition() + 1,player.getYPosition());
+			}
+		}
+		if (board.getBoardArrayElement(player.getXPosition() - 1,
+				player.getYPosition()) == 'e'){
+			player.setX(player.getXPosition() - 1);
+			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			player.setLives(player.getLives()-1);
+			if (board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b'
+					|| board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'c')
 				board.placeBomb(player.getXPosition() + 1,player.getYPosition());
 			else {
 				board.placeFloor(player.getXPosition() + 1,player.getYPosition());
@@ -191,6 +216,18 @@ public class GameEngine implements Runnable {
 				board.placeFloor(player.getXPosition(),player.getYPosition() - 1);
 			}
 		}
+		if (board.getBoardArrayElement(player.getXPosition(),
+				player.getYPosition() + 1) == 'e'){
+			player.setY(player.getYPosition() + 1);
+			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			player.setLives(player.getLives()-1);
+			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'b'
+					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() - 1) == 'c')
+				board.placeBomb(player.getXPosition(),player.getYPosition() - 1);
+			else {
+				board.placeFloor(player.getXPosition(),player.getYPosition() - 1);
+			}
+		}
 	}
 
 	private void movePlayerLeft(Player player) {
@@ -200,12 +237,25 @@ public class GameEngine implements Runnable {
 						player.getYPosition() - 1) == 'x') {
 			player.setY(player.getYPosition() - 1);
 			board.placePlayer(player);
-			if (board.getBoardArrayElement(player.getXPosition() - 1,player.getYPosition()) == 'c'
-					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() + 1) == 'b')
+			if (board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b'
+					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() + 1) == 'c')
 				board.placeBomb(player.getXPosition(),player.getYPosition() + 1);
 			else {
 				board.placeFloor(player.getXPosition(),player.getYPosition() + 1);
 			}
 		}
+		if (board.getBoardArrayElement(player.getXPosition(),
+				player.getYPosition() - 1) == 'e'){
+			player.setY(player.getYPosition() - 1);
+			board.placeExplosion(player.getXPosition(), player.getYPosition(), player);
+			player.setLives(player.getLives()-1);
+			if (board.getBoardArrayElement(player.getXPosition() + 1,player.getYPosition()) == 'b'
+					|| board.getBoardArrayElement(player.getXPosition(),player.getYPosition() + 1) == 'c')
+				board.placeBomb(player.getXPosition(),player.getYPosition() + 1);
+			else {
+				board.placeFloor(player.getXPosition(),player.getYPosition() + 1);
+			}
+		}
+		
 	}
 }

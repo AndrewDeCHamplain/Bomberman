@@ -10,7 +10,7 @@ public class Player {
 		this.x = x;
 		this.y = y;
 		playerNumber = num;
-		lives = 1;
+		lives = 10;
 		bombs = 1;
 		prevMove = "";
 	}
@@ -32,6 +32,9 @@ public class Player {
 	}
 	public int getBombs(){
 		return bombs;
+	}
+	public int getLives(){
+		return lives;
 	}
 	public void setX(int x){
 		this.x=x;

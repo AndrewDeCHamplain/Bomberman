@@ -38,7 +38,8 @@ public class BombFactory implements Runnable{
 		}
 		synchronized (board) {
 			board.removeExplosion(tempx, tempy, player);
-			player.setBombs(player.getBombs()+1);
+			//player.setBombs(player.getBombs()+1);
 		}
+		//System.out.println(player.getBombs());
 	}
 }

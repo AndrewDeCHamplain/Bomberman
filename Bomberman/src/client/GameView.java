@@ -23,7 +23,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private static char playerNum;
 	private int columnCount;
 	private int rowCount;
-	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosion = null,
+	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
 			spriteDestructible = null;
 	Semaphore semaphore;
 
@@ -38,7 +38,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
 			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
-			//spriteExplosion = ImageIO.read(new File("resources/bmanExplosion.png"));
+			spriteExplosionYellow = ImageIO.read(new File("resources/bmanExplosionYellow.png"));
 			spriteDestructible = ImageIO.read(new File("resources/bmanDestructible.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -55,8 +55,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		GameView d = new GameView(boardArray, playerNum, semaphore);
 		f.add(d);
 		f.pack();
-		f.setResizable(true);
-		
+		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setTitle("Bomberman");
 		f.setLocationRelativeTo(null);
@@ -116,7 +115,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	
 	@Override
 	public Dimension getPreferredSize() {
-		return (new Dimension(600, 600));
+		return (new Dimension(605, 605));
 	}
 
 	protected void paintComponent(Graphics g) {
@@ -160,7 +159,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 					g.drawImage(spriteDestructible, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
 				} else if (temp == 'e'){ // explosion
-					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
+					g.drawImage(spriteExplosionYellow, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
 				} else if (temp == 'b'){ // bomb
 					g.drawImage(spriteBomb, col * cellWidth, row * cellHeight,
