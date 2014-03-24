@@ -23,9 +23,10 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private static char playerNum;
 	private int columnCount;
 	private int rowCount;
-	BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
+	private static JFrame f;
+	private BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
 			spriteDestructible = null, spriteMonster = null;
-	Semaphore semaphore;
+	private Semaphore semaphore;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore) {
 		boardArray = args;
@@ -51,8 +52,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		
-		JFrame f = new JFrame("Bomberman");
+		GameLobby.closeLobby();
+		f = new JFrame("Bomberman");
 		GameView d = new GameView(boardArray, playerNum, semaphore);
 		f.add(d);
 		f.pack();
@@ -76,7 +77,10 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 			f.repaint();
 		}
 	}
-
+	public static void closeGameView() {
+		f.setVisible(false);
+		f.dispose(); //Destroy the JFrame object
+	}
 	@Override
 	public void addNotify() {
         super.addNotify();

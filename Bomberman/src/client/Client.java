@@ -44,8 +44,6 @@ public class Client {
 			e.printStackTrace();
 		}
 
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
-				System.in));
 		Thread receiver = new Thread(new ClientReceive(sendPort, semaphore));
 		receiver.start();
 		System.out.println("Join game.");
