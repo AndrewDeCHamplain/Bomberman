@@ -40,7 +40,8 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
-		
+		Thread gameLobbyThread = new Thread(new GameLobby());
+		gameLobbyThread.start();
 		// Start menu, waiting for a client to connect
 		while (Client.startLobby) {
 			receiveData = new byte[1024];

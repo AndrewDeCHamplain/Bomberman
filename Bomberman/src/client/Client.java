@@ -64,6 +64,7 @@ public class Client {
 			*/
 			
 			//when testing
+			
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e2) {
