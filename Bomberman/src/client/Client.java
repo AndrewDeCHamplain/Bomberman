@@ -19,6 +19,7 @@ public class Client {
 	public static boolean startLobby = true;
 	static int keyInputPort;
 	static String currMove = "";
+	private static boolean isPlayer;
 
 	/**
 	 * @param args
@@ -50,19 +51,7 @@ public class Client {
 
 		while (startLobby) {
 			sendData = new byte[1024];
-			
-			// for user use
-			/*
-			try {
-				currMove = inFromUser.readLine();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
-			
-			//when testing
-			
+
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e2) {
@@ -77,7 +66,7 @@ public class Client {
 					break;
 				}
 				joined = true;
-
+				isPlayer = true;
 				// make thread to handle board updates from server
 
 				sendData = currMove.getBytes();
@@ -131,15 +120,9 @@ public class Client {
 				currMove = "";
 			}
 
-
-			/*
-			 * if (sentence.equals("spectate")){
-			 * 
-			 * call method GameModeType(Spectator); specNum = (new
-			 * String(receivePacket.getData())).charAt(0); // add a new variable
-			 * spectator number System.out.println("You are spectator "+
-			 * specNum);
-			 */
+			 if (currMove.equals("spectate")){
+				 isPlayer = false;
+			 }
 		}
 		
 		// No longer in startLobby
@@ -184,50 +167,10 @@ public class Client {
 	public static void setCurrMove(String s) {
 		currMove = s;
 	}
-	
-	public static void main(String args[]){
+	public static boolean getIsPlayer(){
+		return isPlayer;
+	}
+	public static void main(String args[]) {
 		new Client();
 	}
-/*
-	public void GameModeType(SpectatorMode e) {
-		final Spectator s = e.getPlayer();
-		if (e.getNewGameMode() == GameMode.Spectate) {
-			System.out.println("You are beginning to join as a spectator");
-			joined = true;
-			Thread receiver = new Thread(new ClientReceive(sendPort));
-			receiver.start();
-
-			sendData = sentence.getBytes();
-			sendPacket = new DatagramPacket(sendData, sendData.length,
-					IPAddress, sendPort);
-			System.out.println("Joining game as specatator");
-			try {
-				clientSocket.send(sendPacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				clientSocket.close();
-				e.printStackTrace();
-			}
-			byte[] receiveData = new byte[1024];
-			DatagramPacket receivePacket = new DatagramPacket(receiveData,
-					receiveData.length);
-			try {
-				clientSocket.receive(receivePacket);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				clientSocket.close();
-				e1.printStackTrace();
-			}
-			public void run()
-			{
-				s.addPropertyChangeListener(listener);
-				s.semaphore;
-				s.addComponentListener(null);
-				s.addKeyListener(s);
-			}
-			e.getPlayer().sendMessage("You are now joined in as a spectator");
-
-		}
-	}
-	*/
 }

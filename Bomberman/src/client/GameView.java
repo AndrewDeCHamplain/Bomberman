@@ -5,7 +5,6 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class GameView extends JPanel implements Runnable, KeyListener {
+public class GameView extends JPanel implements Runnable, Observer{
 
 	/**
 	 * 
@@ -21,6 +20,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 	private static final long serialVersionUID = 1L;
 	private static ArrayList<ArrayList<Character>> boardArray = null;
 	private static char playerNum;
+	private boolean isPlayer;
 	private int columnCount;
 	private int rowCount;
 	private static JFrame f;
@@ -28,13 +28,21 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 			spriteDestructible = null, spriteMonster = null;
 	private Semaphore semaphore;
 
-	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore) {
+	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore, boolean isPlayer) {
 		boardArray = args;
 		GameView.playerNum = playerNum;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
 		this.semaphore = semaphore;
-		addKeyListener(this);
+		this.isPlayer = isPlayer;
+		
+		if(isPlayer){
+			Keyer keyListener= new Keyer();
+	        keyListener.addObserver(this);
+	        setFocusable(true);
+	        requestFocusInWindow();
+	        addKeyListener(keyListener);
+		}
 		
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
@@ -54,7 +62,7 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		
 		GameLobby.closeLobby();
 		f = new JFrame("Bomberman");
-		GameView d = new GameView(boardArray, playerNum, semaphore);
+		GameView d = new GameView(boardArray, playerNum, semaphore, isPlayer);
 		f.add(d);
 		f.pack();
 		f.setResizable(false);
@@ -86,10 +94,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
         super.addNotify();
         requestFocus();
     }
-	
-	@Override
-	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+	public void update(KeyEvent e)
+    {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
 			Client.currMove = "right";
 		}
@@ -105,19 +111,8 @@ public class GameView extends JPanel implements Runnable, KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 			Client.currMove = "bomb";
 		}
-	}
+    }
 
-	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-	}
-	
 	@Override
 	public Dimension getPreferredSize() {
 		return (new Dimension(605, 605));

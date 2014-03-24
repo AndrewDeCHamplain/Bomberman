@@ -179,7 +179,7 @@ public class Server {
 			}, 0, 32, TimeUnit.MILLISECONDS); // sends gameboard at 30 FPS
 			//ses.shutdown();
 			
-			while(true);
+			//while(true);
 	}
 
 	private static int getNextPort(int numPlayers) {

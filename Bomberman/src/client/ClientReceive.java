@@ -74,7 +74,7 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();	
 		}
-		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, semaphore));
+		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, semaphore, Client.getIsPlayer()));
 		gameThread.start();
 		
 		
