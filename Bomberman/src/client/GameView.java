@@ -19,23 +19,20 @@ public class GameView extends JPanel implements Runnable, Observer{
 	 */
 	private static final long serialVersionUID = 1L;
 	private static ArrayList<ArrayList<Character>> boardArray = null;
-	private static char playerNum;
-	private boolean isPlayer;
+	private char playerNum;
 	private int columnCount;
 	private int rowCount;
 	private static JFrame f;
 	private BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
 			spriteDestructible = null, spriteMonster = null;
-	private Semaphore semaphore;
+	Semaphore newReceived;
 
-	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore semaphore, boolean isPlayer) {
+	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore newReceived, boolean isPlayer) {
 		boardArray = args;
-		GameView.playerNum = playerNum;
+		this.playerNum = playerNum;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
-		this.semaphore = semaphore;
-		this.isPlayer = isPlayer;
-		
+		this.newReceived = newReceived;
 		if(isPlayer){
 			Keyer keyListener= new Keyer();
 	        keyListener.addObserver(this);
@@ -43,7 +40,6 @@ public class GameView extends JPanel implements Runnable, Observer{
 	        requestFocusInWindow();
 	        addKeyListener(keyListener);
 		}
-		
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
 			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
@@ -59,32 +55,31 @@ public class GameView extends JPanel implements Runnable, Observer{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
 		GameLobby.closeLobby();
 		f = new JFrame("Bomberman");
-		GameView d = new GameView(boardArray, playerNum, semaphore, isPlayer);
-		f.add(d);
+		f.add(this);
 		f.pack();
 		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setTitle("Bomberman");
 		f.setLocationRelativeTo(null);
-		f.setAlwaysOnTop (true);
 		f.setFocusable(true);
 		f.setVisible(true);
-		
+		synchronized (this){
 		while(true){
 			try {
-				this.semaphore.acquire();
+				newReceived.acquire();
+				boardArray = ClientReceive.getTileMap();
+				f.validate();
+				f.repaint();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			boardArray = ClientReceive.tileMap;
-			f.validate();
-			f.repaint();
+		}
 		}
 	}
+
 	public static void closeGameView() {
 		f.setVisible(false);
 		f.dispose(); //Destroy the JFrame object
@@ -123,8 +118,7 @@ public class GameView extends JPanel implements Runnable, Observer{
 		// this.setBackground(new Color(30, 150, 30));
 		Graphics2D g2d = (Graphics2D) g.create();
 		List<Rectangle> cells = new ArrayList<>(columnCount * rowCount);;
-		
-		
+
 		int width = getWidth();
 		int height = getHeight();
 	
