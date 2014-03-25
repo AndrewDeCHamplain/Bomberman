@@ -13,7 +13,7 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.Semaphore;
 
-public class Client {
+public class Client{
 
 	static char playerNum = 0;
 	public static boolean startLobby = true;
@@ -33,8 +33,8 @@ public class Client {
 		int sendPort = 3333;
 		boolean joined = false;
 		byte[] sendData = new byte[1024];
-		Semaphore semaphore = new Semaphore(0);
-
+		Semaphore newReceived = new Semaphore(0);
+		
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -45,7 +45,7 @@ public class Client {
 			e.printStackTrace();
 		}
 
-		Thread receiver = new Thread(new ClientReceive(sendPort, semaphore));
+		Thread receiver = new Thread(new ClientReceive(sendPort, newReceived));
 		receiver.start();
 		System.out.println("Join game.");
 
@@ -53,7 +53,7 @@ public class Client {
 			sendData = new byte[1024];
 
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -111,7 +111,7 @@ public class Client {
 						IPAddress, sendPort);
 				try {
 					clientSocket.send(sendPacket);
-					semaphore.acquire();
+					newReceived.acquire();
 				} catch (IOException | InterruptedException e) {
 					// TODO Auto-generated catch block
 					clientSocket.close();
