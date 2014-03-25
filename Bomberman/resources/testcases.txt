@@ -1,5 +1,3 @@
-join
-start
 down
 down
 bomb
@@ -15,4 +13,3 @@ down
 down
 bomb
 right
-
