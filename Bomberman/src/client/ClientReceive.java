@@ -10,8 +10,8 @@ import java.util.concurrent.Semaphore;
 public class ClientReceive implements Runnable {
 
 	private int receivePort;
-	Semaphore semStarting;
-	public static ArrayList<ArrayList<Character>> tileMap;
+	private Semaphore semStarting;
+	private static ArrayList<ArrayList<Character>> tileMap;
 
 	public ClientReceive(int port, Semaphore semaphore) {
 		receivePort = port + 1;
@@ -25,7 +25,7 @@ public class ClientReceive implements Runnable {
 		DatagramPacket receivePacket = null;
 		MulticastSocket multicastSocket = null;
 		InetAddress group = null;
-		Semaphore semaphore = new Semaphore(0);
+		Semaphore newReceive = new Semaphore(0);
 
 		startLobbyLogic(String.valueOf(Client.playerNum).trim());
 
@@ -40,8 +40,10 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
+
 		Thread gameLobbyThread = new Thread(new GameLobby());
 		gameLobbyThread.start();
+
 		// Start menu, waiting for a client to connect
 		while (Client.startLobby) {
 			receiveData = new byte[1024];
@@ -59,7 +61,7 @@ public class ClientReceive implements Runnable {
 			startLobbyLogic(received);
 
 		}
-		
+		System.out.println("Out of game lobby");
 		
 		//Create first instance of game board
 		receiveData = new byte[1024];
@@ -74,15 +76,14 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();	
 		}
-		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, semaphore, Client.getIsPlayer()));
+		
+		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, newReceive, Client.getIsPlayer()));
 		gameThread.start();
-		
-		
-		
+	
 		// continuously receives and prints game board
 		while(true){
 			receiveData = new byte[1024];
-			
+			synchronized(gameThread){
 			try {
 				multicastSocket.receive(receivePacket);
 				String tileMapString = new String(receivePacket.getData());
@@ -94,10 +95,10 @@ public class ClientReceive implements Runnable {
 				multicastSocket.close();
 				e.printStackTrace();	
 			}
-			semaphore.release();
+			newReceive.release();
+			}
 		}
 	}
-	
 	
 	public void startLobbyLogic(String received){
 		if (received.equals("1") || received.equals("2") || received.equals("3")) {
@@ -144,5 +145,10 @@ public class ClientReceive implements Runnable {
 			tileMapInternal.add(row);
 		}
 		return tileMapInternal;
+	}
+
+	public static ArrayList<ArrayList<Character>> getTileMap() {
+		// TODO Auto-generated method stub
+		return tileMap;
 	}
 }
