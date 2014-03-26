@@ -26,9 +26,9 @@ public class TestDriver {
 		
 		String testInput = testFile.readLine();
 
-		GameLobby.pressJoin();
+		//GameLobby.pressJoin();
 		Thread.sleep(500);
-		GameLobby.pressStart();
+		//GameLobby.pressStart();
 		
 		while (testInput != null) {
 			if(testInput.equals("sleep")) {
