@@ -99,6 +99,10 @@ public class GameLobby extends JPanel implements Runnable {
 				f.validate();
 				f.repaint();
 			}
+			else{
+				JOptionPane.showMessageDialog(null,
+						String.format("Incorrect password"));
+			}
 		}
 	}
 
