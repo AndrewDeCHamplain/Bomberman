@@ -12,28 +12,36 @@ public class TestDriver{
 		while(true){
 			String s = reader.nextLine();
 			if(s.equals("info")){
-				System.out.println("dasda");
-			}
-			else if(s.equals("quit")){
+				System.out.println("Test 1: 1 player performing simple movements which includes the use of bombs.");
+				System.out.println("	A spectator is also present.");
+				System.out.println("Test 2: 2 players are moving and using bombs and end the game by touching.");
+				System.out.println("Test 3: Latency test 1, the server is under low load. The game runs with 1");
+				System.out.println("	player and 1 spectator and measures the latency.");
+				System.out.println("Test 4: Latency test 2, the server is under medium load. The game runs with 2");
+				System.out.println("	players and 2 spectators and measures the latency.");
+				System.out.println("Test 5: Latency test 3, the server is under high load. The game runs with 4");
+				System.out.println("	players and 4 spectators and measures the latency.");
+			}else if(s.equals("quit")){
 				break;
-			}
-			else if(s.equals("test1")){
+			}else if(s.equals("test1")){
 				try {
 					test1();
 				} catch (InterruptedException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			else if(s.equals("test2")){
+			}else if(s.equals("test2")){
 				try {
 					test2();
 				} catch (InterruptedException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			else if(s.equals("test3")){
+			}else if(s.equals("test3")){
+				
+			}else if(s.equals("test4")){
+				
+			}else if(s.equals("test5")){
 				
 			}
 			else{
