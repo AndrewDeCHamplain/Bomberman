@@ -1,17 +1,20 @@
 package client;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 public class GameLobby extends JPanel implements Runnable {
 
@@ -22,21 +25,23 @@ public class GameLobby extends JPanel implements Runnable {
 	private JButton readyButton;
 	private JButton joinButton;
 	private JButton spectateButton;
-	private JButton test1Button;
-	private JButton test2Button;
-	private JButton test3Button;
 	private boolean joined;
 	private JFrame f;
-	private JPanel adminPanel;
-	private JLabel label;
-	private JTextField textField;
+	private JPanel graphicPanel;
 	private GameLobby d;
 	private Client client;
-	private GameLobby lobby;
+	private BufferedImage lobbyBackground;
+	private JLabel backgroundLabel;
 
 	public GameLobby(Client client) {
 		this.client = client;
-		lobby = this;
+		try {
+			lobbyBackground = ImageIO.read(new File("resources/lobbyBackground.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		backgroundLabel = new JLabel(new ImageIcon(lobbyBackground));
 		setLayout(new FlowLayout());
 		joined = false;
 		joinButton = new JButton("Join");
@@ -54,22 +59,19 @@ public class GameLobby extends JPanel implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		f = new JFrame("Bomberman");
+		f.setSize(300, 300);
 		d = this;
 		f.add(d, BorderLayout.NORTH);
-
-		adminPanel = new JPanel();
-		textField = new JTextField(10);
-		label = new JLabel("Enter password for access to testing");
-		textField.addActionListener(new TextFieldListener());
-		adminPanel.add(label);
-		adminPanel.add(textField);
-		f.add(adminPanel, BorderLayout.SOUTH);
+		graphicPanel = new JPanel();
+		graphicPanel.add(backgroundLabel);
+		f.add(graphicPanel, BorderLayout.SOUTH);
 
 		f.pack();
 		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setTitle("Bomberman");
 		f.setLocationRelativeTo(null);
+		f.setAlwaysOnTop(true);
 		f.setFocusable(true);
 		f.setVisible(true);
 	}
@@ -77,36 +79,6 @@ public class GameLobby extends JPanel implements Runnable {
 	public void closeLobby() {
 		f.setVisible(false);
 		f.dispose();
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return (new Dimension(605, 605));
-	}
-
-	private class TextFieldListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (textField.getText().equals("admin")) {
-				System.out.println("Enter pressed");
-				adminPanel.removeAll();
-				test1Button = new JButton("Test 1");
-				test2Button = new JButton("Test 2");
-				test3Button = new JButton("Test 3");
-				test1Button.addActionListener(new ButtonListener());
-				test2Button.addActionListener(new ButtonListener());
-				test3Button.addActionListener(new ButtonListener());
-				adminPanel.add(test1Button);
-				adminPanel.add(test2Button);
-				adminPanel.add(test3Button);
-				f.validate();
-				f.repaint();
-			}
-			else{
-				JOptionPane.showMessageDialog(null,
-						String.format("Incorrect password"));
-			}
-		}
 	}
 
 	public void pressJoin() {
@@ -147,18 +119,7 @@ public class GameLobby extends JPanel implements Runnable {
 		        readyButton.setEnabled(false);
 		        spectateButton.setEnabled(false);
 				//JOptionPane.showMessageDialog(null, String.format("You are a spectator for the next game."));
-			} else if (e.getSource() == test1Button) {
-				f.setVisible(false);
-				Thread tester = new Thread(new TestDriver("test1"));
-				tester.start();
-			} else if (e.getSource() == test2Button) {
-				f.setVisible(false);
-				Thread tester2 = new Thread(new TestDriver("test2"));
-				tester2.start();
-			} else if (e.getSource() == test3Button) {
-				JOptionPane.showMessageDialog(null,
-						String.format("Starting Test 3 (not really)"));
-			}
+			} 
 		}
 	}
 }
