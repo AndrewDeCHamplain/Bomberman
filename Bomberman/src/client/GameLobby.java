@@ -31,9 +31,12 @@ public class GameLobby extends JPanel implements Runnable {
 	private JLabel label;
 	private JTextField textField;
 	private GameLobby d;
+	private Client client;
+	private GameLobby lobby;
 
-	public GameLobby() {
-
+	public GameLobby(Client client) {
+		this.client = client;
+		lobby = this;
 		setLayout(new FlowLayout());
 		joined = false;
 		joinButton = new JButton("Join");
@@ -51,7 +54,7 @@ public class GameLobby extends JPanel implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		f = new JFrame("Bomberman");
-		d = new GameLobby();
+		d = this;
 		f.add(d, BorderLayout.NORTH);
 
 		adminPanel = new JPanel();
@@ -73,7 +76,7 @@ public class GameLobby extends JPanel implements Runnable {
 
 	public static void closeLobby() {
 		f.setVisible(false);
-		f.dispose(); // Destroy the JFrame object
+		f.dispose();
 	}
 
 	@Override
@@ -105,17 +108,19 @@ public class GameLobby extends JPanel implements Runnable {
 			}
 		}
 	}
-	public static void pressJoin() {
+
+	public void pressJoin() {
 		joinButton.doClick();
 	}
 
-	public static void pressStart() {
+	public void pressStart() {
 		readyButton.doClick();
 	}
 
-	public static void pressSpectate() {
+	public void pressSpectate() {
 		spectateButton.doClick();
 	}
+
 	private class ButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -126,7 +131,7 @@ public class GameLobby extends JPanel implements Runnable {
 							String.format("You have already joined the game!"));
 				} else {
 					joined = true;
-					Client.setCurrMoveStatic("join");
+					client.setCurrMove("join");
 				}
 				removeAll();
 				add(readyButton);
@@ -136,16 +141,16 @@ public class GameLobby extends JPanel implements Runnable {
 				validate();
 				
 			} else if (e.getSource() == readyButton) {
-				Client.setCurrMoveStatic("start");
+				client.setCurrMove("start");
 			} else if (e.getSource() == spectateButton) {
-				// Client.setCurrMove("spectate");
 				joinButton.setEnabled(false);
 		        readyButton.setEnabled(false);
 		        spectateButton.setEnabled(false);
 				JOptionPane.showMessageDialog(null, String.format("You are a spectator for the next game."));
 			} else if (e.getSource() == test1Button) {
-				JOptionPane.showMessageDialog(null,
-						String.format("Starting Test 1 (not really)"));
+				f.setVisible(false);
+				Thread tester = new Thread(new TestDriver("testcases", lobby));
+				tester.start();
 			} else if (e.getSource() == test2Button) {
 				JOptionPane.showMessageDialog(null,
 						String.format("Starting Test 2 (not really)"));

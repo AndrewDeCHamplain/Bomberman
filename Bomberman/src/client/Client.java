@@ -15,26 +15,25 @@ import java.util.concurrent.Semaphore;
 
 public class Client implements Runnable{
 
-	static char playerNum = 0;
-	public static boolean startLobby = true;
-	static int keyInputPort;
-	static String currMove = "";
-	private static boolean isPlayer;
+	private char playerNum = 0;
+	private boolean startLobby = true;
+	private int keyInputPort;
+	private String currMove = "";
+	private boolean isPlayer;
+	private DatagramPacket sendPacket = null;
+	private DatagramSocket clientSocket = null, inputSocket = null;
+	private InetAddress IPAddress = null;
+	private int sendPort = 3333;
+	private boolean joined = false;
+	private byte[] sendData = new byte[1024];
+	private Semaphore newReceived = new Semaphore(0);
 
 	/**
 	 * @param args
 	 *            [0] -> port number
 	 */
-	public Client(boolean testing) {
+	public Client() {
 
-		DatagramPacket sendPacket = null;
-		DatagramSocket clientSocket = null, inputSocket = null;
-		InetAddress IPAddress = null;
-		int sendPort = 3333;
-		boolean joined = false;
-		byte[] sendData = new byte[1024];
-		Semaphore newReceived = new Semaphore(0);
-		
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -45,10 +44,12 @@ public class Client implements Runnable{
 			e.printStackTrace();
 		}
 
-		Thread receiver = new Thread(new ClientReceive(sendPort, newReceived, testing));
+		Thread receiver = new Thread(new ClientReceive(sendPort, newReceived, this));
 		receiver.start();
 		System.out.println("Join game.");
-
+	}
+		
+		private void game(){
 		while (startLobby) {
 			sendData = new byte[1024];
 
@@ -105,6 +106,7 @@ public class Client implements Runnable{
 				System.out.println("You are player " + playerNum);
 			}
 			if (currMove.equals("start")) {
+				System.out.println(IPAddress.getHostAddress() + " starting game.");
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, sendPort);
@@ -162,23 +164,38 @@ public class Client implements Runnable{
 			}
 		}
 	}
-
-	public static void setCurrMoveStatic(String s) {
-		currMove = s;
+	public char getPlayerNum(){
+		return playerNum;
+	}
+	public void setPlayerNum(char playerNum){
+		this.playerNum = playerNum;
 	}
 	public void setCurrMove(String s) {
 		currMove = s;
 	}
-	public static boolean getIsPlayer(){
+	public String setCurrMove() {
+		return currMove;
+	}
+	public boolean getIsPlayer(){
 		return isPlayer;
 	}
-	public static void main(String args[]) {
-		new Client(false);
+	public boolean getStartLobby() {
+		// TODO Auto-generated method stub
+		return startLobby;
 	}
-
+	public void setStartLobby(boolean startLobby){
+		this.startLobby = startLobby;
+	}
+	public void setKeyInputPort(int port){
+		keyInputPort = port;
+	}
+	public static void main(String args[]) {
+		Client client = new Client();
+		client.game();
+	}
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		game();
 	}
 }

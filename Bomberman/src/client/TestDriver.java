@@ -5,49 +5,59 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
 
-public class TestDriver{
+public class TestDriver implements Runnable{
 
 	//The text file containing the test inputs is stored in testFile
 	private static BufferedReader testFile;
+	private String sentence;
+	private Client client;
+	private ClientTest clientTest;
+	private GameLobby gameLobby;
 	
-	public TestDriver(String sentence){
+	public TestDriver(String sentence, GameLobby gameLobby){
+		this.sentence = sentence;
+		this.gameLobby = gameLobby;
+	}
+	
+	public void test(String testCase) throws IOException, InterruptedException {
+		FileInputStream in = new FileInputStream("resources/" + testCase + ".txt");
+		
+		testFile = new BufferedReader(new InputStreamReader(in));
+
+		Thread clientThread = new Thread(clientTest = new ClientTest());
+		clientThread.start();
+		client = clientTest.getClient();
+		Thread.sleep(1000);
+		gameLobby.pressJoin();
+		Thread.sleep(1000);
+		gameLobby.pressStart();
+		
+		String testInput = testFile.readLine();
+		
+		client = clientTest.client;
+		
+		while (testInput != null) {
+			if(testInput.equals("sleep")) {
+				Thread.sleep(500);
+			}
+			else {
+				client.setCurrMove(testInput);
+			}
+			Thread.sleep(500);
+			testInput = testFile.readLine();
+		}
+		in.close();
+		Thread.sleep(1000);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
 		try {
 			test(sentence);
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public static void test(String testCase) throws IOException, InterruptedException {
-		FileInputStream in = new FileInputStream("resources/" + testCase + ".txt");
-		ClientTest client;
-		testFile = new BufferedReader(new InputStreamReader(in));
-		
-		String testInput = testFile.readLine();
-		
-		Thread clientThread = new Thread(client = new ClientTest());
-		clientThread.start();
-		
-		System.out.println("1");
-		GameLobby.pressJoin();
-		Thread.sleep(500);
-		GameLobby.pressStart();
-
-		while (testInput != null) {
-			if(testInput.equals("sleep")) {
-				Thread.sleep(500);
-			}
-			else {
-				client.getClient().setCurrMove(testInput);
-			}
-			Thread.sleep(500);
-			testInput = testFile.readLine();
-		}
-		
-		in.close();
-	}
-	public static void main(String[] args){
-		new TestDriver("testcases");
 	}
 }

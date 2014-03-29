@@ -12,12 +12,12 @@ public class ClientReceive implements Runnable {
 	private int receivePort;
 	private Semaphore semStarting;
 	private static ArrayList<ArrayList<Character>> tileMap;
-	private boolean testing;
-	
-	public ClientReceive(int port, Semaphore semaphore, boolean testing) {
+	private Client client;
+
+	public ClientReceive(int port, Semaphore semaphore, Client client) {
 		receivePort = port + 1;
 		semStarting = semaphore;
-		this.testing = testing;
+		this.client = client;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class ClientReceive implements Runnable {
 		InetAddress group = null;
 		Semaphore newReceive = new Semaphore(0);
 
-		startLobbyLogic(String.valueOf(Client.playerNum).trim());
+		startLobbyLogic(String.valueOf(client.getPlayerNum()).trim());
 
 		// Create multicasting socket for receiving gameview updates
 		try {
@@ -43,14 +43,12 @@ public class ClientReceive implements Runnable {
 			e.printStackTrace();
 		}
 
-		//if(!testing){
-			Thread gameLobbyThread = new Thread(new GameLobby());
-			gameLobbyThread.start();
-		//}
+		Thread gameLobbyThread = new Thread(new GameLobby(client));
+		gameLobbyThread.start();
+		
 		// Start menu, waiting for a client to connect
-		while (Client.startLobby) {
+		while (client.getStartLobby()) {
 			receiveData = new byte[1024];
-			
 			try {
 				receivePacket = new DatagramPacket(receiveData,
 						receiveData.length, group, receivePort);
@@ -62,8 +60,9 @@ public class ClientReceive implements Runnable {
 			}
 			String received = new String(receivePacket.getData()).trim();
 			startLobbyLogic(received);
-
-		}		
+		}
+		System.out.println("Out of game lobby");
+		
 		//Create first instance of game board
 		receiveData = new byte[1024];
 		try {
@@ -78,9 +77,9 @@ public class ClientReceive implements Runnable {
 			e.printStackTrace();	
 		}
 		
-		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, newReceive, Client.getIsPlayer()));
+		Thread gameThread = new Thread(new GameView(tileMap, client.getPlayerNum(), newReceive, client.getIsPlayer(), client));
 		gameThread.start();
-		
+	
 		// continuously receives and prints game board
 		while(true){
 			receiveData = new byte[1024];
@@ -104,13 +103,13 @@ public class ClientReceive implements Runnable {
 	public void startLobbyLogic(String received){
 		if (received.equals("1") || received.equals("2") || received.equals("3")) {
 			//System.out.println("You are player " + Client.playerNum);
-			Client.playerNum = received.toCharArray()[0];
+			client.setPlayerNum(received.toCharArray()[0]);
 			//System.out.println("You are player );
-			Client.keyInputPort = Integer.valueOf(received)+3333;
+			client.setKeyInputPort(Integer.valueOf(received)+3333);
 		}
 		else if (received.equals("4")) {
 			System.out.println("You are player 4, game is now starting");
-			Client.keyInputPort = 3338;
+			client.setKeyInputPort(3338);
 		}
 		else if(received.equals("no players")){
 			semStarting.release();
@@ -118,7 +117,7 @@ public class ClientReceive implements Runnable {
 		}
 		else if(received.equals("starting")){
 			semStarting.release();
-			Client.startLobby = false;
+			client.setStartLobby(false);
 			System.out.println("Game now starting");
 		}
 		else {

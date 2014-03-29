@@ -2,16 +2,15 @@ package client;
 
 public class ClientTest implements Runnable{
 
-	private static Client client;
-	public ClientTest(){
-		client = new Client(true);
-	}
+	public Client client;
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		Thread clientThread = new Thread(client = new Client());
+		clientThread.start();
 	}
 	public Client getClient(){
 		return client;
 	}
-
 }

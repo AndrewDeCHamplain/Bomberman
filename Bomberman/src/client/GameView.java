@@ -25,14 +25,16 @@ public class GameView extends JPanel implements Runnable, Observer{
 	private static JFrame f;
 	private BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
 			spriteDestructible = null, spriteMonster = null;
-	Semaphore newReceived;
+	private Semaphore newReceived;
+	private Client client;
 
-	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore newReceived, boolean isPlayer) {
+	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore newReceived, boolean isPlayer, Client client) {
 		boardArray = args;
 		this.playerNum = playerNum;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
 		this.newReceived = newReceived;
+		this.client = client;
 		if(isPlayer){
 			Keyer keyListener= new Keyer();
 	        keyListener.addObserver(this);
@@ -54,7 +56,8 @@ public class GameView extends JPanel implements Runnable, Observer{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
+		GameLobby.closeLobby();
 		f = new JFrame("Bomberman");
 		f.add(this);
 		f.pack();
@@ -64,20 +67,19 @@ public class GameView extends JPanel implements Runnable, Observer{
 		f.setLocationRelativeTo(null);
 		f.setFocusable(true);
 		f.setVisible(true);
-		//synchronized (this){
+		synchronized (this){
 		while(true){
 			try {
 				newReceived.acquire();
 				boardArray = ClientReceive.getTileMap();
-				validate();
-				repaint();
-				
+				f.validate();
+				f.repaint();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		//}
+		}
 	}
 
 	public static void closeGameView() {
@@ -92,19 +94,19 @@ public class GameView extends JPanel implements Runnable, Observer{
 	public void update(KeyEvent e)
     {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
-			Client.currMove = "right";
+			client.setCurrMove("right");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_A) {
-			Client.currMove = "left";
+			client.setCurrMove("left");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_W) {
-			Client.currMove = "up";
+			client.setCurrMove("up");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_S) {
-			Client.currMove = "down";
+			client.setCurrMove("down");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			Client.currMove = "bomb";
+			client.setCurrMove("bomb");
 		}
     }
 
