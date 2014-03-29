@@ -16,6 +16,7 @@ public class BombFactory implements Runnable{
 		// TODO Auto-generated method stub
 		System.out.println("Bomb placed");
 		int tempx, tempy;
+		//int constx, consty;
 		synchronized (board) {
 			tempx = player.getXPosition();
 			tempy = player.getYPosition();
@@ -36,6 +37,21 @@ public class BombFactory implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		/*
+		while(1){
+			constx = player.getXposition();
+			consty = player.getYposition();
+			if (constx == tempx && consty == tempy)
+			{
+				player.setLives(getLives() - 1);
+				if(player.getLives() == 0)
+				{
+					System.out.println("The player has lost all lives. Game will terminate");
+					//Begin termination sequence code.
+				}
+			}
+		}
+		*/
 		synchronized (board) {
 			board.removeExplosion(tempx, tempy, player);
 			//player.setBombs(player.getBombs()+1);
