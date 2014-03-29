@@ -26,6 +26,7 @@ public class Client implements Runnable{
 	private int sendPort = 3333;
 	private boolean joined = false;
 	private byte[] sendData = new byte[1024];
+	private ClientReceive clientReceive;
 	private Semaphore newReceived = new Semaphore(0);
 
 	/**
@@ -44,7 +45,7 @@ public class Client implements Runnable{
 			e.printStackTrace();
 		}
 
-		Thread receiver = new Thread(new ClientReceive(sendPort, newReceived, this));
+		Thread receiver = new Thread(clientReceive = new ClientReceive(sendPort, newReceived, this));
 		receiver.start();
 		System.out.println("Join game.");
 	}
@@ -106,7 +107,6 @@ public class Client implements Runnable{
 				System.out.println("You are player " + playerNum);
 			}
 			if (currMove.equals("start")) {
-				System.out.println(IPAddress.getHostAddress() + " starting game.");
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, sendPort);
@@ -188,6 +188,9 @@ public class Client implements Runnable{
 	}
 	public void setKeyInputPort(int port){
 		keyInputPort = port;
+	}
+	public ClientReceive getClientReceive(){
+		return clientReceive;
 	}
 	public static void main(String args[]) {
 		Client client = new Client();

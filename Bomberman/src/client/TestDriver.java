@@ -1,60 +1,53 @@
 package client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
 
-public class TestDriver implements Runnable{
+public class TestDriver implements Runnable {
 
-	//The text file containing the test inputs is stored in testFile
-	private static BufferedReader testFile;
+	// The text file containing the test inputs is stored in testFile
 	private String sentence;
-	private Client client;
-	private ClientTest clientTest;
-	private GameLobby gameLobby;
-	
-	public TestDriver(String sentence, GameLobby gameLobby){
+
+	public TestDriver(String sentence) {
 		this.sentence = sentence;
-		this.gameLobby = gameLobby;
+	}
+
+	private void test1() throws InterruptedException, IOException {
+		Thread clientThread = new Thread(new ClientTest("p1t1"));
+		clientThread.start();
+		sleep(500);
+		Thread spectatorThread = new Thread(new SpectatorTest());
+		spectatorThread.start();
+		
 	}
 	
-	public void test(String testCase) throws IOException, InterruptedException {
-		FileInputStream in = new FileInputStream("resources/" + testCase + ".txt");
-		
-		testFile = new BufferedReader(new InputStreamReader(in));
+	private void test2() throws InterruptedException, IOException {
 
-		Thread clientThread = new Thread(clientTest = new ClientTest());
-		clientThread.start();
-		client = clientTest.getClient();
-		Thread.sleep(1000);
-		gameLobby.pressJoin();
-		Thread.sleep(1000);
-		gameLobby.pressStart();
-		
-		String testInput = testFile.readLine();
-		
-		client = clientTest.client;
-		
-		while (testInput != null) {
-			if(testInput.equals("sleep")) {
-				Thread.sleep(500);
-			}
-			else {
-				client.setCurrMove(testInput);
-			}
-			Thread.sleep(500);
-			testInput = testFile.readLine();
-		}
-		in.close();
-		Thread.sleep(1000);
+		Thread clientThread1 = new Thread(new ClientTest("p1t1"));
+		clientThread1.start();
+		sleep(500);
+		Thread clientThread2 = new Thread(new ClientTest("p2t2"));
+		clientThread2.start();
 	}
 
+	private void sleep(int i) {
+		// TODO Auto-generated method stub
+		try {
+			Thread.sleep(i);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			test(sentence);
+			if (sentence.equals("test1")) {
+				test1();
+			}
+			if (sentence.equals("test2")) {
+				test2();
+			}
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

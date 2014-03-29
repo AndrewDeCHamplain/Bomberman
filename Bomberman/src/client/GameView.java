@@ -18,19 +18,21 @@ public class GameView extends JPanel implements Runnable, Observer{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static ArrayList<ArrayList<Character>> boardArray = null;
+	private  ArrayList<ArrayList<Character>> boardArray = null;
 	private char playerNum;
 	private int columnCount;
 	private int rowCount;
-	private static JFrame f;
+	private JFrame f;
 	private BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
 			spriteDestructible = null, spriteMonster = null;
 	private Semaphore newReceived;
 	private Client client;
+	private GameLobby lobby;
 
-	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore newReceived, boolean isPlayer, Client client) {
+	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore newReceived, boolean isPlayer, Client client, GameLobby lobby) {
 		boardArray = args;
 		this.playerNum = playerNum;
+		this.lobby = lobby;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
 		this.newReceived = newReceived;
@@ -57,7 +59,7 @@ public class GameView extends JPanel implements Runnable, Observer{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		GameLobby.closeLobby();
+		lobby.closeLobby();
 		f = new JFrame("Bomberman");
 		f.add(this);
 		f.pack();
@@ -82,7 +84,7 @@ public class GameView extends JPanel implements Runnable, Observer{
 		}
 	}
 
-	public static void closeGameView() {
+	public void closeGameView() {
 		f.setVisible(false);
 		f.dispose(); //Destroy the JFrame object
 	}

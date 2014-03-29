@@ -13,6 +13,7 @@ public class ClientReceive implements Runnable {
 	private Semaphore semStarting;
 	private static ArrayList<ArrayList<Character>> tileMap;
 	private Client client;
+	private GameLobby gameLobby;
 
 	public ClientReceive(int port, Semaphore semaphore, Client client) {
 		receivePort = port + 1;
@@ -43,7 +44,7 @@ public class ClientReceive implements Runnable {
 			e.printStackTrace();
 		}
 
-		Thread gameLobbyThread = new Thread(new GameLobby(client));
+		Thread gameLobbyThread = new Thread(gameLobby = new GameLobby(client));
 		gameLobbyThread.start();
 		
 		// Start menu, waiting for a client to connect
@@ -77,7 +78,7 @@ public class ClientReceive implements Runnable {
 			e.printStackTrace();	
 		}
 		
-		Thread gameThread = new Thread(new GameView(tileMap, client.getPlayerNum(), newReceive, client.getIsPlayer(), client));
+		Thread gameThread = new Thread(new GameView(tileMap, client.getPlayerNum(), newReceive, client.getIsPlayer(), client, gameLobby));
 		gameThread.start();
 	
 		// continuously receives and prints game board
@@ -146,7 +147,9 @@ public class ClientReceive implements Runnable {
 		}
 		return tileMapInternal;
 	}
-
+	public GameLobby getGameLobby(){
+		return gameLobby;
+	}
 	public static ArrayList<ArrayList<Character>> getTileMap() {
 		// TODO Auto-generated method stub
 		return tileMap;

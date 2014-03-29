@@ -19,14 +19,14 @@ public class GameLobby extends JPanel implements Runnable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static JButton readyButton;
-	private static JButton joinButton;
-	private static JButton spectateButton;
+	private JButton readyButton;
+	private JButton joinButton;
+	private JButton spectateButton;
 	private JButton test1Button;
 	private JButton test2Button;
 	private JButton test3Button;
 	private boolean joined;
-	private static JFrame f;
+	private JFrame f;
 	private JPanel adminPanel;
 	private JLabel label;
 	private JTextField textField;
@@ -74,7 +74,7 @@ public class GameLobby extends JPanel implements Runnable {
 		f.setVisible(true);
 	}
 
-	public static void closeLobby() {
+	public void closeLobby() {
 		f.setVisible(false);
 		f.dispose();
 	}
@@ -121,7 +121,7 @@ public class GameLobby extends JPanel implements Runnable {
 		spectateButton.doClick();
 	}
 
-	private class ButtonListener implements ActionListener {
+	protected class ButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
@@ -146,14 +146,15 @@ public class GameLobby extends JPanel implements Runnable {
 				joinButton.setEnabled(false);
 		        readyButton.setEnabled(false);
 		        spectateButton.setEnabled(false);
-				JOptionPane.showMessageDialog(null, String.format("You are a spectator for the next game."));
+				//JOptionPane.showMessageDialog(null, String.format("You are a spectator for the next game."));
 			} else if (e.getSource() == test1Button) {
 				f.setVisible(false);
-				Thread tester = new Thread(new TestDriver("testcases", lobby));
+				Thread tester = new Thread(new TestDriver("test1"));
 				tester.start();
 			} else if (e.getSource() == test2Button) {
-				JOptionPane.showMessageDialog(null,
-						String.format("Starting Test 2 (not really)"));
+				f.setVisible(false);
+				Thread tester2 = new Thread(new TestDriver("test2"));
+				tester2.start();
 			} else if (e.getSource() == test3Button) {
 				JOptionPane.showMessageDialog(null,
 						String.format("Starting Test 3 (not really)"));

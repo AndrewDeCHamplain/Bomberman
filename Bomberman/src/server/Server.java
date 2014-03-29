@@ -121,6 +121,7 @@ public class Server {
 			}
 			if(startGame.equals("start") && numPlayers > 0){
 				numReadyPlayers++;
+				System.out.println(numReadyPlayers+" Players ready");
 				if (numReadyPlayers == numPlayers)
 					starting = true;
 			}

@@ -1,0 +1,17 @@
+sleep
+sleep
+down
+down
+bomb
+up
+up
+right
+right
+right
+bomb
+left
+left
+down
+down
+bomb
+right
