@@ -1,5 +1,3 @@
-join
-start
 sleep
 sleep
 down

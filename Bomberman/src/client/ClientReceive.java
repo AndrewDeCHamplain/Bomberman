@@ -12,10 +12,12 @@ public class ClientReceive implements Runnable {
 	private int receivePort;
 	private Semaphore semStarting;
 	private static ArrayList<ArrayList<Character>> tileMap;
-
-	public ClientReceive(int port, Semaphore semaphore) {
+	private boolean testing;
+	
+	public ClientReceive(int port, Semaphore semaphore, boolean testing) {
 		receivePort = port + 1;
 		semStarting = semaphore;
+		this.testing = testing;
 	}
 
 	@Override
@@ -41,9 +43,10 @@ public class ClientReceive implements Runnable {
 			e.printStackTrace();
 		}
 
-		Thread gameLobbyThread = new Thread(new GameLobby());
-		gameLobbyThread.start();
-
+		//if(!testing){
+			Thread gameLobbyThread = new Thread(new GameLobby());
+			gameLobbyThread.start();
+		//}
 		// Start menu, waiting for a client to connect
 		while (Client.startLobby) {
 			receiveData = new byte[1024];
@@ -60,9 +63,7 @@ public class ClientReceive implements Runnable {
 			String received = new String(receivePacket.getData()).trim();
 			startLobbyLogic(received);
 
-		}
-		System.out.println("Out of game lobby");
-		
+		}		
 		//Create first instance of game board
 		receiveData = new byte[1024];
 		try {
@@ -79,7 +80,7 @@ public class ClientReceive implements Runnable {
 		
 		Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum, newReceive, Client.getIsPlayer()));
 		gameThread.start();
-	
+		
 		// continuously receives and prints game board
 		while(true){
 			receiveData = new byte[1024];

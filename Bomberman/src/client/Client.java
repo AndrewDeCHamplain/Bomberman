@@ -13,7 +13,7 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.Semaphore;
 
-public class Client{
+public class Client implements Runnable{
 
 	static char playerNum = 0;
 	public static boolean startLobby = true;
@@ -25,7 +25,7 @@ public class Client{
 	 * @param args
 	 *            [0] -> port number
 	 */
-	public Client() {
+	public Client(boolean testing) {
 
 		DatagramPacket sendPacket = null;
 		DatagramSocket clientSocket = null, inputSocket = null;
@@ -45,7 +45,7 @@ public class Client{
 			e.printStackTrace();
 		}
 
-		Thread receiver = new Thread(new ClientReceive(sendPort, newReceived));
+		Thread receiver = new Thread(new ClientReceive(sendPort, newReceived, testing));
 		receiver.start();
 		System.out.println("Join game.");
 
@@ -105,7 +105,6 @@ public class Client{
 				System.out.println("You are player " + playerNum);
 			}
 			if (currMove.equals("start")) {
-				System.out.println(IPAddress.getHostAddress() + " starting game.");
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, sendPort);
@@ -164,13 +163,22 @@ public class Client{
 		}
 	}
 
-	public static void setCurrMove(String s) {
+	public static void setCurrMoveStatic(String s) {
+		currMove = s;
+	}
+	public void setCurrMove(String s) {
 		currMove = s;
 	}
 	public static boolean getIsPlayer(){
 		return isPlayer;
 	}
 	public static void main(String args[]) {
-		new Client();
+		new Client(false);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 }

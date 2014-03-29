@@ -54,8 +54,7 @@ public class GameView extends JPanel implements Runnable, Observer{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		GameLobby.closeLobby();
+		// TODO Auto-generated method stub	
 		f = new JFrame("Bomberman");
 		f.add(this);
 		f.pack();
@@ -65,19 +64,20 @@ public class GameView extends JPanel implements Runnable, Observer{
 		f.setLocationRelativeTo(null);
 		f.setFocusable(true);
 		f.setVisible(true);
-		synchronized (this){
+		//synchronized (this){
 		while(true){
 			try {
 				newReceived.acquire();
 				boardArray = ClientReceive.getTileMap();
-				f.validate();
-				f.repaint();
+				validate();
+				repaint();
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		}
+		//}
 	}
 
 	public static void closeGameView() {
