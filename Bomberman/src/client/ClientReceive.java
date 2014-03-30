@@ -82,7 +82,7 @@ public class ClientReceive implements Runnable {
 		gameThread.start();
 	
 		// continuously receives and prints game board
-		while(true){
+		while(client.getInGame()){
 			receiveData = new byte[1024];
 			synchronized(gameThread){
 			try {
@@ -99,18 +99,23 @@ public class ClientReceive implements Runnable {
 			newReceive.release();
 			}
 		}
+		try {
+			gameThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Thread gameOverThread = new Thread(new GameOver(client.getIsWinner()));
+		gameOverThread.start();
+		
 	}
 	
 	public void startLobbyLogic(String received){
-		if (received.equals("1") || received.equals("2") || received.equals("3")) {
+		if (received.equals("1") || received.equals("2") || received.equals("3") || received.equals("4")) {
 			//System.out.println("You are player " + Client.playerNum);
 			client.setPlayerNum(received.toCharArray()[0]);
 			//System.out.println("You are player );
 			client.setKeyInputPort(Integer.valueOf(received)+3333);
-		}
-		else if (received.equals("4")) {
-			System.out.println("You are player 4, game is now starting");
-			client.setKeyInputPort(3338);
 		}
 		else if(received.equals("no players")){
 			semStarting.release();

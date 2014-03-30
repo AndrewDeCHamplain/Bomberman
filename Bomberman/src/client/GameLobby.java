@@ -51,7 +51,6 @@ public class GameLobby extends JPanel implements Runnable {
 		readyButton.addActionListener(new ButtonListener());
 		spectateButton.addActionListener(new ButtonListener());
 		add(joinButton);
-		//add(startButton);
 		add(spectateButton);
 	}
 

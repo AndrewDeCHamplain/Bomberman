@@ -12,24 +12,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class GameView extends JPanel implements Runnable, Observer{
+public class GameView extends JPanel implements Runnable, Observer {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private  ArrayList<ArrayList<Character>> boardArray = null;
+	private ArrayList<ArrayList<Character>> boardArray = null;
 	private char playerNum;
 	private int columnCount;
 	private int rowCount;
 	private JFrame f;
-	private BufferedImage spriteDown = null, spriteBomb = null, spriteExplosionYellow = null,
-			spriteDestructible = null, spriteMonster = null;
+	private BufferedImage spriteDown = null, spriteBomb = null,
+			spriteExplosionYellow = null, spriteDestructible = null,
+			spriteMonster = null;
 	private Semaphore newReceived;
 	private Client client;
 	private GameLobby lobby;
 
-	public GameView(ArrayList<ArrayList<Character>> args, char playerNum, Semaphore newReceived, boolean isPlayer, Client client, GameLobby lobby) {
+	public GameView(ArrayList<ArrayList<Character>> args, char playerNum,
+			Semaphore newReceived, boolean isPlayer, Client client,
+			GameLobby lobby) {
 		boardArray = args;
 		this.playerNum = playerNum;
 		this.lobby = lobby;
@@ -37,18 +40,20 @@ public class GameView extends JPanel implements Runnable, Observer{
 		rowCount = boardArray.size() - 1;
 		this.newReceived = newReceived;
 		this.client = client;
-		if(isPlayer){
-			Keyer keyListener= new Keyer();
-	        keyListener.addObserver(this);
-	        setFocusable(true);
-	        requestFocusInWindow();
-	        addKeyListener(keyListener);
+		if (isPlayer) {
+			Keyer keyListener = new Keyer();
+			keyListener.addObserver(this);
+			setFocusable(true);
+			requestFocusInWindow();
+			addKeyListener(keyListener);
 		}
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
 			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
-			spriteExplosionYellow = ImageIO.read(new File("resources/bmanExplosionYellow.png"));
-			spriteDestructible = ImageIO.read(new File("resources/bmanDestructible.png"));
+			spriteExplosionYellow = ImageIO.read(new File(
+					"resources/bmanExplosionYellow.png"));
+			spriteDestructible = ImageIO.read(new File(
+					"resources/bmanDestructible.png"));
 			spriteMonster = ImageIO.read(new File("resources/bmanMonster.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -69,32 +74,45 @@ public class GameView extends JPanel implements Runnable, Observer{
 		f.setLocationRelativeTo(null);
 		f.setFocusable(true);
 		f.setVisible(true);
-		synchronized (this){
-		while(true){
-			try {
-				newReceived.acquire();
-				boardArray = ClientReceive.getTileMap();
-				f.validate();
-				f.repaint();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		synchronized (this) {
+			while (true) {
+				try {
+					newReceived.acquire();
+					boardArray = ClientReceive.getTileMap();
+					char temp = boardArray.get(0).get(0);
+					if (temp == playerNum) {
+						client.setIsWinner(true);
+						client.setInGame(false);
+						break;
+					}
+					if (temp == '1' || temp == '2' || temp == '3'
+							|| temp == '4') {
+						client.setWinner(Integer.valueOf(temp));
+						client.setInGame(false);
+						break;
+					}
+					f.validate();
+					f.repaint();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-		}
 		}
 	}
 
 	public void closeGameView() {
 		f.setVisible(false);
-		f.dispose(); //Destroy the JFrame object
+		f.dispose(); // Destroy the JFrame object
 	}
+
 	@Override
 	public void addNotify() {
-        super.addNotify();
-        requestFocus();
-    }
-	public void update(KeyEvent e)
-    {
+		super.addNotify();
+		requestFocus();
+	}
+
+	public void update(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
 			client.setCurrMove("right");
 		}
@@ -110,7 +128,7 @@ public class GameView extends JPanel implements Runnable, Observer{
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 			client.setCurrMove("bomb");
 		}
-    }
+	}
 
 	@Override
 	public Dimension getPreferredSize() {
@@ -121,11 +139,12 @@ public class GameView extends JPanel implements Runnable, Observer{
 		super.paintComponent(g);
 		// this.setBackground(new Color(30, 150, 30));
 		Graphics2D g2d = (Graphics2D) g.create();
-		List<Rectangle> cells = new ArrayList<>(columnCount * rowCount);;
+		List<Rectangle> cells = new ArrayList<>(columnCount * rowCount);
+		;
 
 		int width = getWidth();
 		int height = getHeight();
-	
+
 		int cellWidth = width / columnCount;
 		int cellHeight = height / rowCount;
 
@@ -148,27 +167,28 @@ public class GameView extends JPanel implements Runnable, Observer{
 
 				Rectangle cell = cells.get(row + (col * columnCount));
 				char temp = boardArray.get(row).get(col);
-				if (temp == '1' || temp == '2' || temp == '3' || temp == '4' || temp == 'c') {
+				if (temp == '1' || temp == '2' || temp == '3' || temp == '4'
+						|| temp == 'c') {
 					// g2d.setColor(new Color(200, 180, 160));
 					// g2d.fill(cell);
 					g.drawImage(spriteDown, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
-				} else if (temp == 'd'){ // destructible
-					g.drawImage(spriteDestructible, col * cellWidth, row * cellHeight,
-							cellWidth, cellHeight, null);
-				} else if (temp == 'e'){ // explosion
-					g.drawImage(spriteExplosionYellow, col * cellWidth, row * cellHeight,
-							cellWidth, cellHeight, null);
-				} else if (temp == 'm'){ // monster
-					g.drawImage(spriteMonster, col * cellWidth, row * cellHeight,
-							cellWidth, cellHeight, null);
-				} else if (temp == 'b'){ // bomb
+				} else if (temp == 'd') { // destructible
+					g.drawImage(spriteDestructible, col * cellWidth, row
+							* cellHeight, cellWidth, cellHeight, null);
+				} else if (temp == 'e') { // explosion
+					g.drawImage(spriteExplosionYellow, col * cellWidth, row
+							* cellHeight, cellWidth, cellHeight, null);
+				} else if (temp == 'm') { // monster
+					g.drawImage(spriteMonster, col * cellWidth, row
+							* cellHeight, cellWidth, cellHeight, null);
+				} else if (temp == 'b') { // bomb
 					g.drawImage(spriteBomb, col * cellWidth, row * cellHeight,
 							cellWidth, cellHeight, null);
-				} else if (temp == 'x'){
+				} else if (temp == 'x') {
 					// g2d.setColor(new Color(200, 180, 160));
 					// g2d.fill(cell);
-				} else if (temp == 'w'){
+				} else if (temp == 'w') {
 					g2d.setColor(Color.GRAY);
 					g2d.fill(cell);
 				}

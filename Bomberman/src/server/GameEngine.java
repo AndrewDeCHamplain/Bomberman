@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 
 public class GameEngine implements Runnable {
 	private static GameBoard board;
-	private int numPlayers;
+	private int numPlayers, currPlayers;
 	private Player player1 = null, player2 = null, player3 = null,
 			player4 = null;
 	private int[] alive = { 1, 1, 1, 1 };
@@ -16,6 +16,7 @@ public class GameEngine implements Runnable {
 		board = new GameBoard(1);
 		this.numPlayers = numPlayers;
 		semNewMessage = semaphore;
+		currPlayers = this.numPlayers;
 		// currentBoard = board.getBoardArray();
 	}
 
@@ -32,6 +33,9 @@ public class GameEngine implements Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			if(currPlayers == 0){
+				break;
 			}
 			synchronized (command) {
 				String[] parts = command.split(",");
@@ -146,6 +150,7 @@ public class GameEngine implements Runnable {
 			}
 		}
 		System.out.println("Game over");
+		board.placeElement(0,0, getWinner());
 	}
 
 	public static char[][] getGameBoard() {
@@ -203,8 +208,11 @@ public class GameEngine implements Runnable {
 				player.setLives(player.getLives() - 1);
 				if(player.getLives() > 0)
 					player.setX(player.getXPosition() + 1);
-				else board.placeFloor(player.getXPosition(),
-						player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition(),player.getYPosition());
+					currPlayers--;
+				}
+						
 				board.setExplosion(player.getXPosition(), player.getYPosition());
 				
 				if (board.getBoardArrayElement(player.getXPosition() - 1,
@@ -247,8 +255,11 @@ public class GameEngine implements Runnable {
 				player.setLives(player.getLives() - 1);
 				if(player.getLives() > 0)
 					player.setX(player.getXPosition() - 1);
-				else board.placeFloor(player.getXPosition(),
+				else {
+					board.placeFloor(player.getXPosition(),
 						player.getYPosition());
+					currPlayers--;
+				}
 				board.setExplosion(player.getXPosition(), player.getYPosition());
 				if (board.getBoardArrayElement(player.getXPosition() + 1,
 						player.getYPosition()) == 'b'
@@ -291,8 +302,11 @@ public class GameEngine implements Runnable {
 				player.setLives(player.getLives() - 1);
 				if(player.getLives() > 0)
 					player.setY(player.getYPosition() + 1);
-				else board.placeFloor(player.getXPosition(),
+				else {
+					board.placeFloor(player.getXPosition(),
 						player.getYPosition());
+					currPlayers--;
+				}
 				board.setExplosion(player.getXPosition(), player.getYPosition());
 				if (board.getBoardArrayElement(player.getXPosition() - 1,
 						player.getYPosition()) == 'b'
@@ -332,8 +346,11 @@ public class GameEngine implements Runnable {
 				player.setLives(player.getLives() - 1);
 				if(player.getLives() > 0)
 					player.setY(player.getYPosition() - 1);
-				else board.placeFloor(player.getXPosition(),
+				else {
+					board.placeFloor(player.getXPosition(),
 						player.getYPosition());
+					currPlayers--;
+				}
 				board.setExplosion(player.getXPosition(), player.getYPosition());
 				if (board.getBoardArrayElement(player.getXPosition() + 1,
 						player.getYPosition()) == 'b'
@@ -347,5 +364,16 @@ public class GameEngine implements Runnable {
 				}
 			}
 		}
+	}
+	private char getWinner(){
+		if(player1.getLives() > 0)
+			return '1';
+		else if(player2.getLives()>0)
+			return '2';
+		else if(player3.getLives()>0)
+			return '3';
+		else if(player4.getLives()>0)
+			return '4';
+		else return '0';
 	}
 }

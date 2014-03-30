@@ -76,4 +76,7 @@ public class GameBoard {
 	public int getBoardX(){
 		return boardArray[0].length;
 	}
+	public void placeElement(int x, int y, char i) {
+		boardArray[x][y] = i;
+	}
 }

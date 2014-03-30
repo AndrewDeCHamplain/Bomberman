@@ -16,25 +16,27 @@ import java.util.concurrent.Semaphore;
 public class Client implements Runnable{
 
 	private char playerNum = 0;
-	private boolean startLobby = true;
-	private int keyInputPort;
+	private int keyInputPort, winner;
 	private String currMove = "";
-	private boolean isPlayer;
 	private DatagramPacket sendPacket = null;
 	private DatagramSocket clientSocket = null, inputSocket = null;
 	private InetAddress IPAddress = null;
 	private int sendPort = 3333;
-	private boolean joined = false;
 	private byte[] sendData = new byte[1024];
 	private ClientReceive clientReceive;
 	private Semaphore newReceived = new Semaphore(0);
+	private boolean isWinner, inGame, isPlayer, joined, startLobby;
 
 	/**
 	 * @param args
 	 *            [0] -> port number
 	 */
 	public Client() {
-
+		isWinner = false;
+		inGame = false;
+		joined = false;
+		startLobby = true;
+		winner = 0;
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -128,6 +130,7 @@ public class Client implements Runnable{
 		
 		// No longer in startLobby
 		clientSocket.close();
+		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
 			IPAddress = InetAddress.getByName("localhost");
@@ -139,7 +142,7 @@ public class Client implements Runnable{
 
 		System.out.println("Client: KeyInputPort: " + keyInputPort);
 		System.out.println("Waiting for key presses");
-		while (true) {
+		while (inGame) {
 			sendData = new byte[1024];
 
 			try {
@@ -163,6 +166,12 @@ public class Client implements Runnable{
 				currMove = "";
 			}
 		}
+	}
+	public void setWinner(int w){
+		winner = w;
+	}
+	public int getWinner(){
+		return winner;
 	}
 	public char getPlayerNum(){
 		return playerNum;
@@ -188,6 +197,20 @@ public class Client implements Runnable{
 	}
 	public void setKeyInputPort(int port){
 		keyInputPort = port;
+	}
+	public void setIsWinner(boolean b) {
+		// TODO Auto-generated method stub
+		isWinner = b;
+	}
+	public boolean getIsWinner() {
+		// TODO Auto-generated method stub
+		return isWinner;
+	}
+	public boolean getInGame(){
+		return inGame;
+	}
+	public void setInGame(boolean b){
+		inGame = b;
 	}
 	public ClientReceive getClientReceive(){
 		return clientReceive;
