@@ -34,7 +34,7 @@ public class GameEngine implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(currPlayers == 0){
+			if (currPlayers == 0) {
 				break;
 			}
 			synchronized (command) {
@@ -150,7 +150,8 @@ public class GameEngine implements Runnable {
 			}
 		}
 		System.out.println("Game over");
-		board.placeElement(0,0, getWinner());
+		board.placeElement(0, 0, getWinner());
+		System.out.println(board.getBoardArrayElement(0, 0));
 	}
 
 	public static char[][] getGameBoard() {
@@ -206,15 +207,16 @@ public class GameEngine implements Runnable {
 			if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'e') {
 				player.setLives(player.getLives() - 1);
-				if(player.getLives() > 0)
+				if (player.getLives() > 0)
 					player.setX(player.getXPosition() + 1);
 				else {
-					board.placeFloor(player.getXPosition(),player.getYPosition());
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition());
 					currPlayers--;
 				}
-						
+
 				board.setExplosion(player.getXPosition(), player.getYPosition());
-				
+
 				if (board.getBoardArrayElement(player.getXPosition() - 1,
 						player.getYPosition()) == 'b'
 						|| board.getBoardArrayElement(
@@ -253,11 +255,11 @@ public class GameEngine implements Runnable {
 			if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'e') {
 				player.setLives(player.getLives() - 1);
-				if(player.getLives() > 0)
+				if (player.getLives() > 0)
 					player.setX(player.getXPosition() - 1);
 				else {
 					board.placeFloor(player.getXPosition(),
-						player.getYPosition());
+							player.getYPosition());
 					currPlayers--;
 				}
 				board.setExplosion(player.getXPosition(), player.getYPosition());
@@ -300,11 +302,11 @@ public class GameEngine implements Runnable {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
 				player.setLives(player.getLives() - 1);
-				if(player.getLives() > 0)
+				if (player.getLives() > 0)
 					player.setY(player.getYPosition() + 1);
 				else {
 					board.placeFloor(player.getXPosition(),
-						player.getYPosition());
+							player.getYPosition());
 					currPlayers--;
 				}
 				board.setExplosion(player.getXPosition(), player.getYPosition());
@@ -344,11 +346,11 @@ public class GameEngine implements Runnable {
 			if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'e') {
 				player.setLives(player.getLives() - 1);
-				if(player.getLives() > 0)
+				if (player.getLives() > 0)
 					player.setY(player.getYPosition() - 1);
 				else {
 					board.placeFloor(player.getXPosition(),
-						player.getYPosition());
+							player.getYPosition());
 					currPlayers--;
 				}
 				board.setExplosion(player.getXPosition(), player.getYPosition());
@@ -365,15 +367,33 @@ public class GameEngine implements Runnable {
 			}
 		}
 	}
-	private char getWinner(){
-		if(player1.getLives() > 0)
-			return '1';
-		else if(player2.getLives()>0)
-			return '2';
-		else if(player3.getLives()>0)
-			return '3';
-		else if(player4.getLives()>0)
-			return '4';
-		else return '0';
+
+	private char getWinner() {
+		if (numPlayers == 1) {
+			if (player1.getLives() > 0)
+				return '1';
+		} else if (numPlayers == 2) {
+			if (player1.getLives() > 0)
+				return '1';
+			else if (player2.getLives() > 0)
+				return '2';
+		} else if (numPlayers == 3) {
+			if (player1.getLives() > 0)
+				return '1';
+			else if (player2.getLives() > 0)
+				return '2';
+			else if (player3.getLives() > 0)
+				return '3';
+		} else if (numPlayers == 4) {
+			if (player1.getLives() > 0)
+				return '1';
+			else if (player2.getLives() > 0)
+				return '2';
+			else if (player3.getLives() > 0)
+				return '3';
+			else if (player4.getLives() > 0)
+				return '4';
+		}
+		return '0';
 	}
 }

@@ -21,6 +21,8 @@ public class Server {
 	private static String arrayString = null;
 	private static InetAddress group = null;
 	private static MulticastSocket multicastSocket = null;
+	private static boolean inGame, tooManyPlayers;
+	private Thread inputThread1, inputThread2, inputThread3, inputThread4;
 
 	/**
 	 * @param args
@@ -30,7 +32,8 @@ public class Server {
 		// TODO Auto-generated method stub
 
 		DatagramSocket serverSocket = null;
-
+		inGame = true;
+		tooManyPlayers = false;
 		DatagramPacket receivePacket = null;
 		DatagramPacket sendPacket = null;
 		int port1 = 3333;
@@ -76,7 +79,7 @@ public class Server {
 			if (startGame.equals("join")) {
 				numPlayers++;
 				if (numPlayers >= 4) {
-					starting = true;
+					tooManyPlayers = true;
 				}
 				// get address from who sent packet
 				IPAddress = receivePacket.getAddress();
@@ -85,10 +88,23 @@ public class Server {
 				int port = receivePacket.getPort();
 
 				// create new server thread to handle new clients inputs
-				Thread inputThread = new Thread(new ServerInputThread(
-						getNextPort(numPlayers), numPlayers, semaphore));
-				inputThread.start();
-
+				if (numPlayers == 1) {
+					inputThread1 = new Thread(new ServerInputThread(
+							getNextPort(numPlayers), numPlayers, semaphore));
+					inputThread1.start();
+				} else if (numPlayers == 2) {
+					inputThread2 = new Thread(new ServerInputThread(
+							getNextPort(numPlayers), numPlayers, semaphore));
+					inputThread2.start();
+				} else if (numPlayers == 3) {
+					inputThread3 = new Thread(new ServerInputThread(
+							getNextPort(numPlayers), numPlayers, semaphore));
+					inputThread3.start();
+				} else if (numPlayers == 4) {
+					inputThread4 = new Thread(new ServerInputThread(
+							getNextPort(numPlayers), numPlayers, semaphore));
+					inputThread4.start();
+				}
 				String temp = String.valueOf(numPlayers);
 				sendData = temp.getBytes();
 
@@ -124,8 +140,10 @@ public class Server {
 			if (startGame.equals("start") && numPlayers > 0) {
 				numReadyPlayers++;
 				System.out.println(numReadyPlayers + " Players ready");
-				if (numReadyPlayers == numPlayers)
+				if (numReadyPlayers == numPlayers){
 					starting = true;
+					inGame = true;
+				}
 			}
 		}
 		serverSocket.close(); // server no longer receives any data
@@ -162,7 +180,6 @@ public class Server {
 			e.printStackTrace();
 		}
 		final Semaphore semGameDone = new Semaphore(0);
-
 		ScheduledExecutorService ses = Executors
 				.newSingleThreadScheduledExecutor();
 		ses.scheduleAtFixedRate(new Runnable() {
@@ -183,19 +200,61 @@ public class Server {
 						e.printStackTrace();
 					}
 					char temp = GameEngine.getGameBoard()[0][0];
-					if (temp == '1' || temp == '2' || temp == '3'
-							|| temp == '4')
+					if (temp == '0' || temp == '1' || temp == '2'
+							|| temp == '3' || temp == '4')
 						semGameDone.release();
 				}
 			}
 		}, 0, 32, TimeUnit.MILLISECONDS); // sends gameboard at 30 FPS
 		try {
 			semGameDone.acquire();
+			inGame = false;
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ses.shutdown();
+		try {
+			engineThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (numPlayers == 1) {
+			try {
+				inputThread1.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (numPlayers == 2) {
+			try {
+				inputThread1.join();
+				inputThread2.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (numPlayers == 3) {
+			try {
+				inputThread1.join();
+				inputThread2.join();
+				inputThread3.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (numPlayers == 4) {
+			try {
+				inputThread1.join();
+				inputThread2.join();
+				inputThread3.join();
+				inputThread4.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static int getNextPort(int numPlayers) {
@@ -221,6 +280,13 @@ public class Server {
 			arrayString = arrayString + "|";
 		}
 		return arrayString;
+	}
+
+	public static boolean getInGame() {
+		return inGame;
+	}
+	public static boolean getTooManyPlayers() {
+		return tooManyPlayers;
 	}
 
 	public static void main(String[] args) {

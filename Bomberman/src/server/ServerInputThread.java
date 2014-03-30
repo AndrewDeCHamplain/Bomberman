@@ -32,7 +32,8 @@ public class ServerInputThread implements Runnable {
 			serverSocket.close();
 			e.printStackTrace();
 		}
-		while (true) {
+
+		while (Server.getInGame()) {
 			receivedData = new byte[1024];
 			receivePacket = new DatagramPacket(receivedData,
 					receivedData.length);
