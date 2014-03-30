@@ -36,7 +36,8 @@ public class GameLobby extends JPanel implements Runnable {
 	public GameLobby(Client client) {
 		this.client = client;
 		try {
-			lobbyBackground = ImageIO.read(new File("resources/lobbyBackground.png"));
+			lobbyBackground = ImageIO.read(new File(
+					"resources/lobbyBackground.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,13 +59,12 @@ public class GameLobby extends JPanel implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		f = new JFrame("Bomberman");
-		f.setSize(300, 300);
+		//f.setSize(800, 800);
 		d = this;
 		f.add(d, BorderLayout.NORTH);
 		graphicPanel = new JPanel();
 		graphicPanel.add(backgroundLabel);
 		f.add(graphicPanel, BorderLayout.SOUTH);
-
 		f.pack();
 		f.setResizable(false);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -92,6 +92,16 @@ public class GameLobby extends JPanel implements Runnable {
 		spectateButton.doClick();
 	}
 
+	public void makeMessageDialog(String s) {
+		JOptionPane.showMessageDialog(null,s);
+		removeAll();
+		add(joinButton);
+		add(spectateButton);
+		joinButton.setEnabled(false);
+		invalidate();
+		validate();
+	}
+
 	protected class ButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -110,15 +120,16 @@ public class GameLobby extends JPanel implements Runnable {
 				spectateButton.setEnabled(false);
 				invalidate();
 				validate();
-				
+
 			} else if (e.getSource() == readyButton) {
 				client.setCurrMove("start");
 			} else if (e.getSource() == spectateButton) {
 				joinButton.setEnabled(false);
-		        readyButton.setEnabled(false);
-		        spectateButton.setEnabled(false);
-				//JOptionPane.showMessageDialog(null, String.format("You are a spectator for the next game."));
-			} 
+				readyButton.setEnabled(false);
+				spectateButton.setEnabled(false);
+				// JOptionPane.showMessageDialog(null,
+				// String.format("You are a spectator for the next game."));
+			}
 		}
 	}
 }

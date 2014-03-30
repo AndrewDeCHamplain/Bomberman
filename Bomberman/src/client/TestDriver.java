@@ -38,7 +38,12 @@ public class TestDriver{
 					e.printStackTrace();
 				}
 			}else if(s.equals("test3")){
-				
+				try {
+					test3();
+				} catch (InterruptedException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}else if(s.equals("test4")){
 				
 			}else if(s.equals("test5")){
@@ -71,6 +76,21 @@ public class TestDriver{
 		sleep(500);
 		Thread clientThread2 = new Thread(new ClientTest("p2t2"));
 		clientThread2.start();
+	}
+	
+	private void test3() throws InterruptedException, IOException {
+
+		Thread clientThread1 = new Thread(new ClientTest("p1t1"));
+		clientThread1.start();
+		sleep(500);
+		Thread clientThread2 = new Thread(new ClientTest("p2t2"));
+		clientThread2.start();
+		sleep(500);
+		Thread clientThread3 = new Thread(new ClientTest("p1t1"));
+		clientThread3.start();
+		sleep(500);
+		Thread clientThread4 = new Thread(new ClientTest("p2t2"));
+		clientThread4.start();
 	}
 
 	private void sleep(int i) {

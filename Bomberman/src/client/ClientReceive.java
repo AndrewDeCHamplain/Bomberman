@@ -30,7 +30,6 @@ public class ClientReceive implements Runnable {
 		InetAddress group = null;
 		Semaphore newReceive = new Semaphore(0);
 
-		startLobbyLogic(String.valueOf(client.getPlayerNum()).trim());
 
 		// Create multicasting socket for receiving gameview updates
 		try {
@@ -99,15 +98,6 @@ public class ClientReceive implements Runnable {
 			newReceive.release();
 			}
 		}
-		try {
-			gameThread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Thread gameOverThread = new Thread(new GameOver(client.getIsWinner()));
-		gameOverThread.start();
-		
 	}
 	
 	public void startLobbyLogic(String received){
@@ -117,9 +107,9 @@ public class ClientReceive implements Runnable {
 			//System.out.println("You are player );
 			client.setKeyInputPort(Integer.valueOf(received)+3333);
 		}
-		else if(received.equals("no players")){
-			semStarting.release();
-			System.out.println("Not enough players to start");
+		else if(received.equals("full")){
+			client.setIsFull(true);
+			gameLobby.makeMessageDialog(String.format("Game is full, you may still spectate though"));
 		}
 		else if(received.equals("starting")){
 			semStarting.release();

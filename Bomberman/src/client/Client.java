@@ -25,8 +25,8 @@ public class Client implements Runnable{
 	private byte[] sendData = new byte[1024];
 	private ClientReceive clientReceive;
 	private Semaphore newReceived = new Semaphore(0);
-	private boolean isWinner, inGame, isPlayer, joined, startLobby;
-
+	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
+	private Thread receiver;
 	/**
 	 * @param args
 	 *            [0] -> port number
@@ -37,17 +37,18 @@ public class Client implements Runnable{
 		joined = false;
 		startLobby = true;
 		winner = 0;
+		isFull = false;
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("localhost");
+			IPAddress = InetAddress.getByName("127.0.0.1");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			clientSocket.close();
 			e.printStackTrace();
 		}
 
-		Thread receiver = new Thread(clientReceive = new ClientReceive(sendPort, newReceived, this));
+		receiver = new Thread(clientReceive = new ClientReceive(sendPort, newReceived, this));
 		receiver.start();
 		System.out.println("Join game.");
 	}
@@ -95,7 +96,13 @@ public class Client implements Runnable{
 					clientSocket.close();
 					e1.printStackTrace();
 				}
-				playerNum = (new String(receivePacket.getData())).charAt(0);
+				if(new String(receivePacket.getData()).equals("full")){
+					isFull = true;
+					System.out.println("Game Full");
+				}else {
+					playerNum = (new String(receivePacket.getData())).charAt(0);
+					System.out.println("You are player " + playerNum);
+				}
 
 				if (playerNum == '1')
 					keyInputPort = 3335;
@@ -103,10 +110,10 @@ public class Client implements Runnable{
 					keyInputPort = 3336;
 				else if (playerNum == '3')
 					keyInputPort = 3337;
-				else
+				else if(playerNum == '4')
 					keyInputPort = 3338;
 				currMove = "";
-				System.out.println("You are player " + playerNum);
+				
 			}
 			if (currMove.equals("start")) {
 				sendData = currMove.getBytes();
@@ -133,7 +140,7 @@ public class Client implements Runnable{
 		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("localhost");
+			IPAddress = InetAddress.getByName("127.0.0.1");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			inputSocket.close();
@@ -142,7 +149,7 @@ public class Client implements Runnable{
 
 		System.out.println("Client: KeyInputPort: " + keyInputPort);
 		System.out.println("Waiting for key presses");
-		while (inGame) {
+		while (true) {
 			sendData = new byte[1024];
 
 			try {
@@ -151,7 +158,21 @@ public class Client implements Runnable{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
+			if(!inGame){
+				String temp = "reset";
+				sendData = temp.getBytes();
+				sendPacket = new DatagramPacket(sendData, sendData.length,
+						IPAddress, keyInputPort);
+				try {
+					inputSocket.send(sendPacket);
+					inputSocket.send(sendPacket);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					inputSocket.close();
+					e.printStackTrace();
+				}
+				break;
+			}
 			if (currMove != "") {
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
@@ -166,9 +187,24 @@ public class Client implements Runnable{
 				currMove = "";
 			}
 		}
+		Thread overThread = new Thread(new GameOver(winner, playerNum));
+		overThread.start();
+		try {
+			overThread.join();
+			inputSocket.close();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public void setWinner(int w){
 		winner = w;
+	}
+	public void setIsFull(boolean b){
+		isFull = b;
+	}
+	public boolean getIsFull(){
+		return isFull;
 	}
 	public int getWinner(){
 		return winner;
@@ -216,8 +252,10 @@ public class Client implements Runnable{
 		return clientReceive;
 	}
 	public static void main(String args[]) {
-		Client client = new Client();
-		client.game();
+		while(true){
+			Client client = new Client();
+			client.game();
+		}
 	}
 	@Override
 	public void run() {

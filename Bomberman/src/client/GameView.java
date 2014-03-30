@@ -75,24 +75,30 @@ public class GameView extends JPanel implements Runnable, Observer {
 		f.setFocusable(true);
 		f.setVisible(true);
 		synchronized (this) {
-			while (true) {
+			try {
+				newReceived.acquire();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			while (client.getInGame()) {
 				try {
-					newReceived.acquire();
 					boardArray = ClientReceive.getTileMap();
 					char temp = boardArray.get(0).get(0);
 					if (temp == playerNum) {
 						client.setIsWinner(true);
 						client.setInGame(false);
-						break;
+						closeGameView();
 					}
-					if (temp == '1' || temp == '2' || temp == '3'
+					else if (temp == '0' || temp == '1' || temp == '2' || temp == '3'
 							|| temp == '4') {
 						client.setWinner(Integer.valueOf(temp));
 						client.setInGame(false);
-						break;
+						closeGameView();
 					}
 					f.validate();
 					f.repaint();
+					newReceived.acquire();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
