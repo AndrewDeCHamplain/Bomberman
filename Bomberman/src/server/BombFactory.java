@@ -6,12 +6,23 @@ public class BombFactory implements Runnable{
 	private Player player;
 	private GameBoard board;
 	
+	/**
+	 * Assigns paramaters to the variables intialized in the field.
+	 * @param player, Player
+	 * @param board, GameBoard
+	 */
 	BombFactory(Player player, GameBoard board){
 		this.player = player;
 		this.board = board;
 	}
 
 	@Override
+	/**
+	 * Places bomb at specific x and y position on the gameboard
+	 * wherever the players position is current. Shows the gif for the bomb
+	 * exploding and then removes the gif after a certain amount
+	 * of time having elapsed.
+	 */
 	public void run() {
 		// TODO Auto-generated method stub
 		System.out.println("Bomb placed");
