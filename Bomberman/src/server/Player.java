@@ -5,6 +5,7 @@ public class Player {
 	private int x, y, lives, bombs; 
 	private char playerNumber;
 	private String prevMove;
+	private boolean playerStatus;
 
 	Player(int x,int y,char num){
 		this.x = x;
@@ -13,6 +14,7 @@ public class Player {
 		lives = 2;
 		bombs = 1;
 		prevMove = "";
+		playerStatus = true;
 	}
 	
 	public char getPlayerNum(){
@@ -36,6 +38,9 @@ public class Player {
 	public int getLives(){
 		return lives;
 	}
+	public boolean getPlayerStatus() {
+		return playerStatus;
+	}
 	public void setX(int x){
 		this.x=x;
 	}
@@ -53,5 +58,8 @@ public class Player {
 	}
 	public void setBombs(int bombs){
 		this.bombs = bombs;
+	}
+	public void setPlayerStatus(boolean status) {
+		playerStatus = status;
 	}
 }

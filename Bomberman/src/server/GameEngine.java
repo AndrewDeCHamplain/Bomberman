@@ -7,7 +7,7 @@ public class GameEngine implements Runnable {
 	private int numPlayers;
 	private Player player1 = null, player2 = null, player3 = null,
 			player4 = null;
-	private int[] alive = {1,1,1,1};
+	private int[] alive = { 1, 1, 1, 1 };
 	// private static char[][] currentBoard;
 	public static String command = "0,0";
 	Semaphore semNewMessage;
@@ -18,13 +18,14 @@ public class GameEngine implements Runnable {
 		semNewMessage = semaphore;
 		// currentBoard = board.getBoardArray();
 	}
+
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
 		for (int i = 0; i < numPlayers; i++) {
 			makePlayer(i);
 		}
-		
+
 		while (true) {
 			try {
 				semNewMessage.acquire();
@@ -57,8 +58,8 @@ public class GameEngine implements Runnable {
 							placeBomb(player1);
 						}
 						board.placePlayer(player1);
-					}
-					else alive[0] = 0;
+					} else
+						alive[0] = 0;
 				}
 				if (parts[1].equals("2")) {
 					if (player2.getLives() > 0) {
@@ -83,8 +84,8 @@ public class GameEngine implements Runnable {
 							placeBomb(player2);
 						}
 						board.placePlayer(player1);
-					}
-					else alive[1] = 0;
+					} else
+						alive[1] = 0;
 				}
 				if (parts[1].equals("3")) {
 					if (player3.getLives() > 0) {
@@ -109,8 +110,8 @@ public class GameEngine implements Runnable {
 							placeBomb(player3);
 						}
 						board.placePlayer(player1);
-					}
-					else alive[2] = 0;
+					} else
+						alive[2] = 0;
 				}
 				if (parts[1].equals("4")) {
 					if (player4.getLives() > 0) {
@@ -135,10 +136,11 @@ public class GameEngine implements Runnable {
 							placeBomb(player4);
 						}
 						board.placePlayer(player1);
-					}
-					else alive[3] = 0;
+					} else
+						alive[3] = 0;
 				}
-				if (alive[0] == 0 && alive[1] == 0 && alive[2] == 0 && alive[3] == 0)
+				if (alive[0] == 0 && alive[1] == 0 && alive[2] == 0
+						&& alive[3] == 0)
 					break;
 				command = "0,0";
 			}
@@ -176,148 +178,174 @@ public class GameEngine implements Runnable {
 	}
 
 	private void movePlayerDown(Player player) {
-		if (board.getBoardArrayElement(player.getXPosition() + 1,
-				player.getYPosition()) == 'f'
-				|| board.getBoardArrayElement(player.getXPosition() + 1,
-						player.getYPosition()) == 'x') {
-			player.setX(player.getXPosition() + 1);
-			board.placePlayer(player);
+		if (player.getPlayerStatus()) {
+			if (board.getBoardArrayElement(player.getXPosition() + 1,
+					player.getYPosition()) == 'f'
+					|| board.getBoardArrayElement(player.getXPosition() + 1,
+							player.getYPosition()) == 'x') {
+				player.setX(player.getXPosition() + 1);
+				board.placePlayer(player);
 
-			if (board.getBoardArrayElement(player.getXPosition() - 1,
-					player.getYPosition()) == 'c'
-					|| board.getBoardArrayElement(player.getXPosition() - 1,
-							player.getYPosition()) == 'b')
-				board.placeBomb(player.getXPosition() - 1,
-						player.getYPosition());
-			else {
-				board.placeFloor(player.getXPosition() - 1,
-						player.getYPosition());
+				if (board.getBoardArrayElement(player.getXPosition() - 1,
+						player.getYPosition()) == 'c'
+						|| board.getBoardArrayElement(
+								player.getXPosition() - 1,
+								player.getYPosition()) == 'b')
+					board.placeBomb(player.getXPosition() - 1,
+							player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition() - 1,
+							player.getYPosition());
+				}
 			}
-		}
-		if (board.getBoardArrayElement(player.getXPosition() + 1,
-				player.getYPosition()) == 'e') {
-			player.setX(player.getXPosition() + 1);
-			board.setExplosion(player.getXPosition(), player.getYPosition());
-			player.setLives(player.getLives() - 1);
-			if (board.getBoardArrayElement(player.getXPosition() - 1,
-					player.getYPosition()) == 'b'
-					|| board.getBoardArrayElement(player.getXPosition() - 1,
-							player.getYPosition()) == 'c')
-				board.placeBomb(player.getXPosition() - 1,
+			if (board.getBoardArrayElement(player.getXPosition() + 1,
+					player.getYPosition()) == 'e') {
+				player.setLives(player.getLives() - 1);
+				if(player.getLives() > 0)
+					player.setX(player.getXPosition() + 1);
+				else board.placeFloor(player.getXPosition(),
 						player.getYPosition());
-			else {
-				board.placeFloor(player.getXPosition() - 1,
-						player.getYPosition());
+				board.setExplosion(player.getXPosition(), player.getYPosition());
+				
+				if (board.getBoardArrayElement(player.getXPosition() - 1,
+						player.getYPosition()) == 'b'
+						|| board.getBoardArrayElement(
+								player.getXPosition() - 1,
+								player.getYPosition()) == 'c')
+					board.placeBomb(player.getXPosition() - 1,
+							player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition() - 1,
+							player.getYPosition());
+				}
 			}
 		}
 	}
 
 	private void movePlayerUp(Player player) {
-		if (board.getBoardArrayElement(player.getXPosition() - 1,
-				player.getYPosition()) == 'f'
-				|| board.getBoardArrayElement(player.getXPosition() - 1,
-						player.getYPosition()) == 'x') {
-			player.setX(player.getXPosition() - 1);
-			board.placePlayer(player);
-			if (board.getBoardArrayElement(player.getXPosition() + 1,
-					player.getYPosition()) == 'c'
-					|| board.getBoardArrayElement(player.getXPosition() + 1,
-							player.getYPosition()) == 'b')
-				board.placeBomb(player.getXPosition() + 1,
-						player.getYPosition());
-			else {
-				board.placeFloor(player.getXPosition() + 1,
-						player.getYPosition());
+		if (player.getPlayerStatus()) {
+			if (board.getBoardArrayElement(player.getXPosition() - 1,
+					player.getYPosition()) == 'f'
+					|| board.getBoardArrayElement(player.getXPosition() - 1,
+							player.getYPosition()) == 'x') {
+				player.setX(player.getXPosition() - 1);
+				board.placePlayer(player);
+				if (board.getBoardArrayElement(player.getXPosition() + 1,
+						player.getYPosition()) == 'c'
+						|| board.getBoardArrayElement(
+								player.getXPosition() + 1,
+								player.getYPosition()) == 'b')
+					board.placeBomb(player.getXPosition() + 1,
+							player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition() + 1,
+							player.getYPosition());
+				}
 			}
-		}
-		if (board.getBoardArrayElement(player.getXPosition() - 1,
-				player.getYPosition()) == 'e') {
-			player.setX(player.getXPosition() - 1);
-			board.setExplosion(player.getXPosition(), player.getYPosition());
-			player.setLives(player.getLives() - 1);
-			if (board.getBoardArrayElement(player.getXPosition() + 1,
-					player.getYPosition()) == 'b'
-					|| board.getBoardArrayElement(player.getXPosition() + 1,
-							player.getYPosition()) == 'c')
-				board.placeBomb(player.getXPosition() + 1,
+			if (board.getBoardArrayElement(player.getXPosition() - 1,
+					player.getYPosition()) == 'e') {
+				player.setLives(player.getLives() - 1);
+				if(player.getLives() > 0)
+					player.setX(player.getXPosition() - 1);
+				else board.placeFloor(player.getXPosition(),
 						player.getYPosition());
-			else {
-				board.placeFloor(player.getXPosition() + 1,
-						player.getYPosition());
+				board.setExplosion(player.getXPosition(), player.getYPosition());
+				if (board.getBoardArrayElement(player.getXPosition() + 1,
+						player.getYPosition()) == 'b'
+						|| board.getBoardArrayElement(
+								player.getXPosition() + 1,
+								player.getYPosition()) == 'c')
+					board.placeBomb(player.getXPosition() + 1,
+							player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition() + 1,
+							player.getYPosition());
+				}
 			}
 		}
 	}
 
 	private void movePlayerRight(Player player) {
-		if (board.getBoardArrayElement(player.getXPosition(),
-				player.getYPosition() + 1) == 'f'
-				|| board.getBoardArrayElement(player.getXPosition(),
-						player.getYPosition() + 1) == 'x') {
-			player.setY(player.getYPosition() + 1);
-			board.placePlayer(player);
-			if (board.getBoardArrayElement(player.getXPosition() - 1,
-					player.getYPosition()) == 'b'
+		if (player.getPlayerStatus()) {
+			if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() + 1) == 'f'
 					|| board.getBoardArrayElement(player.getXPosition(),
-							player.getYPosition() - 1) == 'c')
-				board.placeBomb(player.getXPosition(),
-						player.getYPosition() - 1);
-			else {
-				board.placeFloor(player.getXPosition(),
-						player.getYPosition() - 1);
+							player.getYPosition() + 1) == 'x') {
+				player.setY(player.getYPosition() + 1);
+				board.placePlayer(player);
+				if (board.getBoardArrayElement(player.getXPosition() - 1,
+						player.getYPosition()) == 'b'
+						|| board.getBoardArrayElement(player.getXPosition(),
+								player.getYPosition() - 1) == 'c')
+					board.placeBomb(player.getXPosition(),
+							player.getYPosition() - 1);
+				else {
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition() - 1);
+				}
 			}
-		}
-		if (board.getBoardArrayElement(player.getXPosition(),
-				player.getYPosition() + 1) == 'e') {
-			player.setY(player.getYPosition() + 1);
-			board.setExplosion(player.getXPosition(), player.getYPosition());
-			player.setLives(player.getLives() - 1);
-			if (board.getBoardArrayElement(player.getXPosition() - 1,
-					player.getYPosition()) == 'b'
-					|| board.getBoardArrayElement(player.getXPosition(),
-							player.getYPosition() - 1) == 'c')
-				board.placeBomb(player.getXPosition(),
-						player.getYPosition() - 1);
-			else {
-				board.placeFloor(player.getXPosition(),
-						player.getYPosition() - 1);
+			if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() + 1) == 'e') {
+				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				playerSleepThread.start();
+				player.setLives(player.getLives() - 1);
+				if(player.getLives() > 0)
+					player.setY(player.getYPosition() + 1);
+				else board.placeFloor(player.getXPosition(),
+						player.getYPosition());
+				board.setExplosion(player.getXPosition(), player.getYPosition());
+				if (board.getBoardArrayElement(player.getXPosition() - 1,
+						player.getYPosition()) == 'b'
+						|| board.getBoardArrayElement(player.getXPosition(),
+								player.getYPosition() - 1) == 'c')
+					board.placeBomb(player.getXPosition(),
+							player.getYPosition() - 1);
+				else {
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition() - 1);
+				}
 			}
 		}
 	}
 
 	private void movePlayerLeft(Player player) {
-		if (board.getBoardArrayElement(player.getXPosition(),
-				player.getYPosition() - 1) == 'f'
-				|| board.getBoardArrayElement(player.getXPosition(),
-						player.getYPosition() - 1) == 'x') {
-			player.setY(player.getYPosition() - 1);
-			board.placePlayer(player);
-			if (board.getBoardArrayElement(player.getXPosition() + 1,
-					player.getYPosition()) == 'b'
+		if (player.getPlayerStatus()) {
+			if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() - 1) == 'f'
 					|| board.getBoardArrayElement(player.getXPosition(),
-							player.getYPosition() + 1) == 'c')
-				board.placeBomb(player.getXPosition(),
-						player.getYPosition() + 1);
-			else {
-				board.placeFloor(player.getXPosition(),
-						player.getYPosition() + 1);
+							player.getYPosition() - 1) == 'x') {
+				player.setY(player.getYPosition() - 1);
+				board.placePlayer(player);
+				if (board.getBoardArrayElement(player.getXPosition() + 1,
+						player.getYPosition()) == 'b'
+						|| board.getBoardArrayElement(player.getXPosition(),
+								player.getYPosition() + 1) == 'c')
+					board.placeBomb(player.getXPosition(),
+							player.getYPosition() + 1);
+				else {
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition() + 1);
+				}
+			}
+			if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() - 1) == 'e') {
+				player.setLives(player.getLives() - 1);
+				if(player.getLives() > 0)
+					player.setY(player.getYPosition() - 1);
+				else board.placeFloor(player.getXPosition(),
+						player.getYPosition());
+				board.setExplosion(player.getXPosition(), player.getYPosition());
+				if (board.getBoardArrayElement(player.getXPosition() + 1,
+						player.getYPosition()) == 'b'
+						|| board.getBoardArrayElement(player.getXPosition(),
+								player.getYPosition() + 1) == 'c')
+					board.placeBomb(player.getXPosition(),
+							player.getYPosition() + 1);
+				else {
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition() + 1);
+				}
 			}
 		}
-		if (board.getBoardArrayElement(player.getXPosition(),
-				player.getYPosition() - 1) == 'e') {
-			player.setY(player.getYPosition() - 1);
-			board.setExplosion(player.getXPosition(), player.getYPosition());
-			player.setLives(player.getLives() - 1);
-			if (board.getBoardArrayElement(player.getXPosition() + 1,
-					player.getYPosition()) == 'b'
-					|| board.getBoardArrayElement(player.getXPosition(),
-							player.getYPosition() + 1) == 'c')
-				board.placeBomb(player.getXPosition(),
-						player.getYPosition() + 1);
-			else {
-				board.placeFloor(player.getXPosition(),
-						player.getYPosition() + 1);
-			}
-		}
-
 	}
 }
