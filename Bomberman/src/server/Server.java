@@ -21,7 +21,7 @@ public class Server {
 	private static String arrayString = null;
 	private static InetAddress group = null;
 	private static MulticastSocket multicastSocket = null;
-	private static boolean inGame, tooManyPlayers;
+	private static boolean inGame, full;
 	private Thread inputThread1, inputThread2, inputThread3, inputThread4;
 
 	/**
@@ -33,7 +33,7 @@ public class Server {
 
 		DatagramSocket serverSocket = null;
 		inGame = true;
-		tooManyPlayers = false;
+		full = false;
 		DatagramPacket receivePacket = null;
 		DatagramPacket sendPacket = null;
 		int port1 = 3333;
@@ -79,7 +79,7 @@ public class Server {
 			if (startGame.equals("join")) {
 				numPlayers++;
 				if (numPlayers >= 4) {
-					tooManyPlayers = true;
+					full = true;
 				}
 				// get address from who sent packet
 				IPAddress = receivePacket.getAddress();
@@ -105,9 +105,13 @@ public class Server {
 							getNextPort(numPlayers), numPlayers, semaphore));
 					inputThread4.start();
 				}
-				String temp = String.valueOf(numPlayers);
-				sendData = temp.getBytes();
-
+				if(full){
+					String temp = "full";
+					sendData = temp.getBytes();
+				}else{
+					String temp = String.valueOf(numPlayers);
+					sendData = temp.getBytes();
+				}
 				// send player their number and what server they will talk to
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, port);
@@ -285,10 +289,6 @@ public class Server {
 	public static boolean getInGame() {
 		return inGame;
 	}
-	public static boolean getTooManyPlayers() {
-		return tooManyPlayers;
-	}
-
 	public static void main(String[] args) {
 		while (true) {
 			new Server();
