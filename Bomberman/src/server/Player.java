@@ -16,7 +16,6 @@ public class Player {
 		prevMove = "";
 		playerStatus = true;
 	}
-	
 	public char getPlayerNum(){
 		return playerNumber;
 	}

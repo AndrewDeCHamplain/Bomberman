@@ -40,7 +40,7 @@ public class Server {
 		final int port2 = 3334;
 		byte[] receiveData, sendData;
 		int numPlayers = 0;
-		Semaphore semaphore = new Semaphore(0);
+		Semaphore semNewMessage = new Semaphore(0);
 
 		InetAddress IPAddress;
 
@@ -76,11 +76,10 @@ public class Server {
 				multicastSocket.close();
 				e1.printStackTrace();
 			}
-			if (startGame.equals("join")) {
+			if (startGame.equals("join") && numPlayers < 4) {
 				numPlayers++;
-				if (numPlayers >= 4) {
+				if(numPlayers == 4)
 					full = true;
-				}
 				// get address from who sent packet
 				IPAddress = receivePacket.getAddress();
 				System.out.println(receivePacket.getAddress().getHostAddress()
@@ -90,28 +89,25 @@ public class Server {
 				// create new server thread to handle new clients inputs
 				if (numPlayers == 1) {
 					inputThread1 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semaphore));
+							getNextPort(numPlayers), numPlayers, semNewMessage));
 					inputThread1.start();
 				} else if (numPlayers == 2) {
 					inputThread2 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semaphore));
+							getNextPort(numPlayers), numPlayers, semNewMessage));
 					inputThread2.start();
 				} else if (numPlayers == 3) {
 					inputThread3 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semaphore));
+							getNextPort(numPlayers), numPlayers, semNewMessage));
 					inputThread3.start();
 				} else if (numPlayers == 4) {
 					inputThread4 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semaphore));
+							getNextPort(numPlayers), numPlayers, semNewMessage));
 					inputThread4.start();
 				}
-				if(full){
-					String temp = "full";
-					sendData = temp.getBytes();
-				}else{
-					String temp = String.valueOf(numPlayers);
-					sendData = temp.getBytes();
-				}
+
+				String temp = String.valueOf(numPlayers);
+				sendData = temp.getBytes();
+
 				// send player their number and what server they will talk to
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, port);
@@ -123,7 +119,23 @@ public class Server {
 					e.printStackTrace();
 				}
 			}
+			if (startGame.equals("join") && full) {
 
+				String temp = "full";
+				sendData = temp.getBytes();
+				IPAddress = receivePacket.getAddress();
+				int port = receivePacket.getPort();
+				sendPacket = new DatagramPacket(sendData, sendData.length,
+						IPAddress, port);
+				try {
+					serverSocket.send(sendPacket);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					serverSocket.close();
+					e.printStackTrace();
+				}
+				System.out.println("Game full, join rejected");
+			}
 			// If trying to start game without any players
 			if (startGame.equals("start") && numPlayers == 0) {
 				IPAddress = receivePacket.getAddress();
@@ -144,7 +156,7 @@ public class Server {
 			if (startGame.equals("start") && numPlayers > 0) {
 				numReadyPlayers++;
 				System.out.println(numReadyPlayers + " Players ready");
-				if (numReadyPlayers == numPlayers){
+				if (numReadyPlayers == numPlayers) {
 					starting = true;
 					inGame = true;
 				}
@@ -157,8 +169,8 @@ public class Server {
 		 * Then "starting" is send on the multicasted socket. Then the server
 		 * loops, forever sending the boardarray to the clients at a fixed FPS.
 		 */
-
-		Thread engineThread = new Thread(new GameEngine(numPlayers, semaphore));
+		Semaphore semGameDone = new Semaphore(0);
+		Thread engineThread = new Thread(new GameEngine(numPlayers, semNewMessage, semGameDone));
 		engineThread.start();
 
 		System.out.println("Game starting");
@@ -183,7 +195,7 @@ public class Server {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
-		final Semaphore semGameDone = new Semaphore(0);
+		
 		ScheduledExecutorService ses = Executors
 				.newSingleThreadScheduledExecutor();
 		ses.scheduleAtFixedRate(new Runnable() {
@@ -203,21 +215,30 @@ public class Server {
 						multicastSocket.close();
 						e.printStackTrace();
 					}
-					char temp = GameEngine.getGameBoard()[0][0];
-					if (temp == '0' || temp == '1' || temp == '2'
-							|| temp == '3' || temp == '4')
-						semGameDone.release();
 				}
 			}
 		}, 0, 32, TimeUnit.MILLISECONDS); // sends gameboard at 30 FPS
 		try {
 			semGameDone.acquire();
+			
 			inGame = false;
-		} catch (InterruptedException e) {
+			sendData = new byte[1024];
+			// send the board
+			synchronized (GameEngine.getGameBoard()) {
+				sendData = arrayToString(GameEngine.getGameBoard())
+						.getBytes();
+				sendPacket = new DatagramPacket(sendData,
+						sendData.length, group, port2);
+				multicastSocket.send(sendPacket);
+			}
+	
+		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			multicastSocket.close();
 		}
 		ses.shutdown();
+		
 		try {
 			engineThread.join();
 		} catch (InterruptedException e) {
@@ -288,6 +309,9 @@ public class Server {
 
 	public static boolean getInGame() {
 		return inGame;
+	}
+	public static void setInGame(boolean b) {
+		inGame = b;
 	}
 	public static void main(String[] args) {
 		while (true) {

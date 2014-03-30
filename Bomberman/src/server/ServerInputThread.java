@@ -11,10 +11,10 @@ public class ServerInputThread implements Runnable {
 	int receivePort;
 	Semaphore semNewMessage;
 
-	public ServerInputThread(int port, int player, Semaphore semaphore) {
+	public ServerInputThread(int port, int player, Semaphore semNewMessage) {
 		receivePort = port;
 		this.player = player;
-		semNewMessage = semaphore;
+		this.semNewMessage = semNewMessage;
 	}
 
 	@Override
@@ -27,6 +27,9 @@ public class ServerInputThread implements Runnable {
 		try {
 			serverSocket = new DatagramSocket(receivePort);
 			serverSocket.setReuseAddress(true);
+			receivePacket = new DatagramPacket(receivedData,
+					receivedData.length);
+			serverSocket.receive(receivePacket);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			serverSocket.close();
@@ -35,19 +38,21 @@ public class ServerInputThread implements Runnable {
 
 		while (Server.getInGame()) {
 			receivedData = new byte[1024];
-			receivePacket = new DatagramPacket(receivedData,
-					receivedData.length);
-			try {
-				serverSocket.receive(receivePacket);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			System.out.println(player +" Pressed: " +new String(receivePacket.getData()));
 			semNewMessage.release();
 			synchronized (GameEngine.command){
 				GameEngine.command = new String(receivePacket.getData()).trim()+","+player;
 			}
+			try {
+				receivePacket = new DatagramPacket(receivedData,
+						receivedData.length);
+				serverSocket.receive(receivePacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 		}
+		
 	}
 }
