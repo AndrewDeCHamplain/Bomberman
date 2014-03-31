@@ -29,12 +29,25 @@ public class GameView extends JPanel implements Runnable, Observer {
 	private Semaphore newReceived;
 	private Client client;
 	private GameLobby lobby;
+	private Semaphore semMovedRight;
+	private int[] position;
+	private char prev;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum,
 			Semaphore newReceived, boolean isPlayer, Client client,
 			GameLobby lobby) {
 		boardArray = args;
 		this.playerNum = playerNum;
+		
+		if(playerNum == '1'){
+			position = new int[]{1,1};
+		}else if(playerNum == '2'){
+			position = new int[]{1,15};
+		}else if(playerNum == '3'){
+			position = new int[]{15,1};
+		}else if(playerNum == '4'){
+			position = new int[]{15,15};
+		}
 		this.lobby = lobby;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
@@ -64,6 +77,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+
 		lobby.closeLobby();
 		f = new JFrame("Bomberman");
 		f.add(this);
@@ -74,6 +88,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 		f.setLocationRelativeTo(null);
 		f.setFocusable(true);
 		f.setVisible(true);
+		semMovedRight = new Semaphore(0);
 		synchronized (this) {
 			try {
 				newReceived.acquire();
@@ -84,6 +99,9 @@ public class GameView extends JPanel implements Runnable, Observer {
 			while (client.getInGame()) {
 				try {
 					boardArray = ClientReceive.getTileMap();
+					if(boardArray.get(1).get(1)!='1'){
+						semMovedRight.release();
+					}
 					char temp = boardArray.get(0).get(0);
 					if (temp == playerNum) {
 						client.setIsWinner(true);
@@ -118,8 +136,18 @@ public class GameView extends JPanel implements Runnable, Observer {
 		requestFocus();
 	}
 
+	public char getBoardElement(int x, int y){
+		return boardArray.get(x).get(y);
+	}
 	public void update(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
+			prev = boardArray.get(position[0]).get(position[1]);
+			position[0]++;
+			
+			long startTime = System.currentTimeMillis();
+			Thread lagThread = new Thread(new LatencyCounter(semMovedRight, startTime));
+			lagThread.start();
+			
 			client.setCurrMove("right");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_A) {

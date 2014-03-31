@@ -103,7 +103,6 @@ public class ClientReceive implements Runnable {
 			}
 		}
 		multicastSocket.close();
-		System.out.println("Client Receive done");
 	}
 
 	public void startLobbyLogic(String received) {

@@ -15,13 +15,6 @@ public class GameEngine implements Runnable {
 
 	public GameEngine(int numPlayers, Semaphore semNewMessage) {
 		board = new GameBoard(1);
-		char[][] temp = board.getBoardArray();
-		for (int row = 0; row < temp.length; row++) {
-	        for (int column = 0; column < temp[row].length; column++) {
-	            System.out.print(temp[row][column] + " ");
-	        }
-	        System.out.println();
-	    }
 		inGame = true;
 		this.numPlayers = numPlayers;
 		this.semNewMessage = semNewMessage;

@@ -13,7 +13,7 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.Semaphore;
 
-public class Client implements Runnable{
+public class Client implements Runnable {
 
 	private char playerNum;
 	private int keyInputPort, winner;
@@ -27,13 +27,15 @@ public class Client implements Runnable{
 	private Semaphore newReceived;
 	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
 	private Thread receiver;
+
 	/**
 	 * @param args
 	 *            [0] -> port number
 	 */
 	public Client() {
 		sendPacket = null;
-		clientSocket = null; inputSocket = null;
+		clientSocket = null;
+		inputSocket = null;
 		IPAddress = null;
 		newReceived = new Semaphore(0);
 		sendData = new byte[1024];
@@ -57,12 +59,12 @@ public class Client implements Runnable{
 			e.printStackTrace();
 		}
 
-		receiver = new Thread(clientReceive = new ClientReceive(sendPort, newReceived, this));
+		receiver = new Thread(clientReceive = new ClientReceive(sendPort,
+				newReceived, this));
 		receiver.start();
-		System.out.println("Join game.");
 	}
-		
-		private void game(){
+
+	private void game() {
 		while (startLobby) {
 			sendData = new byte[1024];
 
@@ -72,7 +74,7 @@ public class Client implements Runnable{
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			
+
 			if (currMove.equals("join")) {
 
 				if (joined) { // check if already in game
@@ -86,7 +88,6 @@ public class Client implements Runnable{
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, sendPort);
-				System.out.println("Joining game.");
 				try {
 					clientSocket.send(sendPacket);
 				} catch (IOException e) {
@@ -105,10 +106,10 @@ public class Client implements Runnable{
 					clientSocket.close();
 					e1.printStackTrace();
 				}
-				if(new String(receivePacket.getData()).equals("full")){
+				if (new String(receivePacket.getData()).equals("full")) {
 					isFull = true;
 					System.out.println("Game Full");
-				}else {
+				} else {
 					playerNum = (new String(receivePacket.getData())).charAt(0);
 					System.out.println("You are player " + playerNum);
 				}
@@ -119,10 +120,10 @@ public class Client implements Runnable{
 					keyInputPort = 3336;
 				else if (playerNum == '3')
 					keyInputPort = 3337;
-				else if(playerNum == '4')
+				else if (playerNum == '4')
 					keyInputPort = 3338;
 				currMove = "";
-				
+
 			}
 			if (currMove.equals("start")) {
 				sendData = currMove.getBytes();
@@ -139,11 +140,11 @@ public class Client implements Runnable{
 				currMove = "";
 			}
 
-			 if (currMove.equals("spectate")){
-				 isPlayer = false;
-			 }
+			if (currMove.equals("spectate")) {
+				isPlayer = false;
+			}
 		}
-		
+
 		// No longer in startLobby
 		clientSocket.close();
 		inGame = true;
@@ -155,9 +156,6 @@ public class Client implements Runnable{
 			inputSocket.close();
 			e.printStackTrace();
 		}
-
-		System.out.println("Client: KeyInputPort: " + keyInputPort);
-		System.out.println("Waiting for key presses");
 		while (true) {
 			sendData = new byte[1024];
 
@@ -167,8 +165,7 @@ public class Client implements Runnable{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			if(!inGame){
-				System.out.println("Game done");
+			if (!inGame) {
 				String temp = "reset";
 				sendData = temp.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
@@ -213,66 +210,85 @@ public class Client implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	public void setWinner(int w){
+
+	public void setWinner(int w) {
 		winner = w;
 	}
-	public void setIsFull(boolean b){
+
+	public void setIsFull(boolean b) {
 		isFull = b;
 	}
-	public boolean getIsFull(){
+
+	public boolean getIsFull() {
 		return isFull;
 	}
-	public int getWinner(){
+
+	public int getWinner() {
 		return winner;
 	}
-	public char getPlayerNum(){
+
+	public char getPlayerNum() {
 		return playerNum;
 	}
-	public void setPlayerNum(char playerNum){
+
+	public void setPlayerNum(char playerNum) {
 		this.playerNum = playerNum;
 	}
+
 	public void setCurrMove(String s) {
 		currMove = s;
 	}
+
 	public String setCurrMove() {
 		return currMove;
 	}
-	public boolean getIsPlayer(){
+
+	public boolean getIsPlayer() {
 		return isPlayer;
 	}
+
 	public boolean getStartLobby() {
 		// TODO Auto-generated method stub
 		return startLobby;
 	}
-	public void setStartLobby(boolean startLobby){
+
+	public void setStartLobby(boolean startLobby) {
 		this.startLobby = startLobby;
 	}
-	public void setKeyInputPort(int port){
+
+	public void setKeyInputPort(int port) {
 		keyInputPort = port;
 	}
+
 	public void setIsWinner(boolean b) {
 		// TODO Auto-generated method stub
 		isWinner = b;
 	}
+
 	public boolean getIsWinner() {
 		// TODO Auto-generated method stub
 		return isWinner;
 	}
-	public boolean getInGame(){
+
+	public boolean getInGame() {
 		return inGame;
 	}
-	public void setInGame(boolean b){
+
+	public void setInGame(boolean b) {
 		inGame = b;
 	}
-	public ClientReceive getClientReceive(){
+
+	public ClientReceive getClientReceive() {
 		return clientReceive;
 	}
+
 	public static void main(String args[]) {
-		while(true){
+		while (true) {
 			Client client = new Client();
 			client.game();
 		}
 	}
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
