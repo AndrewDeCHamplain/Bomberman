@@ -13,6 +13,12 @@ public class GameEngine implements Runnable {
 	public static String command = "0,0";
 	private Semaphore semNewMessage;
 
+	/**
+	 * Initializes the Game Engine with the 2-d array board
+	 * Initializes placement of players
+	 * @param numPlayers
+	 * @param semNewMessage
+	 */
 	public GameEngine(int numPlayers, Semaphore semNewMessage) {
 		board = new GameBoard(1);
 		inGame = true;
@@ -22,6 +28,12 @@ public class GameEngine implements Runnable {
 	}
 
 	@Override
+	/**
+	 * Runs the game engine with the specifications of everything being initialized 
+	 * on the board (sprite, elements, wall, floor, etc). Also allows the player to
+	 * specify their commands using the keystrokes for each of the players(1-4)
+	 * If the player dies the Game is Over.
+	 */
 	public void run() {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < numPlayers; i++) {
@@ -166,10 +178,17 @@ public class GameEngine implements Runnable {
 		System.out.println(board.getBoardArrayElement(0, 0));
 	}
 
+	/**
+	 * @return the board 2-d
+	 */
 	public static char[][] getGameBoard() {
 		return board.getBoardArray();
 	}
 
+	/**
+	 * Initializes players 1-4 
+	 * @param i
+	 */
 	private void makePlayer(int i) {
 		if (i == 0) {
 			player1 = new Player(1, 1, '1');
@@ -186,7 +205,10 @@ public class GameEngine implements Runnable {
 			board.placePlayer(player4);
 		}
 	}
-
+	/**
+	 * places the bomb at the specific position using the start command
+	 * @param player
+	 */
 	private void placeBomb(Player player) {
 		// if(player.getBombs()>0){
 		Thread bomb = new Thread(new BombFactory(player, board));
@@ -195,6 +217,10 @@ public class GameEngine implements Runnable {
 		// }
 	}
 
+	/**
+	 * Allows the player to move up if there is no obstruction
+	 * @param player
+	 */
 	private void movePlayerDown(Player player) {
 		if (player.getPlayerStatus()) {
 			if (board.getBoardArrayElement(player.getXPosition() + 1,
@@ -254,6 +280,10 @@ public class GameEngine implements Runnable {
 		}
 	}
 
+	/**
+	 * Moves the player up if there is no obstruction
+	 * @param player
+	 */
 	private void movePlayerUp(Player player) {
 		if (player.getPlayerStatus()) {
 			if (board.getBoardArrayElement(player.getXPosition() - 1,
@@ -310,6 +340,10 @@ public class GameEngine implements Runnable {
 		}
 	}
 
+	/**
+	 * Allows the player to move right if there is no obstruction
+	 * @param player
+	 */
 	private void movePlayerRight(Player player) {
 		if (player.getPlayerStatus()) {
 			if (board.getBoardArrayElement(player.getXPosition(),
@@ -366,6 +400,10 @@ public class GameEngine implements Runnable {
 		}
 	}
 
+	/**
+	 * Allows the player to move left if there is no obstruction
+	 * @param player
+	 */
 	private void movePlayerLeft(Player player) {
 		if (player.getPlayerStatus()) {
 			if (board.getBoardArrayElement(player.getXPosition(),
