@@ -333,10 +333,18 @@ public class Server {
 		return arrayString;
 	}
 
+	/**
+	 * If player is currently in game
+	 * @return
+	 */
 	public static boolean getInGame() {
 		return inGame;
 	}
 
+	/**
+	 * set the current status of the game
+	 * @param b
+	 */
 	public static void setInGame(boolean b) {
 		inGame = b;
 	}
