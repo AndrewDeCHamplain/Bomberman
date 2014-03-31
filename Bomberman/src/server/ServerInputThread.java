@@ -53,6 +53,6 @@ public class ServerInputThread implements Runnable {
 				e.printStackTrace();
 			}	
 		}
-		
+		serverSocket.close();
 	}
 }

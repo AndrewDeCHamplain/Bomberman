@@ -2,7 +2,7 @@ package server;
 
 public class GameBoard {
 
-	private static char[][] boardArray = {
+	private char[][] boardArray = {
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
 		{'w','x','x','f','m','f','d','f','f','f','f','f','d','f','x','x','w'},
 		{'w','x','w','f','w','d','w','f','w','d','w','f','w','f','w','x','w'},

@@ -1,4 +1,5 @@
 package client;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -19,6 +20,7 @@ public class ClientReceive implements Runnable {
 		receivePort = port + 1;
 		semStarting = semaphore;
 		this.client = client;
+		tileMap = null;
 	}
 
 	@Override
@@ -29,7 +31,6 @@ public class ClientReceive implements Runnable {
 		MulticastSocket multicastSocket = null;
 		InetAddress group = null;
 		Semaphore newReceive = new Semaphore(0);
-
 
 		// Create multicasting socket for receiving gameview updates
 		try {
@@ -45,7 +46,7 @@ public class ClientReceive implements Runnable {
 
 		Thread gameLobbyThread = new Thread(gameLobby = new GameLobby(client));
 		gameLobbyThread.start();
-		
+
 		// Start menu, waiting for a client to connect
 		while (client.getStartLobby()) {
 			receiveData = new byte[1024];
@@ -61,90 +62,98 @@ public class ClientReceive implements Runnable {
 			String received = new String(receivePacket.getData()).trim();
 			startLobbyLogic(received);
 		}
-		System.out.println("Out of game lobby");
-		
-		//Create first instance of game board
+
+		// Create first instance of game board
 		receiveData = new byte[1024];
 		try {
 			multicastSocket.receive(receivePacket);
 			String tileMapString = new String(receivePacket.getData());
-			
-			// update the tileMap 
+
+			// update the tileMap
 			tileMap = stringToArray(tileMapString);
+			//System.out.println(tileMap);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			multicastSocket.close();
-			e.printStackTrace();	
+			e.printStackTrace();
 		}
-		
-		Thread gameThread = new Thread(new GameView(tileMap, client.getPlayerNum(), newReceive, client.getIsPlayer(), client, gameLobby));
+
+		Thread gameThread = new Thread(new GameView(tileMap,
+				client.getPlayerNum(), newReceive, client.getIsPlayer(),
+				client, gameLobby));
 		gameThread.start();
-	
+
 		// continuously receives and prints game board
-		while(client.getInGame()){
+		while (client.getInGame()) {
 			receiveData = new byte[1024];
-			synchronized(gameThread){
-			try {
-				multicastSocket.receive(receivePacket);
-				String tileMapString = new String(receivePacket.getData());
-				
-				// update the tileMap 
-				tileMap = stringToArray(tileMapString);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				multicastSocket.close();
-				e.printStackTrace();	
-			}
-			newReceive.release();
+			synchronized (gameThread) {
+				try {
+					multicastSocket.receive(receivePacket);
+					String tileMapString = new String(receivePacket.getData());
+
+					// update the tileMap
+					tileMap = stringToArray(tileMapString);
+					//System.out.println(tileMap);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					multicastSocket.close();
+					e.printStackTrace();
+				}
+				newReceive.release();
 			}
 		}
+		multicastSocket.close();
+		System.out.println("Client Receive done");
 	}
-	
-	public void startLobbyLogic(String received){
-		if (received.equals("1") || received.equals("2") || received.equals("3") || received.equals("4")) {
-			//System.out.println("You are player " + Client.playerNum);
+
+	public void startLobbyLogic(String received) {
+		if (received.equals("1") || received.equals("2")
+				|| received.equals("3") || received.equals("4")) {
+			// System.out.println("You are player " + Client.playerNum);
 			client.setPlayerNum(received.toCharArray()[0]);
-			//System.out.println("You are player );
-			client.setKeyInputPort(Integer.valueOf(received)+3333);
-		}
-		else if(received.equals("full")){
+			// System.out.println("You are player );
+			client.setKeyInputPort(Integer.valueOf(received) + 3333);
+		} else if (received.equals("full")) {
 			client.setIsFull(true);
-			gameLobby.makeMessageDialog(String.format("Game is full, you may still spectate though"));
-		}
-		else if(received.equals("starting")){
+			gameLobby.makeMessageDialog(String
+					.format("Game is full, you may still spectate though"));
+		} else if (received.equals("starting")) {
 			semStarting.release();
 			client.setStartLobby(false);
 			System.out.println("Game now starting");
-		}
-		else {
-			//Thread gameThread = new Thread(new GameView(tileMap, Client.playerNum));
+		} else {
+			// Thread gameThread = new Thread(new GameView(tileMap,
+			// Client.playerNum));
 		}
 	}
-	
+
 	// this method converts our array to a CSV string format where each level of
 	// the array is delimited by "|"
 	public ArrayList<ArrayList<Character>> stringToArray(String s) {
 		ArrayList<ArrayList<Character>> tileMapInternal = new ArrayList<ArrayList<Character>>();
 		ArrayList<String> tempMap = new ArrayList<String>();
-		
+
 		StringTokenizer st1 = new StringTokenizer(s, "|");
 		while (st1.hasMoreElements()) {
 			tempMap.add((String) st1.nextElement());
 		}
-		for(int i=0; i<tempMap.size(); i++){
+		for (int i = 0; i < tempMap.size(); i++) {
 			ArrayList<Character> row = new ArrayList<Character>();
-			StringTokenizer st2 = new StringTokenizer((String) tempMap.get(i), ",");
-			
-			while (st2.hasMoreElements()){
+			StringTokenizer st2 = new StringTokenizer((String) tempMap.get(i),
+					",");
+
+			while (st2.hasMoreElements()) {
 				row.add(((String) st2.nextElement()).charAt(0));
 			}
 			tileMapInternal.add(row);
 		}
 		return tileMapInternal;
 	}
-	public GameLobby getGameLobby(){
+
+	public GameLobby getGameLobby() {
 		return gameLobby;
 	}
+
 	public static ArrayList<ArrayList<Character>> getTileMap() {
 		// TODO Auto-generated method stub
 		return tileMap;

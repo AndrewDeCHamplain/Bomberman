@@ -11,14 +11,20 @@ public class GameEngine implements Runnable {
 	private boolean inGame;
 	// private static char[][] currentBoard;
 	public static String command = "0,0";
-	private Semaphore semNewMessage, semGameDone;
+	private Semaphore semNewMessage;
 
-	public GameEngine(int numPlayers, Semaphore semNewMessage, Semaphore semGameDone) {
+	public GameEngine(int numPlayers, Semaphore semNewMessage) {
 		board = new GameBoard(1);
+		char[][] temp = board.getBoardArray();
+		for (int row = 0; row < temp.length; row++) {
+	        for (int column = 0; column < temp[row].length; column++) {
+	            System.out.print(temp[row][column] + " ");
+	        }
+	        System.out.println();
+	    }
 		inGame = true;
 		this.numPlayers = numPlayers;
 		this.semNewMessage = semNewMessage;
-		this.semGameDone = semGameDone;
 		// currentBoard = board.getBoardArray();
 	}
 
@@ -154,7 +160,6 @@ public class GameEngine implements Runnable {
 				command = "0,0";
 			}
 		}
-		semGameDone.release();
 		System.out.println("Game over");
 		if (alive[0] == 1 && alive[1] == 0 && alive[2] == 0 && alive[3] == 0){
 			board.placeElement(0,0,'1');

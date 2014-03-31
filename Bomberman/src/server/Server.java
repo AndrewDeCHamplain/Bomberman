@@ -78,7 +78,7 @@ public class Server {
 			}
 			if (startGame.equals("join") && numPlayers < 4) {
 				numPlayers++;
-				if(numPlayers == 4)
+				if (numPlayers == 4)
 					full = true;
 				// get address from who sent packet
 				IPAddress = receivePacket.getAddress();
@@ -169,8 +169,9 @@ public class Server {
 		 * Then "starting" is send on the multicasted socket. Then the server
 		 * loops, forever sending the boardarray to the clients at a fixed FPS.
 		 */
-		Semaphore semGameDone = new Semaphore(0);
-		Thread engineThread = new Thread(new GameEngine(numPlayers, semNewMessage, semGameDone));
+		final Semaphore semGameDone = new Semaphore(0);
+		Thread engineThread = new Thread(new GameEngine(numPlayers,
+				semNewMessage));
 		engineThread.start();
 
 		System.out.println("Game starting");
@@ -195,7 +196,7 @@ public class Server {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
-		
+
 		ScheduledExecutorService ses = Executors
 				.newSingleThreadScheduledExecutor();
 		ses.scheduleAtFixedRate(new Runnable() {
@@ -204,41 +205,66 @@ public class Server {
 				byte[] sendData = new byte[1024];
 				// send the board
 				synchronized (GameEngine.getGameBoard()) {
-					sendData = arrayToString(GameEngine.getGameBoard())
-							.getBytes();
-					DatagramPacket sendPacket = new DatagramPacket(sendData,
-							sendData.length, group, port2);
-					try {
-						multicastSocket.send(sendPacket);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						multicastSocket.close();
-						e.printStackTrace();
+					char[][] temp = GameEngine.getGameBoard();
+					if (temp[0][0] == '0' || temp[0][0] == '0'
+							|| temp[0][0] == '2' || temp[0][0] == '3'
+							|| temp[0][0] == '4') {
+						sendData = arrayToString(temp).getBytes();
+						DatagramPacket sendPacket = new DatagramPacket(
+								sendData, sendData.length, group, port2);
+						try {
+							multicastSocket.send(sendPacket);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							multicastSocket.close();
+							e.printStackTrace();
+						}
+						semGameDone.release();
+					} else {
+						sendData = arrayToString(temp).getBytes();
+						DatagramPacket sendPacket = new DatagramPacket(
+								sendData, sendData.length, group, port2);
+						try {
+							multicastSocket.send(sendPacket);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							multicastSocket.close();
+							e.printStackTrace();
+						}
 					}
 				}
 			}
-		}, 0, 32, TimeUnit.MILLISECONDS); // sends gameboard at 30 FPS
+		}, 0, 50, TimeUnit.MILLISECONDS); // 32 millisec sends gameboard at 30
+											// FPS
 		try {
 			semGameDone.acquire();
-			
+
 			inGame = false;
 			sendData = new byte[1024];
 			// send the board
 			synchronized (GameEngine.getGameBoard()) {
-				sendData = arrayToString(GameEngine.getGameBoard())
-						.getBytes();
-				sendPacket = new DatagramPacket(sendData,
-						sendData.length, group, port2);
+				sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
+				sendPacket = new DatagramPacket(sendData, sendData.length,
+						group, port2);
 				multicastSocket.send(sendPacket);
 			}
-	
+
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			multicastSocket.close();
 		}
 		ses.shutdown();
-		
+		sendData = new byte[1024];
+		sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
+		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
+		try {
+			multicastSocket.send(sendPacket);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		multicastSocket.close();
 		try {
 			engineThread.join();
 		} catch (InterruptedException e) {
@@ -310,9 +336,11 @@ public class Server {
 	public static boolean getInGame() {
 		return inGame;
 	}
+
 	public static void setInGame(boolean b) {
 		inGame = b;
 	}
+
 	public static void main(String[] args) {
 		while (true) {
 			new Server();

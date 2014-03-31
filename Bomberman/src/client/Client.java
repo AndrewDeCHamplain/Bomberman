@@ -15,16 +15,16 @@ import java.util.concurrent.Semaphore;
 
 public class Client implements Runnable{
 
-	private char playerNum = 0;
+	private char playerNum;
 	private int keyInputPort, winner;
-	private String currMove = "";
-	private DatagramPacket sendPacket = null;
-	private DatagramSocket clientSocket = null, inputSocket = null;
-	private InetAddress IPAddress = null;
+	private String currMove;
+	private DatagramPacket sendPacket;
+	private DatagramSocket clientSocket, inputSocket;
+	private InetAddress IPAddress;
 	private int sendPort = 3333;
-	private byte[] sendData = new byte[1024];
+	private byte[] sendData;
 	private ClientReceive clientReceive;
-	private Semaphore newReceived = new Semaphore(0);
+	private Semaphore newReceived;
 	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
 	private Thread receiver;
 	/**
@@ -32,12 +32,21 @@ public class Client implements Runnable{
 	 *            [0] -> port number
 	 */
 	public Client() {
+		sendPacket = null;
+		clientSocket = null; inputSocket = null;
+		IPAddress = null;
+		newReceived = new Semaphore(0);
+		sendData = new byte[1024];
+		currMove = "";
+		playerNum = 0;
+		isPlayer = false;
 		isWinner = false;
 		inGame = false;
 		joined = false;
 		startLobby = true;
 		winner = 0;
 		isFull = false;
+		keyInputPort = 0;
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
@@ -159,6 +168,7 @@ public class Client implements Runnable{
 				e1.printStackTrace();
 			}
 			if(!inGame){
+				System.out.println("Game done");
 				String temp = "reset";
 				sendData = temp.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
@@ -186,6 +196,12 @@ public class Client implements Runnable{
 				}
 				currMove = "";
 			}
+		}
+		try {
+			receiver.join();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		Thread overThread = new Thread(new GameOver(winner, playerNum));
 		overThread.start();
