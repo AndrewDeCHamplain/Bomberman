@@ -23,6 +23,7 @@ public class Server {
 	private static MulticastSocket multicastSocket = null;
 	private static boolean inGame, full;
 	private Thread inputThread1, inputThread2, inputThread3, inputThread4;
+	private GameEngine engine;
 
 	/**
 	 * @param args
@@ -170,8 +171,8 @@ public class Server {
 		 * loops, forever sending the boardarray to the clients at a fixed FPS.
 		 */
 		final Semaphore semGameDone = new Semaphore(0);
-		Thread engineThread = new Thread(new GameEngine(numPlayers,
-				semNewMessage));
+		engine = new GameEngine(numPlayers,semNewMessage);
+		Thread engineThread = new Thread(engine);
 		engineThread.start();
 
 		System.out.println("Game starting");
@@ -187,7 +188,7 @@ public class Server {
 		}
 
 		// send the board
-		sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
+		sendData = arrayToString(engine.getGameBoard()).getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 		try {
 			multicastSocket.send(sendPacket);
@@ -204,8 +205,8 @@ public class Server {
 			public void run() {
 				byte[] sendData = new byte[1024];
 				// send the board
-				synchronized (GameEngine.getGameBoard()) {
-					char[][] temp = GameEngine.getGameBoard();
+				synchronized (engine.getGameBoard()) {
+					char[][] temp = engine.getGameBoard();
 					if (temp[0][0] == '0' || temp[0][0] == '0'
 							|| temp[0][0] == '2' || temp[0][0] == '3'
 							|| temp[0][0] == '4') {
@@ -242,8 +243,8 @@ public class Server {
 			inGame = false;
 			sendData = new byte[1024];
 			// send the board
-			synchronized (GameEngine.getGameBoard()) {
-				sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
+			synchronized (engine.getGameBoard()) {
+				sendData = arrayToString(engine.getGameBoard()).getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						group, port2);
 				multicastSocket.send(sendPacket);
@@ -256,7 +257,7 @@ public class Server {
 		}
 		ses.shutdown();
 		sendData = new byte[1024];
-		sendData = arrayToString(GameEngine.getGameBoard()).getBytes();
+		sendData = arrayToString(engine.getGameBoard()).getBytes();
 		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
 		try {
 			multicastSocket.send(sendPacket);

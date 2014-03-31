@@ -29,26 +29,13 @@ public class GameView extends JPanel implements Runnable, Observer {
 	private Semaphore newReceived;
 	private Client client;
 	private GameLobby lobby;
-	private Semaphore semMovedRight;
-	private int[] position;
-	private char prev;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum,
 			Semaphore newReceived, boolean isPlayer, Client client,
 			GameLobby lobby) {
 		boardArray = args;
-		System.out.println(boardArray);
 		this.playerNum = playerNum;
 		
-		if(playerNum == '1'){
-			position = new int[]{1,1};
-		}else if(playerNum == '2'){
-			position = new int[]{1,15};
-		}else if(playerNum == '3'){
-			position = new int[]{15,1};
-		}else if(playerNum == '4'){
-			position = new int[]{15,15};
-		}
 		this.lobby = lobby;
 		columnCount = boardArray.get(0).size();
 		rowCount = boardArray.size() - 1;
@@ -89,7 +76,6 @@ public class GameView extends JPanel implements Runnable, Observer {
 		f.setLocationRelativeTo(null);
 		f.setFocusable(true);
 		f.setVisible(true);
-		semMovedRight = new Semaphore(0);
 		synchronized (this) {
 			try {
 				newReceived.acquire();

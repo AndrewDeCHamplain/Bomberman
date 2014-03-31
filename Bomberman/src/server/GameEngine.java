@@ -3,7 +3,7 @@ package server;
 import java.util.concurrent.Semaphore;
 
 public class GameEngine implements Runnable {
-	private static GameBoard board;
+	private GameBoard board;
 	private int numPlayers;
 	private Player player1 = null, player2 = null, player3 = null,
 			player4 = null;
@@ -181,7 +181,7 @@ public class GameEngine implements Runnable {
 	/**
 	 * @return the board 2-d
 	 */
-	public static char[][] getGameBoard() {
+	public char[][] getGameBoard() {
 		return board.getBoardArray();
 	}
 
@@ -244,20 +244,13 @@ public class GameEngine implements Runnable {
 			}
 			if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'e') {
+				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				playerSleepThread.start();
 				player.setLives(player.getLives() - 1);
 				if (player.getLives() > 0)
 					player.setX(player.getXPosition() + 1);
 				else {
-					if(player.getPlayerNum()==1){
-						alive[0] = 0;
-					}
-					else if(player.getPlayerNum()==2){
-						alive[1] = 0;
-					}else if(player.getPlayerNum()==3){
-						alive[2] = 0;
-					}else if(player.getPlayerNum()==4){
-						alive[3] = 0;
-					}
+					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
 					player.setX(player.getXPosition() + 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
@@ -306,20 +299,13 @@ public class GameEngine implements Runnable {
 			}
 			if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'e') {
+				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				playerSleepThread.start();
 				player.setLives(player.getLives() - 1);
 				if (player.getLives() > 0)
 					player.setX(player.getXPosition() - 1);
 				else {
-					if(player.getPlayerNum()==1){
-						alive[0] = 0;
-					}
-					else if(player.getPlayerNum()==2){
-						alive[1] = 0;
-					}else if(player.getPlayerNum()==3){
-						alive[2] = 0;
-					}else if(player.getPlayerNum()==4){
-						alive[3] = 0;
-					}
+					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
 					player.setX(player.getXPosition() - 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
@@ -371,16 +357,7 @@ public class GameEngine implements Runnable {
 				if (player.getLives() > 0)
 					player.setY(player.getYPosition() + 1);
 				else {
-					if(player.getPlayerNum()==1){
-						alive[0] = 0;
-					}
-					else if(player.getPlayerNum()==2){
-						alive[1] = 0;
-					}else if(player.getPlayerNum()==3){
-						alive[2] = 0;
-					}else if(player.getPlayerNum()==4){
-						alive[3] = 0;
-					}
+					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
 					player.setY(player.getYPosition() + 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
@@ -425,20 +402,13 @@ public class GameEngine implements Runnable {
 			}
 			if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'e') {
+				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				playerSleepThread.start();
 				player.setLives(player.getLives() - 1);
 				if (player.getLives() > 0)
 					player.setY(player.getYPosition() - 1);
 				else {
-					if(player.getPlayerNum()==1){
-						alive[0] = 0;
-					}
-					else if(player.getPlayerNum()==2){
-						alive[1] = 0;
-					}else if(player.getPlayerNum()==3){
-						alive[2] = 0;
-					}else if(player.getPlayerNum()==4){
-						alive[3] = 0;
-					}
+					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
 					player.setY(player.getYPosition() - 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
