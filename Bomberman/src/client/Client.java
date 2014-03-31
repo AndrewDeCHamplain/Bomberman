@@ -27,6 +27,7 @@ public class Client implements Runnable {
 	private Semaphore newReceived;
 	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
 	private Thread receiver;
+	private int[] position;
 
 	/**
 	 * @param args
@@ -114,14 +115,19 @@ public class Client implements Runnable {
 					System.out.println("You are player " + playerNum);
 				}
 
-				if (playerNum == '1')
+				if (playerNum == '1'){
 					keyInputPort = 3335;
-				else if (playerNum == '2')
+					position = new int[]{1,1};
+				}else if (playerNum == '2'){
 					keyInputPort = 3336;
-				else if (playerNum == '3')
+					position = new int[]{1,15};	
+				}else if (playerNum == '3'){
 					keyInputPort = 3337;
-				else if (playerNum == '4')
+					position = new int[]{15,1};
+				}else if (playerNum == '4'){
 					keyInputPort = 3338;
+					position = new int[]{15,15};
+				}
 				currMove = "";
 
 			}
@@ -144,7 +150,6 @@ public class Client implements Runnable {
 				isPlayer = false;
 			}
 		}
-
 		// No longer in startLobby
 		clientSocket.close();
 		inGame = true;

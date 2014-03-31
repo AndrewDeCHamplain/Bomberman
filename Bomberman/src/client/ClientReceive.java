@@ -21,6 +21,7 @@ public class ClientReceive implements Runnable {
 		semStarting = semaphore;
 		this.client = client;
 		tileMap = null;
+		
 	}
 
 	@Override
@@ -71,7 +72,6 @@ public class ClientReceive implements Runnable {
 
 			// update the tileMap
 			tileMap = stringToArray(tileMapString);
-			//System.out.println(tileMap);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			multicastSocket.close();
@@ -93,7 +93,6 @@ public class ClientReceive implements Runnable {
 
 					// update the tileMap
 					tileMap = stringToArray(tileMapString);
-					//System.out.println(tileMap);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					multicastSocket.close();
