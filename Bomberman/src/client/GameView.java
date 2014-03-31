@@ -37,6 +37,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 			Semaphore newReceived, boolean isPlayer, Client client,
 			GameLobby lobby) {
 		boardArray = args;
+		System.out.println(boardArray);
 		this.playerNum = playerNum;
 		
 		if(playerNum == '1'){
@@ -99,9 +100,6 @@ public class GameView extends JPanel implements Runnable, Observer {
 			while (client.getInGame()) {
 				try {
 					boardArray = ClientReceive.getTileMap();
-					if(boardArray.get(1).get(1)!='1'){
-						semMovedRight.release();
-					}
 					char temp = boardArray.get(0).get(0);
 					if (temp == playerNum) {
 						client.setIsWinner(true);
@@ -141,12 +139,6 @@ public class GameView extends JPanel implements Runnable, Observer {
 	}
 	public void update(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
-			prev = boardArray.get(position[0]).get(position[1]);
-			position[0]++;
-			
-			long startTime = System.currentTimeMillis();
-			Thread lagThread = new Thread(new LatencyCounter(semMovedRight, startTime));
-			lagThread.start();
 			
 			client.setCurrMove("right");
 		}
