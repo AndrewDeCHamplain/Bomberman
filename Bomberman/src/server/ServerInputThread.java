@@ -11,6 +11,12 @@ public class ServerInputThread implements Runnable {
 	int receivePort;
 	Semaphore semNewMessage;
 
+	/**
+	 * assigns specified paramters to field variables
+	 * @param port
+	 * @param player
+	 * @param semNewMessage
+	 */
 	public ServerInputThread(int port, int player, Semaphore semNewMessage) {
 		receivePort = port;
 		this.player = player;
@@ -18,6 +24,11 @@ public class ServerInputThread implements Runnable {
 	}
 
 	@Override
+	/**
+	 * Runs the Servers Input Thread by initializing sockets and packets alike.
+	 * Checks if the players are able to get in game. If yes, then the communication
+	 * link is established and packets are sent through.
+	 */
 	public void run() {
 		// TODO Auto-generated method stub
 		DatagramSocket serverSocket = null;
