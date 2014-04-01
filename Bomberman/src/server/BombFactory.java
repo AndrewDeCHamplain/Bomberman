@@ -25,7 +25,6 @@ public class BombFactory implements Runnable{
 	 */
 	public void run() {
 		// TODO Auto-generated method stub
-		System.out.println("Bomb placed");
 		int tempx, tempy;
 		//int constx, consty;
 		synchronized (board) {
@@ -40,7 +39,6 @@ public class BombFactory implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Bomb exploded");
 		synchronized (board) {board.placeExplosion(tempx, tempy, player);}
 		try {
 			Thread.sleep(1000);

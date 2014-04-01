@@ -45,9 +45,19 @@ public class TestDriver{
 					e.printStackTrace();
 				}
 			}else if(s.equals("test4")){
-				
+				try {
+					test4();
+				} catch (InterruptedException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}else if(s.equals("test5")){
-				
+				try {
+					test5();
+				} catch (InterruptedException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else{
 				System.out.println("Unreconized command");
@@ -62,35 +72,73 @@ public class TestDriver{
 		new TestDriver();
 	}
 	private void test1() throws InterruptedException, IOException {
-		Thread clientThread = new Thread(new ClientTest("p1t1"));
+		Thread clientThread = new Thread(new ClientTest("p1t3", false));
 		clientThread.start();
 		sleep(500);
 		Thread spectatorThread = new Thread(new SpectatorTest());
 		spectatorThread.start();
+		clientThread.join();
 	}
 	
 	private void test2() throws InterruptedException, IOException {
 
-		Thread clientThread1 = new Thread(new ClientTest("p1t1"));
+		Thread clientThread1 = new Thread(new ClientTest("p1t1", false));
 		clientThread1.start();
 		sleep(500);
-		Thread clientThread2 = new Thread(new ClientTest("p2t2"));
+		Thread clientThread2 = new Thread(new ClientTest("p2t2", false));
 		clientThread2.start();
 	}
 	
 	private void test3() throws InterruptedException, IOException {
 
-		Thread clientThread1 = new Thread(new ClientTest("p1t1"));
+		Thread clientThread1 = new Thread(new ClientTest("p1t3", false));
 		clientThread1.start();
 		sleep(500);
-		Thread clientThread2 = new Thread(new ClientTest("p2t2"));
+		Thread clientThread2 = new Thread(new ClientTest("p2t3", false));
 		clientThread2.start();
 		sleep(500);
-		Thread clientThread3 = new Thread(new ClientTest("p1t1"));
+		clientThread1.join();
+		clientThread2.join();
+		//Thread spectatorThread = new Thread(new SpectatorTest());
+		//spectatorThread.start();
+	}
+	private void test4() throws InterruptedException, IOException {
+
+		Thread clientThread1 = new Thread(new ClientTest("p1t3", false));
+		clientThread1.start();
+		sleep(200);
+		Thread clientThread2 = new Thread(new ClientTest("p2t3", false));
+		clientThread2.start();
+		sleep(200);
+		Thread clientThread3 = new Thread(new ClientTest("p2t3", false));
+		clientThread3.start();
+		sleep(200);
+		Thread clientThread4 = new Thread(new ClientTest("p2t3", false));
+		clientThread4.start();
+		sleep(200);
+		clientThread1.join();
+		clientThread2.join();
+		clientThread3.join();
+		clientThread4.join();
+	}
+	private void test5() throws InterruptedException, IOException {
+
+		Thread clientThread1 = new Thread(new ClientTest("p1t3", true));
+		clientThread1.start();
+		sleep(500);
+		Thread clientThread2 = new Thread(new ClientTest("p2t3", true));
+		clientThread2.start();
+		sleep(500);
+		Thread clientThread3 = new Thread(new ClientTest("p2t3", true));
 		clientThread3.start();
 		sleep(500);
-		Thread clientThread4 = new Thread(new ClientTest("p2t2"));
+		Thread clientThread4 = new Thread(new ClientTest("p2t3", true));
 		clientThread4.start();
+		sleep(500);
+		clientThread1.join();
+		clientThread2.join();
+		clientThread3.join();
+		clientThread4.join();
 	}
 
 	private void sleep(int i) {
@@ -102,21 +150,4 @@ public class TestDriver{
 			e.printStackTrace();
 		}
 	}
-	/*
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		try {
-			if (sentence.equals("test1")) {
-				test1();
-			}
-			if (sentence.equals("test2")) {
-				test2();
-			}
-		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	*/
 }

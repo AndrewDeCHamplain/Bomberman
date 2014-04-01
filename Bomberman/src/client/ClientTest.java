@@ -11,8 +11,10 @@ public class ClientTest implements Runnable{
 	private Client client;
 	private FileInputStream in;
 	private BufferedReader testFile;
+	private boolean fast;
 	
-	public ClientTest(String file){
+	public ClientTest(String file, boolean fast){
+		this.fast = fast;
 		try {
 			in = new FileInputStream("resources/"+file+".txt");
 		} catch (FileNotFoundException e) {
@@ -26,12 +28,12 @@ public class ClientTest implements Runnable{
 		// TODO Auto-generated method stub
 		Thread clientThread = new Thread(client = new Client());
 		clientThread.start();
-
+		
 		sleep(1000);
 		client.getClientReceive().getGameLobby().pressJoin();
-		sleep(2000);
+		sleep(3000);
 		client.getClientReceive().getGameLobby().pressStart();
-		
+		sleep(2000);
 		String testInput = null;
 		try {
 			testInput = testFile.readLine();
@@ -41,6 +43,8 @@ public class ClientTest implements Runnable{
 		}
 		while (testInput != null) {
 			if (testInput.equals("sleep")) {
+				if(fast)
+					sleep(100);
 				sleep(500);
 			} else {
 				client.setCurrMove(testInput);
@@ -59,6 +63,15 @@ public class ClientTest implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		while(client.getGameOver()==null){}
+		sleep(500);
+		client.getGameOver().pressEnter();
+		try {
+			clientThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private void sleep(int time){
 		try {
@@ -68,6 +81,7 @@ public class ClientTest implements Runnable{
 			e.printStackTrace();
 		}
 	}
+	
 	public Client getClient(){
 		return client;
 	}

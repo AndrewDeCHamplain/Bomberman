@@ -74,6 +74,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setTitle("Bomberman");
 		f.setLocationRelativeTo(null);
+		f.setAlwaysOnTop(true);
 		f.setFocusable(true);
 		f.setVisible(true);
 		synchronized (this) {
@@ -125,10 +126,21 @@ public class GameView extends JPanel implements Runnable, Observer {
 	}
 	public void update(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
-			
+			/*
+			client.setPrev(boardArray.get(client.getPosition()[1]).get(client.getPosition()[0]));
+			client.setPosition(0, client.getPosition()[0]+1);
+			System.out.println(client.getPosition()[0]+" "+client.getPosition()[1]);
+			client.startTimer();
+			*/
 			client.setCurrMove("right");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_A) {
+			/*
+			client.setPrev(boardArray.get(client.getPosition()[1]).get(client.getPosition()[0]));
+			client.setPosition(0, client.getPosition()[0]-1);
+			System.out.println(client.getPosition()[0]+" "+client.getPosition()[1]);
+			client.startTimer();
+			*/
 			client.setCurrMove("left");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_W) {
@@ -144,7 +156,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return (new Dimension(605, 605));
+		return (new Dimension(400, 400));
 	}
 
 	protected void paintComponent(Graphics g) {

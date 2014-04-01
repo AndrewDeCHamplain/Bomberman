@@ -50,7 +50,6 @@ public class ServerInputThread implements Runnable {
 		while (Server.getInGame()) {
 			receivedData = new byte[1024];
 			
-			System.out.println(player +" Pressed: " +new String(receivePacket.getData()));
 			semNewMessage.release();
 			synchronized (GameEngine.command){
 				GameEngine.command = new String(receivePacket.getData()).trim()+","+player;

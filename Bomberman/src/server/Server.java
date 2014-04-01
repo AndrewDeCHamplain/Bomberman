@@ -71,18 +71,20 @@ public class Server {
 				serverSocket.receive(receivePacket);
 				startGame = new String(receivePacket.getData(), 0,
 						receivePacket.getLength(), "UTF-8");
+				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				serverSocket.close();
 				multicastSocket.close();
 				e1.printStackTrace();
 			}
+			IPAddress = receivePacket.getAddress();
 			if (startGame.equals("join") && numPlayers < 4) {
 				numPlayers++;
 				if (numPlayers == 4)
 					full = true;
 				// get address from who sent packet
-				IPAddress = receivePacket.getAddress();
+				
 				System.out.println(receivePacket.getAddress().getHostAddress()
 						+ " joined the game.");
 				int port = receivePacket.getPort();
@@ -124,7 +126,6 @@ public class Server {
 
 				String temp = "full";
 				sendData = temp.getBytes();
-				IPAddress = receivePacket.getAddress();
 				int port = receivePacket.getPort();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, port);
@@ -139,7 +140,6 @@ public class Server {
 			}
 			// If trying to start game without any players
 			if (startGame.equals("start") && numPlayers == 0) {
-				IPAddress = receivePacket.getAddress();
 				// int port = receivePacket.getPort();
 				String temp = "No players";
 				sendData = temp.getBytes();
@@ -235,7 +235,7 @@ public class Server {
 					}
 				}
 			}
-		}, 0, 50, TimeUnit.MILLISECONDS); // 32 millisec sends gameboard at 30
+		}, 0, 32, TimeUnit.MILLISECONDS); // 32 millisec sends gameboard at 30
 											// FPS
 		try {
 			semGameDone.acquire();

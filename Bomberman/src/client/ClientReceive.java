@@ -15,13 +15,13 @@ public class ClientReceive implements Runnable {
 	private static ArrayList<ArrayList<Character>> tileMap;
 	private Client client;
 	private GameLobby gameLobby;
+	private GameView gameView;
 
 	public ClientReceive(int port, Semaphore semaphore, Client client) {
 		receivePort = port + 1;
 		semStarting = semaphore;
 		this.client = client;
 		tileMap = null;
-		
 	}
 
 	@Override
@@ -77,10 +77,9 @@ public class ClientReceive implements Runnable {
 			multicastSocket.close();
 			e.printStackTrace();
 		}
-
-		Thread gameThread = new Thread(new GameView(tileMap,
-				client.getPlayerNum(), newReceive, client.getIsPlayer(),
-				client, gameLobby));
+		gameView = new GameView(tileMap, client.getPlayerNum(), newReceive,
+				client.getIsPlayer(), client, gameLobby);
+		Thread gameThread = new Thread(gameView);
 		gameThread.start();
 
 		// continuously receives and prints game board
@@ -98,7 +97,20 @@ public class ClientReceive implements Runnable {
 					multicastSocket.close();
 					e.printStackTrace();
 				}
+
 				newReceive.release();
+				/*
+				if (client.getIsPlayer()) {
+					if (gameView.getBoardElement(client.getPosition()[1],
+							client.getPosition()[0]) == client.getPrev()) {
+						client.setPrev('.');
+						long stopTime = System.currentTimeMillis();
+						long elapsedTime = stopTime - client.getTimer();
+						System.out.println("Player " + client.getPlayerNum()
+								+ ": " + "Latency: " + elapsedTime);
+					}
+				}
+				*/
 			}
 		}
 		multicastSocket.close();
@@ -150,6 +162,10 @@ public class ClientReceive implements Runnable {
 
 	public GameLobby getGameLobby() {
 		return gameLobby;
+	}
+
+	public GameView getGameView() {
+		return gameView;
 	}
 
 	public static ArrayList<ArrayList<Character>> getTileMap() {

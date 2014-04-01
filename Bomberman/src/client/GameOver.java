@@ -1,7 +1,9 @@
 package client;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -96,6 +98,17 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 		}
 		f.setVisible(false);
 		f.dispose();
+	}
+	public void pressEnter() {
+		try {
+			requestFocus(true);
+			Robot robot = new Robot();
+			robot.keyPress(KeyEvent.VK_ENTER);
+	        robot.keyRelease(KeyEvent.VK_ENTER);
+		} catch (AWTException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public Dimension getPreferredSize() {

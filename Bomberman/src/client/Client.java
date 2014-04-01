@@ -15,7 +15,7 @@ import java.util.concurrent.Semaphore;
 
 public class Client implements Runnable {
 
-	private char playerNum;
+	private char playerNum, prev;
 	private int keyInputPort, winner;
 	private String currMove;
 	private DatagramPacket sendPacket;
@@ -28,7 +28,8 @@ public class Client implements Runnable {
 	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
 	private Thread receiver;
 	private int[] position;
-
+	private long timer;
+	private GameOver gameOver;
 	/**
 	 * @param args
 	 *            [0] -> port number
@@ -50,10 +51,11 @@ public class Client implements Runnable {
 		winner = 0;
 		isFull = false;
 		keyInputPort = 0;
+		gameOver = null;
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("127.0.0.1");
+			IPAddress = InetAddress.getByName("localhost"); // 192.168.43.21 my laptop
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			clientSocket.close();
@@ -155,7 +157,7 @@ public class Client implements Runnable {
 		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("127.0.0.1");
+			IPAddress = InetAddress.getByName("localhost"); // 192.168.43.21 my laptop
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			inputSocket.close();
@@ -186,6 +188,17 @@ public class Client implements Runnable {
 				break;
 			}
 			if (currMove != "") {
+				/*
+				if(currMove.equals("right")){
+					prev = clientReceive.getGameView().getBoardElement(position[1],position[0]);
+					position[0]++;
+					startTimer();
+				}else if(currMove.equals("left")){
+					prev = clientReceive.getGameView().getBoardElement(position[1],position[0]);
+					position[0]--;
+					startTimer();
+				}
+				*/
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, keyInputPort);
@@ -205,7 +218,8 @@ public class Client implements Runnable {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		Thread overThread = new Thread(new GameOver(winner, playerNum));
+		gameOver = new GameOver(winner, playerNum);
+		Thread overThread = new Thread(gameOver);
 		overThread.start();
 		try {
 			overThread.join();
@@ -215,7 +229,15 @@ public class Client implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
+	public GameOver getGameOver(){
+		return gameOver;
+	}
+	public int[] getPosition(){
+		return position;
+	}
+	public void setPosition(int i, int k){
+		position[i] = k;
+	}
 	public void setWinner(int w) {
 		winner = w;
 	}
@@ -283,6 +305,12 @@ public class Client implements Runnable {
 		inGame = b;
 	}
 
+	public long getTimer(){
+		return timer;
+	}
+	public void startTimer(){
+		timer = System.currentTimeMillis();
+	}
 	public ClientReceive getClientReceive() {
 		return clientReceive;
 	}
@@ -298,5 +326,12 @@ public class Client implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		game();
+	}
+
+	public void setPrev(char i) {
+		prev = i;
+	}
+	public char getPrev(){
+		return prev;
 	}
 }
