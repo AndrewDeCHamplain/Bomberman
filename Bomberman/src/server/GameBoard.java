@@ -8,12 +8,12 @@ public class GameBoard {
 		{'w','x','w','f','w','d','w','f','w','d','w','f','w','f','w','x','w'},
 		{'w','f','d','d','f','f','f','f','f','d','f','f','d','d','f','d','w'},
 		{'w','d','w','f','w','f','w','f','w','f','w','f','w','d','w','f','w'},
-		{'w','f','d','f','f','f','f','d','f','f','d','f','f','f','f','f','w'},
-		{'w','f','w','d','w','f','w','f','w','f','w','f','w','d','w','d','w'},
-		{'w','d','f','f','f','f','f','d','f','d','f','f','f','d','f','f','w'},
-		{'w','f','w','f','w','f','w','d','w','f','w','f','w','f','w','f','w'},
+		{'w','f','d','f','f','f','f','d','f','f','d','d','f','f','f','f','w'},
+		{'w','f','w','d','w','d','w','f','w','f','w','f','w','d','w','d','w'},
+		{'w','d','f','f','f','d','f','f','f','d','f','f','f','d','f','f','w'},
+		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
 		{'w','f','f','f','d','f','d','f','f','d','f','f','d','d','f','f','w'},
-		{'w','d','w','f','w','d','w','f','w','f','w','f','w','f','w','f','w'},
+		{'w','d','w','f','w','d','w','d','w','f','w','d','w','f','w','f','w'},
 		{'w','f','d','d','f','d','f','f','f','d','f','f','f','d','f','d','w'},
 		{'w','f','w','f','w','f','w','f','w','d','w','f','w','f','w','d','w'},
 		{'w','f','d','f','f','f','f','d','f','f','f','f','d','f','f','f','w'},
@@ -37,7 +37,9 @@ public class GameBoard {
 	 * @param player Player
 	 */
 	public void placePlayer(Player player){
-		boardArray[player.getXPosition()][player.getYPosition()] = player.getPlayerNum();
+		if(player.getLives()>0){
+			boardArray[player.getXPosition()][player.getYPosition()] = player.getPlayerNum();
+		}
 	}
 	/**
 	 * Assigns the 'floor' where the player can walk

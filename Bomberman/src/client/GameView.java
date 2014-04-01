@@ -25,7 +25,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 	private JFrame f;
 	private BufferedImage spriteDown = null, spriteBomb = null,
 			spriteExplosionYellow = null, spriteDestructible = null,
-			spriteMonster = null;
+			spriteMonster = null, portal = null;
 	private Semaphore newReceived;
 	private Client client;
 	private GameLobby lobby;
@@ -56,6 +56,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 			spriteDestructible = ImageIO.read(new File(
 					"resources/bmanDestructible.png"));
 			spriteMonster = ImageIO.read(new File("resources/bmanMonster.png"));
+			portal = ImageIO.read(new File("resources/portal2.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -156,7 +157,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return (new Dimension(400, 400));
+		return (new Dimension(605, 605));
 	}
 
 	protected void paintComponent(Graphics g) {
@@ -199,6 +200,9 @@ public class GameView extends JPanel implements Runnable, Observer {
 							cellWidth, cellHeight, null);
 				} else if (temp == 'd') { // destructible
 					g.drawImage(spriteDestructible, col * cellWidth, row
+							* cellHeight, cellWidth, cellHeight, null);
+				} else if (temp == 'P') { // portal
+					g.drawImage(portal, col * cellWidth, row
 							* cellHeight, cellWidth, cellHeight, null);
 				} else if (temp == 'e') { // explosion
 					g.drawImage(spriteExplosionYellow, col * cellWidth, row

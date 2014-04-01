@@ -1,5 +1,6 @@
 package server;
 
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 public class GameEngine implements Runnable {
@@ -15,10 +16,12 @@ public class GameEngine implements Runnable {
 	private Semaphore semNewMessage;
 
 	/**
-	 * Initializes the Game Engine with the 2-d array board
-	 * Initializes placement of players
+	 * Initializes the Game Engine with the 2-d array board Initializes
+	 * placement of players
+	 * 
 	 * @param numPlayers
 	 * @param semNewMessage
+	 * @param server
 	 */
 	public GameEngine(int numPlayers, Semaphore semNewMessage, Server server) {
 		this.server = server;
@@ -42,6 +45,11 @@ public class GameEngine implements Runnable {
 			makePlayer(i);
 			alive[i] = 1;
 		}
+		int[] p1Win = { 1, 0, 0, 0 };
+		int[] p2Win = { 0, 1, 0, 0 };
+		int[] p3Win = { 0, 0, 1, 0 };
+		int[] p4Win = { 0, 0, 0, 1 };
+		int[] allDead = { 0, 0, 0, 0 };
 
 		while (inGame) {
 			if (alive[0] == 0 && alive[1] == 0 && alive[2] == 0
@@ -159,24 +167,32 @@ public class GameEngine implements Runnable {
 					} else
 						alive[3] = 0;
 				}
-				if (alive[0] == 0 && alive[1] == 0 && alive[2] == 0
-						&& alive[3] == 0){
+				if (Arrays.equals(alive, allDead)) {
 					inGame = false;
 					server.setInGame(false);
+				}
+				if (Arrays.equals(alive, p1Win) || Arrays.equals(alive, p2Win)
+						|| Arrays.equals(alive, p3Win)
+						|| Arrays.equals(alive, p4Win)) {
+					board.placeElement(7, 7, 'P');
 				}
 				command = "0,0";
 			}
 		}
 		System.out.println("Game over");
-		if (alive[0] == 1 && alive[1] == 0 && alive[2] == 0 && alive[3] == 0){
-			board.placeElement(0,0,'1');
-		}else if(alive[0] == 0 && alive[1] == 1 && alive[2] == 0 && alive[3] == 0){
-			board.placeElement(0,0,'2');
-		}else if(alive[0] == 0 && alive[1] == 1 && alive[2] == 0 && alive[3] == 0){
-			board.placeElement(0,0,'3');
-		}else if(alive[0] == 0 && alive[1] == 1 && alive[2] == 0 && alive[3] == 0){
-			board.placeElement(0,0,'4');
-		}else board.placeElement(0,0,'0');
+		if (alive[0] == 1 && alive[1] == 0 && alive[2] == 0 && alive[3] == 0) {
+			board.placeElement(0, 0, '1');
+		} else if (alive[0] == 0 && alive[1] == 1 && alive[2] == 0
+				&& alive[3] == 0) {
+			board.placeElement(0, 0, '2');
+		} else if (alive[0] == 0 && alive[1] == 1 && alive[2] == 0
+				&& alive[3] == 0) {
+			board.placeElement(0, 0, '3');
+		} else if (alive[0] == 0 && alive[1] == 1 && alive[2] == 0
+				&& alive[3] == 0) {
+			board.placeElement(0, 0, '4');
+		} else
+			board.placeElement(0, 0, '0');
 		System.out.println(board.getBoardArrayElement(0, 0));
 	}
 
@@ -188,7 +204,8 @@ public class GameEngine implements Runnable {
 	}
 
 	/**
-	 * Initializes players 1-4 
+	 * Initializes players 1-4
+	 * 
 	 * @param i
 	 */
 	private void makePlayer(int i) {
@@ -207,8 +224,10 @@ public class GameEngine implements Runnable {
 			board.placePlayer(player4);
 		}
 	}
+
 	/**
 	 * places the bomb at the specific position using the start command
+	 * 
 	 * @param player
 	 */
 	private void placeBomb(Player player) {
@@ -221,6 +240,7 @@ public class GameEngine implements Runnable {
 
 	/**
 	 * Allows the player to move up if there is no obstruction
+	 * 
 	 * @param player
 	 */
 	private void movePlayerDown(Player player) {
@@ -252,7 +272,7 @@ public class GameEngine implements Runnable {
 				if (player.getLives() > 0)
 					player.setX(player.getXPosition() + 1);
 				else {
-					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
+					alive[(int) (player.getPlayerNum() - '0') - 1] = 0;
 					player.setX(player.getXPosition() + 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
@@ -277,6 +297,7 @@ public class GameEngine implements Runnable {
 
 	/**
 	 * Moves the player up if there is no obstruction
+	 * 
 	 * @param player
 	 */
 	private void movePlayerUp(Player player) {
@@ -307,7 +328,7 @@ public class GameEngine implements Runnable {
 				if (player.getLives() > 0)
 					player.setX(player.getXPosition() - 1);
 				else {
-					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
+					alive[(int) (player.getPlayerNum() - '0') - 1] = 0;
 					player.setX(player.getXPosition() - 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
@@ -330,6 +351,7 @@ public class GameEngine implements Runnable {
 
 	/**
 	 * Allows the player to move right if there is no obstruction
+	 * 
 	 * @param player
 	 */
 	private void movePlayerRight(Player player) {
@@ -359,7 +381,7 @@ public class GameEngine implements Runnable {
 				if (player.getLives() > 0)
 					player.setY(player.getYPosition() + 1);
 				else {
-					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
+					alive[(int) (player.getPlayerNum() - '0') - 1] = 0;
 					player.setY(player.getYPosition() + 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
@@ -381,6 +403,7 @@ public class GameEngine implements Runnable {
 
 	/**
 	 * Allows the player to move left if there is no obstruction
+	 * 
 	 * @param player
 	 */
 	private void movePlayerLeft(Player player) {
@@ -410,7 +433,7 @@ public class GameEngine implements Runnable {
 				if (player.getLives() > 0)
 					player.setY(player.getYPosition() - 1);
 				else {
-					alive[(int)(player.getPlayerNum() - '0')-1] = 0;
+					alive[(int) (player.getPlayerNum() - '0') - 1] = 0;
 					player.setY(player.getYPosition() - 1);
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
