@@ -61,6 +61,7 @@ public class ClientReceive implements Runnable {
 				e.printStackTrace();
 			}
 			String received = new String(receivePacket.getData()).trim();
+			System.out.println("1 :"+received);
 			startLobbyLogic(received);
 		}
 
@@ -69,7 +70,7 @@ public class ClientReceive implements Runnable {
 		try {
 			multicastSocket.receive(receivePacket);
 			String tileMapString = new String(receivePacket.getData());
-
+			System.out.println("2 :"+tileMapString);
 			// update the tileMap
 			tileMap = stringToArray(tileMapString);
 		} catch (IOException e) {

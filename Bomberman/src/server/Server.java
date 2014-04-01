@@ -11,6 +11,7 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
@@ -18,12 +19,14 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
 
-	private static String arrayString = null;
-	private static InetAddress group = null;
-	private static MulticastSocket multicastSocket = null;
-	private static boolean inGame, full;
+	private String arrayString = null;
+	// private static InetAddress group = null;
+	// private static MulticastSocket multicastSocket = null;
+	private boolean inGame, full;
 	private Thread inputThread1, inputThread2, inputThread3, inputThread4;
 	private GameEngine engine;
+	private ArrayList<InetAddress> connections;
+	private DatagramSocket serverSocket;
 
 	/**
 	 * @param args
@@ -31,10 +34,11 @@ public class Server {
 	 */
 	public Server() {
 		// TODO Auto-generated method stub
-
-		DatagramSocket serverSocket = null;
+		connections = new ArrayList<InetAddress>();
+		serverSocket = null;
 		inGame = true;
 		full = false;
+		engine = null;
 		DatagramPacket receivePacket = null;
 		DatagramPacket sendPacket = null;
 		int port1 = 3333;
@@ -49,9 +53,9 @@ public class Server {
 			serverSocket = new DatagramSocket(port1);
 			serverSocket.setReuseAddress(true);
 
-			group = InetAddress.getByName("224.224.224.224");
-			multicastSocket = new MulticastSocket(port2);
-			multicastSocket.joinGroup(group);
+			// group = InetAddress.getByName("224.224.224.224");
+			// multicastSocket = new MulticastSocket(port2);
+			// multicastSocket.joinGroup(group);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,20 +75,22 @@ public class Server {
 				serverSocket.receive(receivePacket);
 				startGame = new String(receivePacket.getData(), 0,
 						receivePacket.getLength(), "UTF-8");
-				
+
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				serverSocket.close();
-				multicastSocket.close();
 				e1.printStackTrace();
 			}
 			IPAddress = receivePacket.getAddress();
+			if (startGame.equals("spectate")) {
+				connections.add(IPAddress);
+			}
 			if (startGame.equals("join") && numPlayers < 4) {
 				numPlayers++;
 				if (numPlayers == 4)
 					full = true;
 				// get address from who sent packet
-				
+
 				System.out.println(receivePacket.getAddress().getHostAddress()
 						+ " joined the game.");
 				int port = receivePacket.getPort();
@@ -92,22 +98,22 @@ public class Server {
 				// create new server thread to handle new clients inputs
 				if (numPlayers == 1) {
 					inputThread1 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semNewMessage));
+							getNextPort(numPlayers), numPlayers, semNewMessage, this, engine));
 					inputThread1.start();
 				} else if (numPlayers == 2) {
 					inputThread2 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semNewMessage));
+							getNextPort(numPlayers), numPlayers, semNewMessage, this, engine));
 					inputThread2.start();
 				} else if (numPlayers == 3) {
 					inputThread3 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semNewMessage));
+							getNextPort(numPlayers), numPlayers, semNewMessage, this, engine));
 					inputThread3.start();
 				} else if (numPlayers == 4) {
 					inputThread4 = new Thread(new ServerInputThread(
-							getNextPort(numPlayers), numPlayers, semNewMessage));
+							getNextPort(numPlayers), numPlayers, semNewMessage, this, engine));
 					inputThread4.start();
 				}
-
+				connections.add(IPAddress);
 				String temp = String.valueOf(numPlayers);
 				sendData = temp.getBytes();
 
@@ -138,22 +144,6 @@ public class Server {
 				}
 				System.out.println("Game full, join rejected");
 			}
-			// If trying to start game without any players
-			if (startGame.equals("start") && numPlayers == 0) {
-				// int port = receivePacket.getPort();
-				String temp = "No players";
-				sendData = temp.getBytes();
-				sendPacket = new DatagramPacket(sendData, sendData.length,
-						group, port2);
-				try {
-					multicastSocket.send(sendPacket);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					serverSocket.close();
-					multicastSocket.close();
-					e.printStackTrace();
-				}
-			}
 			if (startGame.equals("start") && numPlayers > 0) {
 				numReadyPlayers++;
 				System.out.println(numReadyPlayers + " Players ready");
@@ -163,7 +153,6 @@ public class Server {
 				}
 			}
 		}
-		serverSocket.close(); // server no longer receives any data
 
 		/*
 		 * Once starting, server makes the GameEngine which makes the GameBoard.
@@ -171,31 +160,37 @@ public class Server {
 		 * loops, forever sending the boardarray to the clients at a fixed FPS.
 		 */
 		final Semaphore semGameDone = new Semaphore(0);
-		engine = new GameEngine(numPlayers,semNewMessage);
+		engine = new GameEngine(numPlayers, semNewMessage, this);
 		Thread engineThread = new Thread(engine);
 		engineThread.start();
 
 		System.out.println("Game starting");
 
 		sendData = "starting".getBytes();
-		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
-		try {
-			multicastSocket.send(sendPacket);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			multicastSocket.close();
-			e.printStackTrace();
+		for (InetAddress x : connections) {
+			sendPacket = new DatagramPacket(sendData, sendData.length, x, port2);
+			try {
+				serverSocket.send(sendPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				serverSocket.close();
+				e.printStackTrace();
+			}
 		}
 
 		// send the board
+		sendData = new byte[1024];
 		sendData = arrayToString(engine.getGameBoard()).getBytes();
-		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
-		try {
-			multicastSocket.send(sendPacket);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			multicastSocket.close();
-			e.printStackTrace();
+
+		for (InetAddress x : connections) {
+			sendPacket = new DatagramPacket(sendData, sendData.length, x, port2);
+			try {
+				serverSocket.send(sendPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				serverSocket.close();
+				e.printStackTrace();
+			}
 		}
 
 		ScheduledExecutorService ses = Executors
@@ -211,26 +206,30 @@ public class Server {
 							|| temp[0][0] == '2' || temp[0][0] == '3'
 							|| temp[0][0] == '4') {
 						sendData = arrayToString(temp).getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(
-								sendData, sendData.length, group, port2);
-						try {
-							multicastSocket.send(sendPacket);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							multicastSocket.close();
-							e.printStackTrace();
+						for (InetAddress x : connections) {
+							DatagramPacket sendPacket = new DatagramPacket(
+									sendData, sendData.length, x, port2);
+							try {
+								serverSocket.send(sendPacket);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								serverSocket.close();
+								e.printStackTrace();
+							}
 						}
 						semGameDone.release();
 					} else {
 						sendData = arrayToString(temp).getBytes();
-						DatagramPacket sendPacket = new DatagramPacket(
-								sendData, sendData.length, group, port2);
-						try {
-							multicastSocket.send(sendPacket);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							multicastSocket.close();
-							e.printStackTrace();
+						for (InetAddress x : connections) {
+							DatagramPacket sendPacket = new DatagramPacket(
+									sendData, sendData.length, x, port2);
+							try {
+								serverSocket.send(sendPacket);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								serverSocket.close();
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -245,27 +244,33 @@ public class Server {
 			// send the board
 			synchronized (engine.getGameBoard()) {
 				sendData = arrayToString(engine.getGameBoard()).getBytes();
-				sendPacket = new DatagramPacket(sendData, sendData.length,
-						group, port2);
-				multicastSocket.send(sendPacket);
+				for (InetAddress x : connections) {
+					sendPacket = new DatagramPacket(sendData, sendData.length,
+							x, port2);
+					serverSocket.send(sendPacket);
+
+				}
 			}
 
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			multicastSocket.close();
+			serverSocket.close();
 		}
 		ses.shutdown();
 		sendData = new byte[1024];
 		sendData = arrayToString(engine.getGameBoard()).getBytes();
-		sendPacket = new DatagramPacket(sendData, sendData.length, group, port2);
-		try {
-			multicastSocket.send(sendPacket);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		for (InetAddress x : connections) {
+			sendPacket = new DatagramPacket(sendData, sendData.length, x, port2);
+			try {
+				serverSocket.send(sendPacket);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				serverSocket.close();
+				e.printStackTrace();
+			}
 		}
-		multicastSocket.close();
+		serverSocket.close();
 		try {
 			engineThread.join();
 		} catch (InterruptedException e) {
@@ -309,7 +314,7 @@ public class Server {
 		}
 	}
 
-	private static int getNextPort(int numPlayers) {
+	private int getNextPort(int numPlayers) {
 		if (numPlayers == 1)
 			return 3335;
 		if (numPlayers == 2)
@@ -322,7 +327,7 @@ public class Server {
 
 	// this method converts our array to a CSV string format where each level of
 	// the array is delimited by "|"
-	private static String arrayToString(char array[][]) {
+	private String arrayToString(char array[][]) {
 		arrayString = "";
 		for (int i = 0; i < array.length; i++) {
 			arrayString = arrayString + array[i][0];
@@ -336,17 +341,19 @@ public class Server {
 
 	/**
 	 * If player is currently in game
+	 * 
 	 * @return
 	 */
-	public static boolean getInGame() {
+	public boolean getInGame() {
 		return inGame;
 	}
 
 	/**
 	 * set the current status of the game
+	 * 
 	 * @param b
 	 */
-	public static void setInGame(boolean b) {
+	public void setInGame(boolean b) {
 		inGame = b;
 	}
 
@@ -354,5 +361,8 @@ public class Server {
 		while (true) {
 			new Server();
 		}
+	}
+	public GameEngine getGameEngine(){
+		return engine;
 	}
 }

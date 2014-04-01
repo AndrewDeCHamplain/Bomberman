@@ -7,9 +7,11 @@ import java.util.concurrent.Semaphore;
 
 public class ServerInputThread implements Runnable {
 
-	public int player;
-	int receivePort;
-	Semaphore semNewMessage;
+	private int player;
+	private int receivePort;
+	private Semaphore semNewMessage;
+	private Server server;
+	private GameEngine gameEngine;
 
 	/**
 	 * assigns specified paramters to field variables
@@ -17,7 +19,9 @@ public class ServerInputThread implements Runnable {
 	 * @param player
 	 * @param semNewMessage
 	 */
-	public ServerInputThread(int port, int player, Semaphore semNewMessage) {
+	public ServerInputThread(int port, int player, Semaphore semNewMessage, Server server, GameEngine gameEngine) {
+		this.gameEngine = gameEngine;
+		this.server = server;
 		receivePort = port;
 		this.player = player;
 		this.semNewMessage = semNewMessage;
@@ -46,13 +50,13 @@ public class ServerInputThread implements Runnable {
 			serverSocket.close();
 			e.printStackTrace();
 		}
-
-		while (Server.getInGame()) {
+		gameEngine = server.getGameEngine();
+		while (server.getInGame()) {
 			receivedData = new byte[1024];
 			
 			semNewMessage.release();
-			synchronized (GameEngine.command){
-				GameEngine.command = new String(receivePacket.getData()).trim()+","+player;
+			synchronized (gameEngine.command){
+				gameEngine.command = new String(receivePacket.getData()).trim()+","+player;
 			}
 			try {
 				receivePacket = new DatagramPacket(receivedData,

@@ -4,13 +4,14 @@ import java.util.concurrent.Semaphore;
 
 public class GameEngine implements Runnable {
 	private GameBoard board;
+	private Server server;
 	private int numPlayers;
 	private Player player1 = null, player2 = null, player3 = null,
 			player4 = null;
 	private int[] alive = { 0, 0, 0, 0 };
 	private boolean inGame;
 	// private static char[][] currentBoard;
-	public static String command = "0,0";
+	public String command = "0,0";
 	private Semaphore semNewMessage;
 
 	/**
@@ -19,7 +20,8 @@ public class GameEngine implements Runnable {
 	 * @param numPlayers
 	 * @param semNewMessage
 	 */
-	public GameEngine(int numPlayers, Semaphore semNewMessage) {
+	public GameEngine(int numPlayers, Semaphore semNewMessage, Server server) {
+		this.server = server;
 		board = new GameBoard(1);
 		inGame = true;
 		this.numPlayers = numPlayers;
@@ -160,7 +162,7 @@ public class GameEngine implements Runnable {
 				if (alive[0] == 0 && alive[1] == 0 && alive[2] == 0
 						&& alive[3] == 0){
 					inGame = false;
-					Server.setInGame(false);
+					server.setInGame(false);
 				}
 				command = "0,0";
 			}
