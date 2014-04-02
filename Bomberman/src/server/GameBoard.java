@@ -76,16 +76,30 @@ public class GameBoard {
 	 * @param y int
 	 */
 	public synchronized void placeExplosion(int x, int y, Player player){
-
+		char temp;
+		if(boardArray[x][y] == player.getPlayerNum())
+			player.decLives();
 		boardArray[x][y] = 'e';
-		if (boardArray[x+1][y] != 'w')
+		if ((temp = boardArray[x+1][y]) != 'w'){
+			if(temp == player.getPlayerNum())
+				player.decLives();
 			boardArray[x+1][y] = 'e';
-		if (boardArray[x-1][y] != 'w')
+		}
+		if ((temp = boardArray[x-1][y]) != 'w'){
+			if(temp == player.getPlayerNum())
+				player.decLives();
 			boardArray[x-1][y] = 'e';
-		if (boardArray[x][y+1] != 'w')
+		}
+		if ((temp = boardArray[x][y+1]) != 'w'){
+			if(temp == player.getPlayerNum())
+				player.decLives();
 			boardArray[x][y+1] = 'e';
-		if (boardArray[x][y-1] != 'w')
+		}
+		if ((temp = boardArray[x][y-1]) != 'w'){
+			if(temp == player.getPlayerNum())
+				player.decLives();
 			boardArray[x][y-1] = 'e';
+		}
 	}
 	/**
 	 * Sets the explosion at the specific coordinates

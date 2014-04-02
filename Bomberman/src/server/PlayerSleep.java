@@ -3,12 +3,14 @@ package server;
 public class PlayerSleep implements Runnable{
 
 	private Player player;
+	private GameBoard board;
 	
 	/**
 	 * Assigns parameter to field variable
 	 * @param player
 	 */
-	public PlayerSleep(Player player){
+	public PlayerSleep(Player player, GameBoard board){
+		this.board = board;
 		this.player = player;
 	}
 	@Override

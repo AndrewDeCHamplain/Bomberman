@@ -264,9 +264,9 @@ public class GameEngine implements Runnable {
 			}
 			else if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'e') {
-				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				Thread playerSleepThread = new Thread(new PlayerSleep(player, board));
 				playerSleepThread.start();
-				player.setLives(player.getLives() - 1);
+				player.decLives();
 				if (player.getLives() > 0)
 					player.setX(player.getXPosition() + 1);
 				else {
@@ -325,9 +325,9 @@ public class GameEngine implements Runnable {
 			}
 			else if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'e') {
-				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				Thread playerSleepThread = new Thread(new PlayerSleep(player, board));
 				playerSleepThread.start();
-				player.setLives(player.getLives() - 1);
+				player.decLives();
 				if (player.getLives() > 0)
 					player.setX(player.getXPosition() - 1);
 				else {
@@ -383,9 +383,9 @@ public class GameEngine implements Runnable {
 			}
 			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() + 1) == 'e') {
-				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				Thread playerSleepThread = new Thread(new PlayerSleep(player, board));
 				playerSleepThread.start();
-				player.setLives(player.getLives() - 1);
+				player.decLives();
 				if (player.getLives() > 0)
 					player.setY(player.getYPosition() + 1);
 				else {
@@ -441,9 +441,9 @@ public class GameEngine implements Runnable {
 			}
 			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'e') {
-				Thread playerSleepThread = new Thread(new PlayerSleep(player));
+				Thread playerSleepThread = new Thread(new PlayerSleep(player, board));
 				playerSleepThread.start();
-				player.setLives(player.getLives() - 1);
+				player.decLives();
 				if (player.getLives() > 0)
 					player.setY(player.getYPosition() - 1);
 				else {

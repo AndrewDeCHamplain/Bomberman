@@ -79,11 +79,18 @@ public class Player {
 		this.y=y;
 	}
 	/**
-	 * Sets the amount of lives the player has
+	 * Increments the amount of lives the player has
 	 * @param lives
 	 */
-	public void setLives(int lives){
-		this.lives = lives;
+	public void incLives(){
+		lives++;
+	}
+	/**
+	 * Decrements the amount of lives the player has
+	 * @param lives
+	 */
+	public void decLives(){
+		lives--;
 	}
 	/**
 	 * Assigns a number to the player
