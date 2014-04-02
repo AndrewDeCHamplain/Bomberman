@@ -76,8 +76,7 @@ public class GameBoard {
 	 * @param y int
 	 */
 	public synchronized void placeExplosion(int x, int y, Player player){
-		
-		player.setBombs(player.getBombs()-1);
+
 		boardArray[x][y] = 'e';
 		if (boardArray[x+1][y] != 'w')
 			boardArray[x+1][y] = 'e';

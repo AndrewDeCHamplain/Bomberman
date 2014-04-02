@@ -224,11 +224,11 @@ public class GameEngine implements Runnable {
 	 * @param player
 	 */
 	private void placeBomb(Player player) {
-		// if(player.getBombs()>0){
+		if(player.getBombs()>0){
 		Thread bomb = new Thread(new BombFactory(player, board));
 		bomb.start();
 		// player.setBombs(player.getBombs() -1);
-		// }
+		}
 	}
 
 	/**

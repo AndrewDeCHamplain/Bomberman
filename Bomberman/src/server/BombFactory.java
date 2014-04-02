@@ -26,6 +26,7 @@ public class BombFactory implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		int tempx, tempy;
+		player.decBombs();
 		//int constx, consty;
 		synchronized (board) {
 			tempx = player.getXPosition();
@@ -34,12 +35,16 @@ public class BombFactory implements Runnable{
 		}
 		
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		synchronized (board) {board.placeExplosion(tempx, tempy, player);}
+		synchronized (board) {
+			board.placeExplosion(tempx, tempy, player);
+			player.incBombs();
+			System.out.println(player.getPlayerNum()+" "+player.getBombs());
+		}
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -63,7 +68,7 @@ public class BombFactory implements Runnable{
 		*/
 		synchronized (board) {
 			board.removeExplosion(tempx, tempy, player);
-			//player.setBombs(player.getBombs()+1);
+			
 		}
 		//System.out.println(player.getBombs());
 	}

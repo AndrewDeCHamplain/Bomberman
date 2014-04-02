@@ -107,6 +107,20 @@ public class Player {
 		this.bombs = bombs;
 	}
 	/**
+	 * Increments number of bombs by 1
+	 * @param bombs
+	 */
+	public void incBombs(){
+		this.bombs++;
+	}
+	/**
+	 * Decrements number of bombs by 1
+	 * @param bombs
+	 */
+	public void decBombs(){
+		this.bombs--;
+	}
+	/**
 	 * Sets the status of the player to 'alive' or dead'
 	 * @param status
 	 */
