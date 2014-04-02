@@ -53,7 +53,7 @@ public class Client implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("192.168.56.1"); // AA 508 - PC19 
+			IPAddress = InetAddress.getByName("134.117.59.126"); // AA 508 - PC19 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			clientSocket.close();
