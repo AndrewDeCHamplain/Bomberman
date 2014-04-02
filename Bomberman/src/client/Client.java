@@ -151,7 +151,7 @@ public class Client implements Runnable {
 		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("192.168.56.1");
+			IPAddress = InetAddress.getByName("134.117.59.126");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			inputSocket.close();

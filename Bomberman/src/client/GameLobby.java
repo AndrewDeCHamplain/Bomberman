@@ -123,6 +123,8 @@ public class GameLobby extends JPanel implements Runnable {
 
 			} else if (e.getSource() == readyButton) {
 				client.setCurrMove("start");
+				readyButton.setText("Player "+client.getPlayerNum());
+				readyButton.setEnabled(false);
 			} else if (e.getSource() == spectateButton) {
 				client.setCurrMove("spectate");
 				joinButton.setEnabled(false);

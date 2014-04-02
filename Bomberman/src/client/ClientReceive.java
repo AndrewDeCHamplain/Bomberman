@@ -96,7 +96,6 @@ public class ClientReceive implements Runnable {
 					receiveSocket.close();
 					e.printStackTrace();
 				}
-
 				newReceive.release();
 				/*
 				if (client.getIsPlayer()) {
