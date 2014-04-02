@@ -144,6 +144,17 @@ public class Client implements Runnable {
 
 			if (currMove.equals("spectate")) {
 				isPlayer = false;
+				sendData = currMove.getBytes();
+				sendPacket = new DatagramPacket(sendData, sendData.length,
+						IPAddress, sendPort);
+				try {
+					clientSocket.send(sendPacket);
+					newReceived.acquire();
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					clientSocket.close();
+					e.printStackTrace();
+				}
 			}
 		}
 		// No longer in startLobby
