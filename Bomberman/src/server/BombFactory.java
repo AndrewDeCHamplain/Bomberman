@@ -43,7 +43,6 @@ public class BombFactory implements Runnable{
 		synchronized (board) {
 			board.placeExplosion(tempx, tempy, player);
 			player.incBombs();
-			System.out.println(player.getPlayerNum()+" "+player.getBombs());
 		}
 		try {
 			Thread.sleep(1000);

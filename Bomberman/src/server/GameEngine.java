@@ -263,6 +263,22 @@ public class GameEngine implements Runnable {
 				server.setInGame(false);
 			}
 			else if (board.getBoardArrayElement(player.getXPosition() + 1,
+					player.getYPosition()) == 'B') {
+				player.setX(player.getXPosition() + 1);
+				player.incBombs();
+				if (board.getBoardArrayElement(player.getXPosition() - 1,
+						player.getYPosition()) == 'c'
+						|| board.getBoardArrayElement(
+								player.getXPosition() - 1,
+								player.getYPosition()) == 'b')
+					board.placeBomb(player.getXPosition() - 1,
+							player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition() - 1,
+							player.getYPosition());
+				}
+			}
+			else if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player, board));
 				playerSleepThread.start();
@@ -324,6 +340,22 @@ public class GameEngine implements Runnable {
 				server.setInGame(false);
 			}
 			else if (board.getBoardArrayElement(player.getXPosition() - 1,
+					player.getYPosition()) == 'B') {
+				player.setX(player.getXPosition() - 1);
+				player.incBombs();
+				if (board.getBoardArrayElement(player.getXPosition() + 1,
+						player.getYPosition()) == 'c'
+						|| board.getBoardArrayElement(
+								player.getXPosition() + 1,
+								player.getYPosition()) == 'b')
+					board.placeBomb(player.getXPosition() + 1,
+							player.getYPosition());
+				else {
+					board.placeFloor(player.getXPosition() + 1,
+							player.getYPosition());
+				}
+			}
+			else if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player, board));
 				playerSleepThread.start();
@@ -365,8 +397,8 @@ public class GameEngine implements Runnable {
 							player.getYPosition() + 1) == 'x') {
 				player.setY(player.getYPosition() + 1);
 				board.placePlayer(player);
-				if (board.getBoardArrayElement(player.getXPosition() - 1,
-						player.getYPosition()) == 'b'
+				if (board.getBoardArrayElement(player.getXPosition() ,
+						player.getYPosition() - 1) == 'b'
 						|| board.getBoardArrayElement(player.getXPosition(),
 								player.getYPosition() - 1) == 'c')
 					board.placeBomb(player.getXPosition(),
@@ -380,6 +412,22 @@ public class GameEngine implements Runnable {
 					player.getYPosition() + 1) == 'P') {
 				inGame = false;
 				server.setInGame(false);
+			}
+			else if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() + 1) == 'B') {
+				player.setY(player.getYPosition() + 1);
+				player.incBombs();
+				if (board.getBoardArrayElement(player.getXPosition(),
+						player.getYPosition() - 1) == 'c'
+						|| board.getBoardArrayElement(
+								player.getXPosition(),
+								player.getYPosition() - 1) == 'b')
+					board.placeBomb(player.getXPosition(),
+							player.getYPosition() - 1);
+				else {
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition() - 1);
+				}
 			}
 			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() + 1) == 'e') {
@@ -423,8 +471,8 @@ public class GameEngine implements Runnable {
 							player.getYPosition() - 1) == 'x') {
 				player.setY(player.getYPosition() - 1);
 				board.placePlayer(player);
-				if (board.getBoardArrayElement(player.getXPosition() + 1,
-						player.getYPosition()) == 'b'
+				if (board.getBoardArrayElement(player.getXPosition(),
+						player.getYPosition() + 1) == 'b'
 						|| board.getBoardArrayElement(player.getXPosition(),
 								player.getYPosition() + 1) == 'c')
 					board.placeBomb(player.getXPosition(),
@@ -438,6 +486,22 @@ public class GameEngine implements Runnable {
 					player.getYPosition() - 1) == 'P') {
 				inGame = false;
 				server.setInGame(false);
+			}
+			else if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() - 1) == 'B') {
+				player.setY(player.getYPosition() - 1);
+				player.incBombs();
+				if (board.getBoardArrayElement(player.getXPosition(),
+						player.getYPosition()) == 'c'
+						|| board.getBoardArrayElement(
+								player.getXPosition(),
+								player.getYPosition() + 1) == 'b')
+					board.placeBomb(player.getXPosition(),
+							player.getYPosition() + 1);
+				else {
+					board.placeFloor(player.getXPosition(),
+							player.getYPosition() + 1);
+				}
 			}
 			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'e') {

@@ -4,26 +4,28 @@ public class GameBoard {
 
 	private char[][] boardArray = {
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'},
-		{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
-		{'w','x','w','f','w','d','w','f','w','d','w','f','w','f','w','x','w'},
-		{'w','f','d','d','f','f','f','f','f','d','f','f','d','d','f','d','w'},
-		{'w','d','w','f','w','f','w','f','w','f','w','f','w','d','w','f','w'},
-		{'w','f','d','f','f','f','f','d','f','f','d','d','f','f','f','f','w'},
-		{'w','f','w','d','w','d','w','f','w','f','w','f','w','d','w','d','w'},
-		{'w','d','f','f','f','d','f','f','f','d','f','f','f','d','f','f','w'},
-		{'w','f','w','f','w','f','w','f','w','f','w','f','w','f','w','f','w'},
-		{'w','f','f','f','d','f','d','f','f','d','f','f','d','d','f','f','w'},
-		{'w','d','w','f','w','d','w','d','w','f','w','d','w','f','w','f','w'},
-		{'w','f','d','d','f','d','f','f','f','d','f','f','f','d','f','d','w'},
-		{'w','f','w','f','w','f','w','f','w','d','w','f','w','f','w','d','w'},
-		{'w','f','d','f','f','f','f','d','f','f','f','f','d','f','f','f','w'},
-		{'w','x','w','d','w','d','w','f','w','f','w','d','w','d','w','x','w'},
-		{'w','x','x','f','f','f','f','f','f','f','f','f','f','f','x','x','w'},
+		{'w','x','x','f','f','d','f','d','d','f','f','f','d','f','x','x','w'},
+		{'w','x','w','d','w','d','w','f','w','d','w','f','w','f','w','x','w'},
+		{'w','d','d','d','f','d','d','f','f','d','d','d','f','d','d','d','w'},
+		{'w','f','w','f','w','f','w','d','w','f','w','f','w','f','w','f','w'},
+		{'w','d','d','d','f','d','f','d','f','d','d','d','f','d','d','f','w'},
+		{'w','f','w','d','w','d','w','f','w','f','w','d','w','d','w','d','w'},
+		{'w','d','d','f','f','d','f','f','f','d','f','f','d','d','f','f','w'},
+		{'w','d','w','f','w','f','w','f','w','f','w','f','w','f','w','d','w'},
+		{'w','f','d','d','d','d','f','d','f','d','f','d','f','d','f','d','w'},
+		{'w','f','w','f','w','f','w','d','w','f','w','d','w','f','w','f','w'},
+		{'w','d','d','d','f','d','d','f','f','d','f','d','f','d','f','d','w'},
+		{'w','d','w','d','w','f','w','f','w','d','w','f','w','f','w','d','w'},
+		{'w','f','d','f','f','d','d','d','f','f','d','f','d','d','d','f','w'},
+		{'w','x','w','d','w','d','w','f','w','d','w','d','w','f','w','x','w'},
+		{'w','x','x','d','f','d','f','f','f','d','f','d','f','d','x','x','w'},
 		{'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w'} 
 		};
+	private boolean left, right, down, up;
 
 	public GameBoard(int gameSize) {
 		// use XML parse to make correct game board array
+		this.left = false; right = false; this.up = false; this.down = false;
 	}
 	/**
 	 * Returns the double array representing the game board.
@@ -83,22 +85,48 @@ public class GameBoard {
 		if ((temp = boardArray[x+1][y]) != 'w'){
 			if(temp == player.getPlayerNum())
 				player.decLives();
+			if(temp == 'd'){
+				down = true;
+				System.out.println("down");
+			}
 			boardArray[x+1][y] = 'e';
 		}
 		if ((temp = boardArray[x-1][y]) != 'w'){
 			if(temp == player.getPlayerNum())
 				player.decLives();
+			if(temp == 'd'){
+				up = true;
+				System.out.println("up");
+			}
 			boardArray[x-1][y] = 'e';
 		}
 		if ((temp = boardArray[x][y+1]) != 'w'){
 			if(temp == player.getPlayerNum())
 				player.decLives();
+			if(temp == 'd'){
+				right = true;
+				System.out.println("right");
+			}
 			boardArray[x][y+1] = 'e';
 		}
 		if ((temp = boardArray[x][y-1]) != 'w'){
 			if(temp == player.getPlayerNum())
 				player.decLives();
+			if(temp == 'd'){
+				left = true;
+				System.out.println("left");
+			}
 			boardArray[x][y-1] = 'e';
+		}
+	}
+	public int tryPowerUp(){
+		int temp = (int) (Math.random()*4);
+		if(temp == 1){
+			return 1;
+		}else if(temp == 2){
+			return 2;
+		}else {
+			return 0;
 		}
 	}
 	/**
@@ -118,14 +146,35 @@ public class GameBoard {
 	 */
 	public synchronized void removeExplosion(int x, int y, Player player){
 		boardArray[x][y] = 'f';
-		if (boardArray[x+1][y] == 'e')
-			boardArray[x+1][y] = 'f';
-		if (boardArray[x-1][y] == 'e')
-			boardArray[x-1][y] = 'f';
-		if (boardArray[x][y+1] == 'e')
-			boardArray[x][y+1] = 'f';
-		if (boardArray[x][y-1] == 'e')
-			boardArray[x][y-1] = 'f';
+		if (boardArray[x][y+1] == 'e'){
+			if(right && tryPowerUp() == 1){
+				placeElement(x, y+1, 'B');
+			}else {
+				boardArray[x][y+1] = 'f';
+			}
+		}
+		if (boardArray[x][y-1] == 'e'){
+			if(left && tryPowerUp() == 1){
+				placeElement(x, y-1, 'B');
+			}else {
+				boardArray[x][y-1] = 'f';
+			}
+		}
+		if (boardArray[x-1][y] == 'e'){
+			if(up && tryPowerUp() == 1){
+				placeElement(x-1, y, 'B');
+			}else {
+				boardArray[x-1][y] = 'f';
+			}
+		}
+		if (boardArray[x+1][y] == 'e'){
+			if(down && tryPowerUp() == 1){
+				placeElement(x+1, y, 'B');
+			}else {
+				boardArray[x+1][y] = 'f';
+			}
+		}
+		right = false; left = false; up = false; down = false;
 	}
 	/**
 	 * returns the size of the board in terms of a 2-d array

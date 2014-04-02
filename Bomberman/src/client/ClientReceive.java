@@ -53,9 +53,7 @@ public class ClientReceive implements Runnable {
 			try {
 				receivePacket = new DatagramPacket(receiveData,
 						receiveData.length);
-				System.out.println("wating for packet "+receivePort);
 				receiveSocket.receive(receivePacket);
-				System.out.println("got packet");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				receiveSocket.close();
@@ -129,7 +127,6 @@ public class ClientReceive implements Runnable {
 		} else if (received.equals("starting")) {
 			semStarting.release();
 			client.setStartLobby(false);
-			System.out.println("Game now starting");
 		}
 	}
 

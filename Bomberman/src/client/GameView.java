@@ -25,7 +25,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 	private JFrame f;
 	private BufferedImage spriteDown = null, spriteBomb = null,
 			spriteExplosionYellow = null, spriteDestructible = null,
-			spriteMonster = null, portal = null;
+			spriteMonster = null, portal = null, bombPU = null, explosionPU = null;
 	private Semaphore newReceived;
 	private Client client;
 	private GameLobby lobby;
@@ -53,6 +53,8 @@ public class GameView extends JPanel implements Runnable, Observer {
 		try {
 			spriteDown = ImageIO.read(new File("resources/bmanDown.png"));
 			spriteBomb = ImageIO.read(new File("resources/bmanBomb.png"));
+			bombPU = ImageIO.read(new File("resources/bombPU.png"));
+			explosionPU = ImageIO.read(new File("resources/explosionPU.png"));
 			spriteExplosionYellow = ImageIO.read(new File(
 					"resources/bmanExplosionYellow.png"));
 			spriteDestructible = ImageIO.read(new File(
@@ -129,21 +131,9 @@ public class GameView extends JPanel implements Runnable, Observer {
 	}
 	public void update(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_D) {
-			/*
-			client.setPrev(boardArray.get(client.getPosition()[1]).get(client.getPosition()[0]));
-			client.setPosition(0, client.getPosition()[0]+1);
-			System.out.println(client.getPosition()[0]+" "+client.getPosition()[1]);
-			client.startTimer();
-			*/
 			client.setCurrMove("right");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_A) {
-			/*
-			client.setPrev(boardArray.get(client.getPosition()[1]).get(client.getPosition()[0]));
-			client.setPosition(0, client.getPosition()[0]-1);
-			System.out.println(client.getPosition()[0]+" "+client.getPosition()[1]);
-			client.startTimer();
-			*/
 			client.setCurrMove("left");
 		}
 		if (e.getKeyCode() == KeyEvent.VK_W) {
@@ -206,6 +196,12 @@ public class GameView extends JPanel implements Runnable, Observer {
 							* cellHeight, cellWidth, cellHeight, null);
 				} else if (temp == 'P') { // portal
 					g.drawImage(portal, col * cellWidth, row
+							* cellHeight, cellWidth, cellHeight, null);
+				} else if (temp == 'B') { // bomb power up
+					g.drawImage(bombPU, col * cellWidth, row
+							* cellHeight, cellWidth, cellHeight, null);
+				} else if (temp == 'E') { // explosion power up
+					g.drawImage(explosionPU, col * cellWidth, row
 							* cellHeight, cellWidth, cellHeight, null);
 				} else if (temp == 'e') { // explosion
 					g.drawImage(spriteExplosionYellow, col * cellWidth, row
