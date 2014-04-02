@@ -2,6 +2,7 @@ package client;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
@@ -16,8 +17,10 @@ public class ClientReceive implements Runnable {
 	private Client client;
 	private GameLobby gameLobby;
 	private GameView gameView;
+	private InetAddress serverAddress;
 
-	public ClientReceive(int port, Semaphore semaphore, Client client) {
+	public ClientReceive(int port, Semaphore semaphore, Client client, InetAddress serverAddress) {
+		this.serverAddress = serverAddress;
 		receivePort = port + 1;
 		semStarting = semaphore;
 		this.client = client;
@@ -29,19 +32,19 @@ public class ClientReceive implements Runnable {
 		// TODO Auto-generated method stub
 		byte[] receiveData = new byte[1024];
 		DatagramPacket receivePacket = null;
-		MulticastSocket multicastSocket = null;
-		InetAddress group = null;
+		DatagramSocket receiveSocket = null;
+		//MulticastSocket multicastSocket = null;
+		//InetAddress group = null;
 		Semaphore newReceive = new Semaphore(0);
 
 		// Create multicasting socket for receiving gameview updates
 		try {
-			group = InetAddress.getByName("224.224.224.224");
-			multicastSocket = new MulticastSocket(receivePort);
-			multicastSocket.joinGroup(group);
-			multicastSocket.setReuseAddress(true);
+			receiveSocket = new DatagramSocket(receivePort);
+			receiveSocket.setReuseAddress(true);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			multicastSocket.close();
+			receiveSocket.close();
 			e.printStackTrace();
 		}
 
@@ -53,11 +56,11 @@ public class ClientReceive implements Runnable {
 			receiveData = new byte[1024];
 			try {
 				receivePacket = new DatagramPacket(receiveData,
-						receiveData.length, group, receivePort);
-				multicastSocket.receive(receivePacket);
+						receiveData.length);
+				receiveSocket.receive(receivePacket);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				multicastSocket.close();
+				receiveSocket.close();
 				e.printStackTrace();
 			}
 			String received = new String(receivePacket.getData()).trim();
@@ -67,13 +70,14 @@ public class ClientReceive implements Runnable {
 		// Create first instance of game board
 		receiveData = new byte[1024];
 		try {
-			multicastSocket.receive(receivePacket);
+			receiveSocket.receive(receivePacket);
 			String tileMapString = new String(receivePacket.getData());
 			// update the tileMap
 			tileMap = stringToArray(tileMapString);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			multicastSocket.close();
+			
+			receiveSocket.close();
 			e.printStackTrace();
 		}
 		gameView = new GameView(tileMap, client.getPlayerNum(), newReceive,
@@ -86,14 +90,14 @@ public class ClientReceive implements Runnable {
 			receiveData = new byte[1024];
 			synchronized (gameThread) {
 				try {
-					multicastSocket.receive(receivePacket);
+					receiveSocket.receive(receivePacket);
 					String tileMapString = new String(receivePacket.getData());
 
 					// update the tileMap
 					tileMap = stringToArray(tileMapString);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					multicastSocket.close();
+					receiveSocket.close();
 					e.printStackTrace();
 				}
 
@@ -112,7 +116,7 @@ public class ClientReceive implements Runnable {
 				*/
 			}
 		}
-		multicastSocket.close();
+		receiveSocket.close();
 	}
 
 	public void startLobbyLogic(String received) {
