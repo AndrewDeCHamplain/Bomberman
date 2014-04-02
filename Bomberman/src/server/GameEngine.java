@@ -52,9 +52,6 @@ public class GameEngine implements Runnable {
 		int[] allDead = { 0, 0, 0, 0 };
 
 		while (inGame) {
-			if (alive[0] == 0 && alive[1] == 0 && alive[2] == 0
-					&& alive[3] == 0)
-				inGame = false;
 			try {
 				semNewMessage.acquire();
 			} catch (InterruptedException e) {
@@ -180,20 +177,16 @@ public class GameEngine implements Runnable {
 			}
 		}
 		System.out.println("Game over");
-		if (alive[0] == 1 && alive[1] == 0 && alive[2] == 0 && alive[3] == 0) {
+		if (Arrays.equals(alive, p1Win)) {
 			board.placeElement(0, 0, '1');
-		} else if (alive[0] == 0 && alive[1] == 1 && alive[2] == 0
-				&& alive[3] == 0) {
+		} else if (Arrays.equals(alive, p2Win)) {
 			board.placeElement(0, 0, '2');
-		} else if (alive[0] == 0 && alive[1] == 1 && alive[2] == 0
-				&& alive[3] == 0) {
+		} else if (Arrays.equals(alive, p3Win)) {
 			board.placeElement(0, 0, '3');
-		} else if (alive[0] == 0 && alive[1] == 1 && alive[2] == 0
-				&& alive[3] == 0) {
+		} else if (Arrays.equals(alive, p4Win)) {
 			board.placeElement(0, 0, '4');
 		} else
 			board.placeElement(0, 0, '0');
-		System.out.println(board.getBoardArrayElement(0, 0));
 	}
 
 	/**
@@ -265,6 +258,11 @@ public class GameEngine implements Runnable {
 				}
 			}
 			if (board.getBoardArrayElement(player.getXPosition() + 1,
+					player.getYPosition()) == 'P') {
+				inGame = false;
+				server.setInGame(false);
+			}
+			if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
@@ -321,6 +319,11 @@ public class GameEngine implements Runnable {
 				}
 			}
 			if (board.getBoardArrayElement(player.getXPosition() - 1,
+					player.getYPosition()) == 'P') {
+				inGame = false;
+				server.setInGame(false);
+			}
+			if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
@@ -374,6 +377,11 @@ public class GameEngine implements Runnable {
 				}
 			}
 			if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() + 1) == 'P') {
+				inGame = false;
+				server.setInGame(false);
+			}
+			if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() + 1) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
@@ -386,6 +394,7 @@ public class GameEngine implements Runnable {
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition());
 				}
+				
 				board.setExplosion(player.getXPosition(), player.getYPosition());
 				if (board.getBoardArrayElement(player.getXPosition() - 1,
 						player.getYPosition()) == 'b'
@@ -424,6 +433,11 @@ public class GameEngine implements Runnable {
 					board.placeFloor(player.getXPosition(),
 							player.getYPosition() + 1);
 				}
+			}
+			if (board.getBoardArrayElement(player.getXPosition(),
+					player.getYPosition() - 1) == 'P') {
+				inGame = false;
+				server.setInGame(false);
 			}
 			if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'e') {

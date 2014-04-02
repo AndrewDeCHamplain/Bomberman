@@ -29,10 +29,12 @@ public class GameView extends JPanel implements Runnable, Observer {
 	private Semaphore newReceived;
 	private Client client;
 	private GameLobby lobby;
+	private ClientReceive receiver;
 
 	public GameView(ArrayList<ArrayList<Character>> args, char playerNum,
 			Semaphore newReceived, boolean isPlayer, Client client,
-			GameLobby lobby) {
+			GameLobby lobby, ClientReceive receiver) {
+		this.receiver = receiver;
 		boardArray = args;
 		this.playerNum = playerNum;
 		
@@ -87,7 +89,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 			}
 			while (client.getInGame()) {
 				try {
-					boardArray = ClientReceive.getTileMap();
+					boardArray = receiver.getTileMap();
 					char temp = boardArray.get(0).get(0);
 					if (temp == playerNum) {
 						client.setIsWinner(true);
@@ -160,6 +162,7 @@ public class GameView extends JPanel implements Runnable, Observer {
 		return (new Dimension(605, 605));
 	}
 
+	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		// this.setBackground(new Color(30, 150, 30));

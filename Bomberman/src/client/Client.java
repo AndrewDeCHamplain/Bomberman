@@ -27,8 +27,6 @@ public class Client implements Runnable {
 	private Semaphore newReceived;
 	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
 	private Thread receiver;
-	private int[] position;
-	private long timer;
 	private GameOver gameOver;
 	/**
 	 * @param args
@@ -119,16 +117,12 @@ public class Client implements Runnable {
 
 				if (playerNum == '1'){
 					keyInputPort = 3335;
-					position = new int[]{1,1};
 				}else if (playerNum == '2'){
 					keyInputPort = 3336;
-					position = new int[]{1,15};	
 				}else if (playerNum == '3'){
 					keyInputPort = 3337;
-					position = new int[]{15,1};
 				}else if (playerNum == '4'){
 					keyInputPort = 3338;
-					position = new int[]{15,15};
 				}
 				currMove = "";
 
@@ -157,7 +151,6 @@ public class Client implements Runnable {
 		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("localhost"); // 192.168.43.21 my laptop
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			inputSocket.close();
@@ -188,17 +181,6 @@ public class Client implements Runnable {
 				break;
 			}
 			if (currMove != "") {
-				/*
-				if(currMove.equals("right")){
-					prev = clientReceive.getGameView().getBoardElement(position[1],position[0]);
-					position[0]++;
-					startTimer();
-				}else if(currMove.equals("left")){
-					prev = clientReceive.getGameView().getBoardElement(position[1],position[0]);
-					position[0]--;
-					startTimer();
-				}
-				*/
 				sendData = currMove.getBytes();
 				sendPacket = new DatagramPacket(sendData, sendData.length,
 						IPAddress, keyInputPort);
@@ -218,7 +200,7 @@ public class Client implements Runnable {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		gameOver = new GameOver(winner, playerNum);
+		gameOver = new GameOver(winner, playerNum, isWinner);
 		Thread overThread = new Thread(gameOver);
 		overThread.start();
 		try {
@@ -231,12 +213,6 @@ public class Client implements Runnable {
 	}
 	public GameOver getGameOver(){
 		return gameOver;
-	}
-	public int[] getPosition(){
-		return position;
-	}
-	public void setPosition(int i, int k){
-		position[i] = k;
 	}
 	public void setWinner(int w) {
 		winner = w;
@@ -303,13 +279,6 @@ public class Client implements Runnable {
 
 	public void setInGame(boolean b) {
 		inGame = b;
-	}
-
-	public long getTimer(){
-		return timer;
-	}
-	public void startTimer(){
-		timer = System.currentTimeMillis();
 	}
 	public ClientReceive getClientReceive() {
 		return clientReceive;

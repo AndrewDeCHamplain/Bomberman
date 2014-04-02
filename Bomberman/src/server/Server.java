@@ -202,7 +202,7 @@ public class Server {
 				// send the board
 				synchronized (engine.getGameBoard()) {
 					char[][] temp = engine.getGameBoard();
-					if (temp[0][0] == '0' || temp[0][0] == '0'
+					if (temp[0][0] == '0' || temp[0][0] == '1'
 							|| temp[0][0] == '2' || temp[0][0] == '3'
 							|| temp[0][0] == '4') {
 						sendData = arrayToString(temp).getBytes();
@@ -252,6 +252,7 @@ public class Server {
 				}
 			}
 
+			
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

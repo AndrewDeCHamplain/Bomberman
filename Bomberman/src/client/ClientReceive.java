@@ -12,7 +12,7 @@ public class ClientReceive implements Runnable {
 
 	private int receivePort;
 	private Semaphore semStarting;
-	private static ArrayList<ArrayList<Character>> tileMap;
+	private ArrayList<ArrayList<Character>> tileMap;
 	private Client client;
 	private GameLobby gameLobby;
 	private GameView gameView;
@@ -77,7 +77,7 @@ public class ClientReceive implements Runnable {
 			e.printStackTrace();
 		}
 		gameView = new GameView(tileMap, client.getPlayerNum(), newReceive,
-				client.getIsPlayer(), client, gameLobby);
+				client.getIsPlayer(), client, gameLobby, this);
 		Thread gameThread = new Thread(gameView);
 		gameThread.start();
 
@@ -118,9 +118,7 @@ public class ClientReceive implements Runnable {
 	public void startLobbyLogic(String received) {
 		if (received.equals("1") || received.equals("2")
 				|| received.equals("3") || received.equals("4")) {
-			// System.out.println("You are player " + Client.playerNum);
 			client.setPlayerNum(received.toCharArray()[0]);
-			// System.out.println("You are player );
 			client.setKeyInputPort(Integer.valueOf(received) + 3333);
 		} else if (received.equals("full")) {
 			client.setIsFull(true);
@@ -130,9 +128,6 @@ public class ClientReceive implements Runnable {
 			semStarting.release();
 			client.setStartLobby(false);
 			System.out.println("Game now starting");
-		} else {
-			// Thread gameThread = new Thread(new GameView(tileMap,
-			// Client.playerNum));
 		}
 	}
 
@@ -167,7 +162,7 @@ public class ClientReceive implements Runnable {
 		return gameView;
 	}
 
-	public static ArrayList<ArrayList<Character>> getTileMap() {
+	public ArrayList<ArrayList<Character>> getTileMap() {
 		// TODO Auto-generated method stub
 		return tileMap;
 	}

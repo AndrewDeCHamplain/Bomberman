@@ -3,6 +3,7 @@ package client;
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -12,7 +13,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,15 +24,15 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 	 */
 	private JFrame f;
 	private BufferedImage endBackground;
-	private JLabel backgroundLabel, gameInfoLabel;
+	private JLabel gameInfoLabel;
 	private GameOver backgroundPanel;
 	private JPanel gameInfoPanel;
 	private static final long serialVersionUID = 1L;
 	private boolean waiting;
 
-	public GameOver(int winner, int playerNum) {
+	public GameOver(int winner, int playerNum, boolean isWinner) {
 		waiting = true;
-		if(winner == playerNum)
+		if(isWinner)
 			gameInfoLabel = new JLabel("YOU WON!");
 		else if(winner == 1)
 			gameInfoLabel = new JLabel("PLAYER 1 WON!");
@@ -45,7 +45,7 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 		else 
 			gameInfoLabel = new JLabel("NO WINNER");
 		this.setBackground(new Color(210,210,210));
-		if (winner == playerNum) {
+		if (isWinner) {
 			try {
 				endBackground = ImageIO.read(new File(
 						"resources/winnerBackground.png"));
@@ -61,8 +61,6 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 				e.printStackTrace();
 			}
 		}
-		backgroundLabel = new JLabel(new ImageIcon(endBackground));
-		
 		gameInfoPanel = new JPanel();
 		gameInfoPanel.setBackground(new Color(210,210,210));
 		gameInfoPanel.add(gameInfoLabel);
@@ -73,7 +71,6 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 		// TODO Auto-generated method stub
 		f = new JFrame("Bomberman");
 		backgroundPanel = this;
-		backgroundPanel.add(backgroundLabel);
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.add(gameInfoPanel);
@@ -133,5 +130,8 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 		// TODO Auto-generated method stub
 		
 	}
-
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.drawImage(endBackground,0,0, this.getWidth(), this.getHeight(), null);
+	}
 }

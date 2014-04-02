@@ -39,6 +39,8 @@ public class GameBoard {
 	public void placePlayer(Player player){
 		if(player.getLives()>0){
 			boardArray[player.getXPosition()][player.getYPosition()] = player.getPlayerNum();
+		}else{
+			boardArray[player.getXPosition()][player.getYPosition()] = 'f';
 		}
 	}
 	/**
