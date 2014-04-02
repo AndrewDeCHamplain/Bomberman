@@ -100,7 +100,8 @@ public class GameView extends JPanel implements Runnable, Observer {
 					}
 					else if (temp == '0' || temp == '1' || temp == '2' || temp == '3'
 							|| temp == '4') {
-						client.setWinner(Integer.valueOf(temp));
+						client.setWinner(Character.getNumericValue(temp));
+						System.out.println(client.getWinner());
 						client.setInGame(false);
 						closeGameView();
 					}

@@ -32,6 +32,7 @@ public class GameOver extends JPanel implements Runnable, KeyListener{
 
 	public GameOver(int winner, int playerNum, boolean isWinner) {
 		waiting = true;
+		System.out.println(winner);
 		if(isWinner)
 			gameInfoLabel = new JLabel("YOU WON!");
 		else if(winner == 1)
