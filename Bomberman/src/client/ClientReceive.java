@@ -3,8 +3,6 @@ package client;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
@@ -17,10 +15,8 @@ public class ClientReceive implements Runnable {
 	private Client client;
 	private GameLobby gameLobby;
 	private GameView gameView;
-	private InetAddress serverAddress;
 
-	public ClientReceive(int port, Semaphore semaphore, Client client, InetAddress serverAddress) {
-		this.serverAddress = serverAddress;
+	public ClientReceive(int port, Semaphore semaphore, Client client) {
 		receivePort = port + 1;
 		semStarting = semaphore;
 		this.client = client;
@@ -57,7 +53,9 @@ public class ClientReceive implements Runnable {
 			try {
 				receivePacket = new DatagramPacket(receiveData,
 						receiveData.length);
+				System.out.println("wating for packet "+receivePort);
 				receiveSocket.receive(receivePacket);
+				System.out.println("got packet");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				receiveSocket.close();
