@@ -53,7 +53,7 @@ public class Client implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("192.168.0.16"); 
+			IPAddress = InetAddress.getByName("192.168.56.1"); // AA 508 - PC19 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			clientSocket.close();
@@ -151,7 +151,7 @@ public class Client implements Runnable {
 		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("192.168.0.16");
+			IPAddress = InetAddress.getByName("192.168.56.1");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			inputSocket.close();
