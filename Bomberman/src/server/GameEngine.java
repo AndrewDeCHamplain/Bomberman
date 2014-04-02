@@ -257,12 +257,12 @@ public class GameEngine implements Runnable {
 							player.getYPosition());
 				}
 			}
-			if (board.getBoardArrayElement(player.getXPosition() + 1,
+			else if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'P') {
 				inGame = false;
 				server.setInGame(false);
 			}
-			if (board.getBoardArrayElement(player.getXPosition() + 1,
+			else if (board.getBoardArrayElement(player.getXPosition() + 1,
 					player.getYPosition()) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
@@ -318,12 +318,12 @@ public class GameEngine implements Runnable {
 							player.getYPosition());
 				}
 			}
-			if (board.getBoardArrayElement(player.getXPosition() - 1,
+			else if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'P') {
 				inGame = false;
 				server.setInGame(false);
 			}
-			if (board.getBoardArrayElement(player.getXPosition() - 1,
+			else if (board.getBoardArrayElement(player.getXPosition() - 1,
 					player.getYPosition()) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
@@ -376,12 +376,12 @@ public class GameEngine implements Runnable {
 							player.getYPosition() - 1);
 				}
 			}
-			if (board.getBoardArrayElement(player.getXPosition(),
+			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() + 1) == 'P') {
 				inGame = false;
 				server.setInGame(false);
 			}
-			if (board.getBoardArrayElement(player.getXPosition(),
+			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() + 1) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
@@ -434,12 +434,12 @@ public class GameEngine implements Runnable {
 							player.getYPosition() + 1);
 				}
 			}
-			if (board.getBoardArrayElement(player.getXPosition(),
+			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'P') {
 				inGame = false;
 				server.setInGame(false);
 			}
-			if (board.getBoardArrayElement(player.getXPosition(),
+			else if (board.getBoardArrayElement(player.getXPosition(),
 					player.getYPosition() - 1) == 'e') {
 				Thread playerSleepThread = new Thread(new PlayerSleep(player));
 				playerSleepThread.start();
