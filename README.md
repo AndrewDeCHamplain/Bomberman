@@ -3,8 +3,8 @@ Bomberman
 
 Project for SYSC 3303 
 
-
-Run Files: Client.java and Server.java 
+Playing:
+ Run Files: Client.java and Server.java 
  For Ease of Use: Use Eclipse 
  For Player Case: - Run Server.java first, 
  - Then Run Client.java for as many players as you want (1-4) 
@@ -15,7 +15,8 @@ Run Files: Client.java and Server.java
  - Press 'Spacebar' to drop a bomb 
 
  
-Run Files: TestDriver.java and Server.java 
+Testing:
+  Run Files: TestDriver.java and Server.java 
   For Ease of Use: Use Eclipse 
   For Testing Case: 
   - Run Server.java and TestDriver.java 
