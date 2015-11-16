@@ -28,6 +28,7 @@ public class Client implements Runnable {
 	private boolean isWinner, inGame, isPlayer, joined, startLobby, isFull;
 	private Thread receiver;
 	private GameOver gameOver;
+	private String IP = null;//"134.117.59.126"; // AA 508 - PC19 
 	/**
 	 * @param args
 	 *            [0] -> port number
@@ -53,7 +54,7 @@ public class Client implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			clientSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("134.117.59.126"); // AA 508 - PC19 
+			IPAddress = InetAddress.getByName(IP); 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			clientSocket.close();
@@ -162,7 +163,7 @@ public class Client implements Runnable {
 		inGame = true;
 		try {
 			inputSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName("134.117.59.126");
+			IPAddress = InetAddress.getByName(IP);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			inputSocket.close();

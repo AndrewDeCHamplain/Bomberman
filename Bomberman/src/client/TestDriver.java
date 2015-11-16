@@ -8,7 +8,7 @@ public class TestDriver{
 	public TestDriver(){
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Which test would you like to conduct (test1, test2, test3, and test4)?");
-		System.out.println("Type info for explination of each test, type 'quit' to end.");
+		System.out.println("Type 'info' for explination of each test, type 'quit' to end.");
 		while(true){
 			String s = reader.nextLine();
 			if(s.equals("info")){
