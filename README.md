@@ -3,6 +3,8 @@ Bomberman
 
 Project for SYSC 3303 
 
+![alt tag](https://raw.github.com/andrewdechamplain/Bomberman/tree/master/Bomberman/resources/home.jpg)
+
 Playing:
  Run Files: Client.java and Server.java 
  For Ease of Use: Use Eclipse 
@@ -14,7 +16,8 @@ Playing:
    down and 'D' to move right 
  - Press 'Spacebar' to drop a bomb 
 
- 
+ ![alt tag](https://raw.github.com/andrewdechamplain/Bomberman/tree/master/Bomberman/resources/playing.jpg)
+ ![alt tag](https://raw.github.com/andrewdechamplain/Bomberman/tree/master/Bomberman/resources/gameover.jpg)
 Testing:
   Run Files: TestDriver.java and Server.java 
   For Ease of Use: Use Eclipse 
