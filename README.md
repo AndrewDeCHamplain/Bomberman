@@ -22,3 +22,14 @@ Testing:
   - Run Server.java and TestDriver.java 
   - in testdriver.java enter "testcases"
   - watch the test execute
+
+Tests
+Test 1: 1 player performing simple movements which includes the use of bombs.
+	A spectator is also present.
+Test 2: 2 players are moving and using bombs and end the game by touching.
+Test 3: Latency test 1, the server is under low load. The game runs with 1
+	player and 1 spectator and measures the latency.
+Test 4: Latency test 2, the server is under medium load. The game runs with 2
+	players and 2 spectators and measures the latency.
+Test 5: Latency test 3, the server is under high load. The game runs with 4
+	players and 4 spectators and measures the latency.
